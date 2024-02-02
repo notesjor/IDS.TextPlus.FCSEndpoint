@@ -13,7 +13,7 @@ namespace IDS.TextPlus.FCSEndpoint
     {
       short port = 16319;
 
-      var server = new Server("*", port, (ctx) => DefaultVersion.DefaultRoute(ctx));
+      var server = new Server("*", port, (ctx) => DefaultVersion.ProcessRequest(ctx));
       Console.WriteLine($"SERVER STARTED on PORT:{port}");
 
       while (true)

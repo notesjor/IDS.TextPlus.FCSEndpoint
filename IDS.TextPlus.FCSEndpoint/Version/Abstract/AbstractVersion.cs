@@ -9,10 +9,6 @@ namespace IDS.TextPlus.FCSEndpoint.Version.Abstract
 {
   public abstract class AbstractVersion
   {
-    public abstract bool DefaultRoute(HttpContext ctx);
-    public abstract bool Resources(HttpContext ctx);
-    public abstract bool EndpointDescription(HttpContext ctx);
-    public abstract bool DataviewHits(HttpContext ctx);
-    public abstract bool DataviewAdvanced(HttpContext ctx);
+    public abstract void ProcessRequest(HttpContext ctx);
   }
 }
