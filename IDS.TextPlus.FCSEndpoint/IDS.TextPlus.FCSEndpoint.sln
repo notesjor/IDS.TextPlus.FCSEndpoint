@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDS.TextPlus.FCSEndpoint", "IDS.TextPlus.FCSEndpoint.csproj", "{F73E9FE8-D50A-4000-8994-DB6B74AF6BFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFRES.DotNet6", "..\..\..\..\Projekte-Kooperation\TfresWebserver\TFRES.DotNet6\TFRES.DotNet6.csproj", "{2EFEA9FB-DC6A-47C0-B18C-7141B5825453}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F73E9FE8-D50A-4000-8994-DB6B74AF6BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F73E9FE8-D50A-4000-8994-DB6B74AF6BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F73E9FE8-D50A-4000-8994-DB6B74AF6BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F73E9FE8-D50A-4000-8994-DB6B74AF6BFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EFEA9FB-DC6A-47C0-B18C-7141B5825453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EFEA9FB-DC6A-47C0-B18C-7141B5825453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EFEA9FB-DC6A-47C0-B18C-7141B5825453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EFEA9FB-DC6A-47C0-B18C-7141B5825453}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9EAD859A-89F6-49BE-91F9-47EC8757ED74}
+	EndGlobalSection
+EndGlobal
