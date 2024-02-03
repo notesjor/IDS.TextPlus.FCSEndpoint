@@ -20,8 +20,8 @@
         </zr:databaseInfo>
         <zr:indexInfo>
           <zr:set identifier="http://clarin.eu/fcs/resource" name="fcs">
-            <zr:title lang="de">CLARIN Content Search</zr:title>
-            <zr:title lang="en" primary="true">CLARIN Content Search</zr:title>
+            <zr:title lang="de">OWID Content Search</zr:title>
+            <zr:title lang="en" primary="true">OWID Content Search</zr:title>
           </zr:set>
           <zr:index search="true" scan="false" sort="false">
             <zr:title lang="en" primary="true">Words</zr:title>
@@ -32,12 +32,12 @@
         </zr:indexInfo>
         <zr:schemaInfo>
           <zr:schema identifier="http://clarin.eu/fcs/resource" name="fcs">
-            <zr:title lang="en" primary="true">CLARIN Content Search</zr:title>
+            <zr:title lang="en" primary="true">OWID Content Search</zr:title>
           </zr:schema>
         </zr:schemaInfo>
         <zr:configInfo>
           <zr:default type="numberOfRecords">10</zr:default>
-          <zr:setting type="maximumRecords">1000</zr:setting>
+          <zr:setting type="maximumRecords">{{max}}</zr:setting>
         </zr:configInfo>
       </zr:explain>
     </sruResponse:recordData>
