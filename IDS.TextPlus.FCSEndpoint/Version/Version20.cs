@@ -43,6 +43,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       GetUrlParameterNumber(ctx, ref data, "maximumrecords", "maximumRecords", 10, 0, _maxRecords, out var maximum, Template_Error_Number);
       GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum, Template_Error_ScanNumber); // maximumRecords = maximumTerms
 
+      /* Stupid param - add <sruResponse:recordXMLEscaping>xml</sruResponse:recordXMLEscaping> to any response and everything will be fine
       var recordXMLEscaping = ""; 
       if (data.ContainsKey("recordxmlescaping"))
       {
@@ -60,8 +61,17 @@ namespace IDS.TextPlus.FCSEndpoint.Version
             return;
         }
       }
+      */
 
-      ctx.Response.Send(DefaultRouteResponse, _mime);
+      if (data.ContainsKey("query"))
+        ExecuteQuery(ctx, data["query"], start, maximum);
+      else
+        ctx.Response.Send(DefaultRouteResponse, _mime);
+    }
+
+    private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
+    {
+      
     }
 
     private bool GetUrlParameterNumber(HttpContext ctx, ref Dictionary<string, string> data, string name, string nameSpec, int defaultValue, int minValue, out int returnValue, string template)
