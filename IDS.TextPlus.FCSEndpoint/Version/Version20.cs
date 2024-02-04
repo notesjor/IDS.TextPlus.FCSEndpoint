@@ -43,26 +43,6 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       GetUrlParameterNumber(ctx, ref data, "maximumrecords", "maximumRecords", 10, 0, _maxRecords, out var maximum, Template_Error_Number);
       GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum, Template_Error_ScanNumber); // maximumRecords = maximumTerms
 
-      /* Stupid param - add <sruResponse:recordXMLEscaping>xml</sruResponse:recordXMLEscaping> to any response and everything will be fine
-      var recordXMLEscaping = ""; 
-      if (data.ContainsKey("recordxmlescaping"))
-      {
-        var escaping = data["recordxmlescaping"];
-        switch (escaping)
-        {
-          case "none":
-            recordXMLEscaping = "";
-            break;
-          case "xml":
-            recordXMLEscaping = "<sruResponse:recordXMLEscaping>xml</sruResponse:recordXMLEscaping>";
-            break;
-          default:
-            ctx.Response.Send(Template_Error_RecordXmlEscaping.Replace("{{template}}", escaping), _mime);
-            return;
-        }
-      }
-      */
-
       if (data.ContainsKey("query"))
         ExecuteQuery(ctx, data["query"], start, maximum);
       else
