@@ -51,7 +51,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
     private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
     {
-      
+      Console.WriteLine(query);
     }
 
     private bool GetUrlParameterNumber(HttpContext ctx, ref Dictionary<string, string> data, string name, string nameSpec, int defaultValue, int minValue, out int returnValue, string template)
