@@ -16,17 +16,30 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
     private string DefaultRouteResponse;
     private string EndpointDescriptionResponse;
+    private string Error_QueryParser;
     private string Template_Error_RecordXmlEscaping;
     private string Template_Error_Number;
     private string Template_Error_ScanNumber;
+    private string Template_Response_01;
+    private string Template_Response_02;
+    private string Template_Response_03;
+    private string Template_Response_04;
+    private string Template_Response_05;
 
     public Version20()
     {
       DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/20DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
       EndpointDescriptionResponse = System.IO.File.ReadAllText("Snippets/20EndpointDescription.xml", Encoding.UTF8);
+      Error_QueryParser = System.IO.File.ReadAllText("Snippets/20Error_QueryParser.xml", Encoding.UTF8);
       Template_Error_RecordXmlEscaping = System.IO.File.ReadAllText("Snippets/20Template_Error_recordXMLEscaping.xml", Encoding.UTF8);
       Template_Error_Number = System.IO.File.ReadAllText("Snippets/20Template_Error_Number.xml", Encoding.UTF8);
       Template_Error_ScanNumber = System.IO.File.ReadAllText("Snippets/20Template_Error_Scan_Number.xml", Encoding.UTF8);
+
+      Template_Response_01 = System.IO.File.ReadAllText("Snippets/20Template_Response_01.xml", Encoding.UTF8);
+      Template_Response_02 = System.IO.File.ReadAllText("Snippets/20Template_Response_02.xml", Encoding.UTF8);
+      Template_Response_03 = System.IO.File.ReadAllText("Snippets/20Template_Response_03.xml", Encoding.UTF8);
+      Template_Response_04 = System.IO.File.ReadAllText("Snippets/20Template_Response_04.xml", Encoding.UTF8);
+      Template_Response_05 = System.IO.File.ReadAllText("Snippets/20Template_Response_05.xml", Encoding.UTF8);
     }
 
     public override void ProcessRequest(HttpContext ctx)
@@ -51,7 +64,20 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
     private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
     {
-      Console.WriteLine(query);
+      if (query.Contains("="))
+      {
+        ctx.Response.Send(Error_QueryParser, _mime);
+        return;
+      }
+
+      ctx.Response.SendChunk(Template_Response_01, mimeType: _mime);
+      ctx.Response.SendChunk("3");
+      ctx.Response.SendChunk(Template_Response_02);
+      ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", "1").Replace("{{url}}", "https://owid.de").Replace("{{hit}}", "Das ist ein HIT ... wow!!!"));
+      ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", "2").Replace("{{url}}", "https://owid.de").Replace("{{hit}}", "Das ist ein HIT ... wow!!!"));
+      ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", "3").Replace("{{url}}", "https://owid.de").Replace("{{hit}}", "Das ist ein HIT ... wow!!!"));
+      ctx.Response.SendChunk(Template_Response_04);
+      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", "1"));
     }
 
     private bool GetUrlParameterNumber(HttpContext ctx, ref Dictionary<string, string> data, string name, string nameSpec, int defaultValue, int minValue, out int returnValue, string template)

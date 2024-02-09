@@ -1,0 +1,3 @@
+﻿<sruResponse:searchRetrieveResponse xmlns:sruResponse="http://docs.oasis-open.org/ns/search-ws/sruResponse">
+	<sruResponse:version>2.0</sruResponse:version>
+	<sruResponse:numberOfRecords>

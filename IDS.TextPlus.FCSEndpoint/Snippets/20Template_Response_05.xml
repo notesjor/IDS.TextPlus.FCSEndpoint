@@ -1,0 +1,15 @@
+﻿  <sruResponse:echoedSearchRetrieveRequest>
+    <sruResponse:version>2.0</sruResponse:version>
+    <sruResponse:query>{{query}}</sruResponse:query>
+    <sruResponse:xQuery>
+      <searchClause>
+        <index>cql.serverChoice</index>
+        <relation>
+          <value>scr</value>
+        </relation>
+        <term>{{query}}</term>
+      </searchClause>
+    </sruResponse:xQuery>
+    <sruResponse:startRecord>{{start}}</sruResponse:startRecord>
+  </sruResponse:echoedSearchRetrieveRequest>
+</sruResponse:searchRetrieveResponse>
