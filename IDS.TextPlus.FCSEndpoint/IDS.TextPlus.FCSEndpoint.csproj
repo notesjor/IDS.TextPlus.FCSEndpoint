@@ -29,46 +29,46 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Snippets\20DefaultRoute.xml">
+    <None Update="Snippets\20\20DefaultRoute.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20EmptyResult.xml">
+    <None Update="Snippets\20\20EmptyResult.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20EndpointDescription.xml">
+    <None Update="Snippets\20\20EndpointDescription.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Error_OutOfRange.xml">
+    <None Update="Snippets\20\20Error_OutOfRange.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Error_QueryParser.xml">
+    <None Update="Snippets\20\20Error_QueryParser.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Error_Number.xml">
+    <None Update="Snippets\20\20Template_Error_Number.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Error_recordXMLEscaping.xml">
+    <None Update="Snippets\20\20Template_Error_recordXMLEscaping.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Error_Scan_Number.xml">
+    <None Update="Snippets\20\20Template_Error_Scan_Number.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Response_01.xml">
+    <None Update="Snippets\20\20Template_Response_01.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Response_02.xml">
+    <None Update="Snippets\20\20Template_Response_02.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Response_03.xml">
+    <None Update="Snippets\20\20Template_Response_03.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Snippets\20Template_Response_03_DB_SAMPLE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Response_04.xml">
+    <None Update="Snippets\20\20Template_Response_04.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Snippets\20Template_Response_05.xml">
+    <None Update="Snippets\20\20Template_Response_05.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Snippets\20Template_Response_08.txt">

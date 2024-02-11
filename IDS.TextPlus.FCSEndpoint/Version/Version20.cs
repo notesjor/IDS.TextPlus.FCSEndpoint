@@ -34,20 +34,20 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
     public Version20()
     {
-      DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/20DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
-      EmptyResult = System.IO.File.ReadAllText("Snippets/20EmptyResult.xml", Encoding.UTF8);
-      EndpointDescriptionResponse = System.IO.File.ReadAllText("Snippets/20EndpointDescription.xml", Encoding.UTF8);
-      Error_OutOfRange = System.IO.File.ReadAllText("Snippets/20Error_OutOfRange.xml", Encoding.UTF8);
-      Error_QueryParser = System.IO.File.ReadAllText("Snippets/20Error_QueryParser.xml", Encoding.UTF8);
-      Template_Error_RecordXmlEscaping = System.IO.File.ReadAllText("Snippets/20Template_Error_recordXMLEscaping.xml", Encoding.UTF8);
-      Template_Error_Number = System.IO.File.ReadAllText("Snippets/20Template_Error_Number.xml", Encoding.UTF8);
-      Template_Error_ScanNumber = System.IO.File.ReadAllText("Snippets/20Template_Error_Scan_Number.xml", Encoding.UTF8);
+      DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/20/20DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
+      EmptyResult = System.IO.File.ReadAllText("Snippets/20/20EmptyResult.xml", Encoding.UTF8);
+      EndpointDescriptionResponse = System.IO.File.ReadAllText("Snippets/20/20EndpointDescription.xml", Encoding.UTF8);
+      Error_OutOfRange = System.IO.File.ReadAllText("Snippets/20/20Error_OutOfRange.xml", Encoding.UTF8);
+      Error_QueryParser = System.IO.File.ReadAllText("Snippets/20/20Error_QueryParser.xml", Encoding.UTF8);
+      Template_Error_RecordXmlEscaping = System.IO.File.ReadAllText("Snippets/20/20Template_Error_recordXMLEscaping.xml", Encoding.UTF8);
+      Template_Error_Number = System.IO.File.ReadAllText("Snippets/20/20Template_Error_Number.xml", Encoding.UTF8);
+      Template_Error_ScanNumber = System.IO.File.ReadAllText("Snippets/20/20Template_Error_Scan_Number.xml", Encoding.UTF8);
 
-      Template_Response_01 = System.IO.File.ReadAllText("Snippets/20Template_Response_01.xml", Encoding.UTF8);
-      Template_Response_02 = System.IO.File.ReadAllText("Snippets/20Template_Response_02.xml", Encoding.UTF8);
-      Template_Response_03 = System.IO.File.ReadAllText("Snippets/20Template_Response_03.xml", Encoding.UTF8);
-      Template_Response_04 = System.IO.File.ReadAllText("Snippets/20Template_Response_04.xml", Encoding.UTF8);
-      Template_Response_05 = System.IO.File.ReadAllText("Snippets/20Template_Response_05.xml", Encoding.UTF8);
+      Template_Response_01 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_01.xml", Encoding.UTF8);
+      Template_Response_02 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_02.xml", Encoding.UTF8);
+      Template_Response_03 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_03.xml", Encoding.UTF8);
+      Template_Response_04 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_04.xml", Encoding.UTF8);
+      Template_Response_05 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_05.xml", Encoding.UTF8);
     }
 
     public override void ProcessRequest(HttpContext ctx)
@@ -83,7 +83,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         ctx.Response.Send(Error_QueryParser, _mime);
         return;
       }
-      
+
       var request = new RestRequest("/indexes/fcs/search", Method.Post);
       request.AddHeader("Content-Type", "application/json");
       request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
@@ -96,11 +96,11 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       var response = _client.ExecuteAsync(request);
       response.Wait();
 
-      var result = JsonConvert.DeserializeObject<SearchResponse>(response.Result.Content);      
+      var result = JsonConvert.DeserializeObject<SearchResponse>(response.Result.Content);
 
-      if(result.Hits.Count == 0)
+      if (result?.Hits == null || result.Hits.Count == 0)
       {
-        if (start > 1 && start > result.EstimatedTotalHits)
+        if (start > 1 && start > result?.EstimatedTotalHits)
         {
           ctx.Response.Send(Error_OutOfRange, _mime);
           return;
