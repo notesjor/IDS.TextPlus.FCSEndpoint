@@ -1,4 +1,7 @@
-﻿using IDS.TextPlus.FCSEndpoint.Version.Abstract;
+﻿using IDS.TextPlus.FCSEndpoint.Model;
+using IDS.TextPlus.FCSEndpoint.Version.Abstract;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +18,9 @@ namespace IDS.TextPlus.FCSEndpoint.Version
     private int _maxRecords = 1000;
 
     private string DefaultRouteResponse;
+    private string EmptyResult;
     private string EndpointDescriptionResponse;
+    private string Error_OutOfRange;
     private string Error_QueryParser;
     private string Template_Error_RecordXmlEscaping;
     private string Template_Error_Number;
@@ -29,7 +34,9 @@ namespace IDS.TextPlus.FCSEndpoint.Version
     public Version20()
     {
       DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/20DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
+      EmptyResult = System.IO.File.ReadAllText("Snippets/20EmptyResult.xml", Encoding.UTF8);
       EndpointDescriptionResponse = System.IO.File.ReadAllText("Snippets/20EndpointDescription.xml", Encoding.UTF8);
+      Error_OutOfRange = System.IO.File.ReadAllText("Snippets/20Error_OutOfRange.xml", Encoding.UTF8);
       Error_QueryParser = System.IO.File.ReadAllText("Snippets/20Error_QueryParser.xml", Encoding.UTF8);
       Template_Error_RecordXmlEscaping = System.IO.File.ReadAllText("Snippets/20Template_Error_recordXMLEscaping.xml", Encoding.UTF8);
       Template_Error_Number = System.IO.File.ReadAllText("Snippets/20Template_Error_Number.xml", Encoding.UTF8);
@@ -48,6 +55,12 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       if (data.ContainsKey("x-fcs-endpoint-description"))
       {
         ctx.Response.Send(EndpointDescriptionResponse, _mime);
+        return;
+      }
+
+      if (data.ContainsKey("recordxmlescaping") && data["recordxmlescaping"].ToLower() != "xml")
+      {
+        ctx.Response.Send(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordxmlescaping"]));
         return;
       }
 
@@ -70,14 +83,40 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         return;
       }
 
+      var client = new RestClient(new RestClientOptions("http://lexik08.ids-mannheim.de:7700") { MaxTimeout = 5000 });
+      var request = new RestRequest("/indexes/fcs/search", Method.Post);
+      request.AddHeader("Content-Type", "application/json");
+      request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
+      request.AddStringBody(JsonConvert.SerializeObject(new SearchRequest
+      {
+        q = query,
+        limit = maximum,
+        offset = start - 1
+      }), ContentType.Json);
+      var response = client.ExecuteAsync(request);
+      response.Wait();
+
+      var result = JsonConvert.DeserializeObject<SearchResponse>(response.Result.Content);      
+
+      if(result.Hits.Count == 0)
+      {
+        if (start > 1 && start > result.EstimatedTotalHits)
+        {
+          ctx.Response.Send(Error_OutOfRange, _mime);
+          return;
+        }
+
+        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+        return;
+      }
+
       ctx.Response.SendChunk(Template_Response_01, mimeType: _mime);
-      ctx.Response.SendChunk("3");
+      ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
-      ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", "1").Replace("{{url}}", "https://owid.de").Replace("{{hit}}", "Das ist ein HIT ... wow!!!"));
-      ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", "2").Replace("{{url}}", "https://owid.de").Replace("{{hit}}", "Das ist ein HIT ... wow!!!"));
-      ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", "3").Replace("{{url}}", "https://owid.de").Replace("{{hit}}", "Das ist ein HIT ... wow!!!"));
+      foreach (var hit in result.Hits)
+        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", hit.id).Replace("{{url}}", hit.url).Replace("{{hit}}", hit.text));
       ctx.Response.SendChunk(Template_Response_04);
-      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", "1"));
+      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()));
     }
 
     private bool GetUrlParameterNumber(HttpContext ctx, ref Dictionary<string, string> data, string name, string nameSpec, int defaultValue, int minValue, out int returnValue, string template)
