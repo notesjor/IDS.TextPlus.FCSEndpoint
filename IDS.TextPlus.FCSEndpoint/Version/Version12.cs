@@ -12,7 +12,7 @@ using Tfres;
 
 namespace IDS.TextPlus.FCSEndpoint.Version
 {
-  public class Version20 : AbstractVersion
+  public class Version12 : AbstractVersion
   {
     private string DefaultRouteResponse;
     private string EmptyResult;
@@ -28,9 +28,11 @@ namespace IDS.TextPlus.FCSEndpoint.Version
     private string Template_Response_04;
     private string Template_Response_05;
 
-    public Version20()
+    public Version12()
     {
-      DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/20/20DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
+      DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/12/12DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
+      
+      // TODO
       EmptyResult = System.IO.File.ReadAllText("Snippets/20/20EmptyResult.xml", Encoding.UTF8);
       EndpointDescriptionResponse = System.IO.File.ReadAllText("Snippets/20/20EndpointDescription.xml", Encoding.UTF8);
       Error_OutOfRange = System.IO.File.ReadAllText("Snippets/20/20Error_OutOfRange.xml", Encoding.UTF8);
