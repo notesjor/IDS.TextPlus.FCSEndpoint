@@ -14,6 +14,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 {
   public class Version20 : AbstractVersion
   {
+    private RestClient _client = new RestClient(new RestClientOptions("http://lexik08.ids-mannheim.de:7700") { MaxTimeout = 5000 });
     private string _mime = "application/xml;charset=utf-8";
     private int _maxRecords = 1000;
 
@@ -82,8 +83,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         ctx.Response.Send(Error_QueryParser, _mime);
         return;
       }
-
-      var client = new RestClient(new RestClientOptions("http://lexik08.ids-mannheim.de:7700") { MaxTimeout = 5000 });
+      
       var request = new RestRequest("/indexes/fcs/search", Method.Post);
       request.AddHeader("Content-Type", "application/json");
       request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
@@ -93,7 +93,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         limit = maximum,
         offset = start - 1
       }), ContentType.Json);
-      var response = client.ExecuteAsync(request);
+      var response = _client.ExecuteAsync(request);
       response.Wait();
 
       var result = JsonConvert.DeserializeObject<SearchResponse>(response.Result.Content);      
