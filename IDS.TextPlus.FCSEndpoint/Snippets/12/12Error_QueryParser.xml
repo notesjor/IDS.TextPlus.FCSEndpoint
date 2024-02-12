@@ -1,0 +1,14 @@
+﻿<sru:searchRetrieveResponse xmlns:sru="http://www.loc.gov/zing/srw/">
+  <sru:version>1.2</sru:version>
+  <sru:numberOfRecords>0</sru:numberOfRecords>
+  <sru:diagnostics xmlns:diag="http://www.loc.gov/zing/srw/diagnostic/">
+    <diag:diagnostic>
+      <diag:uri>info:srw/diagnostic/1/10</diag:uri>
+      <diag:message>error parsing query</diag:message>
+    </diag:diagnostic>
+    <diag:diagnostic>
+      <diag:uri>info:srw/diagnostic/1/10</diag:uri>
+      <diag:message>Query could not be parsed.</diag:message>
+    </diag:diagnostic>
+  </sru:diagnostics>
+</sru:searchRetrieveResponse>

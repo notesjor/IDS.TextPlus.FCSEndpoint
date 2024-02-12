@@ -1,6 +1,8 @@
 ﻿  <sruResponse:echoedSearchRetrieveRequest>
     <sruResponse:version>2.0</sruResponse:version>
     <sruResponse:query>{{query}}</sruResponse:query>
+    <sruResponse:startRecord>{{offset}}</sruResponse:startRecord>
+    <sruResponse:maximumRecords>{{max}}</sruResponse:maximumRecords>
     <sruResponse:xQuery>
       <searchClause>
         <index>cql.serverChoice</index>

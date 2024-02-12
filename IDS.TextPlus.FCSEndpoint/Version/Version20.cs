@@ -60,9 +60,11 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         return;
       }
 
-      GetUrlParameterNumber(ctx, ref data, "startrecord", "startRecord", 1, 1, out var start, Template_Error_Number);
-      GetUrlParameterNumber(ctx, ref data, "responseposition", "responsePosition", start, 1, out start, Template_Error_ScanNumber); // startRecord = responsePosition
+      GetUrlParameterNumber(ctx, ref data, "startrecord", "startRecord", 1, 1, out var start, Template_Error_Number);      
       GetUrlParameterNumber(ctx, ref data, "maximumrecords", "maximumRecords", 10, 0, _maxRecords, out var maximum, Template_Error_Number);
+
+      // URL parameters are specified but meaningless. In version 1.2 they are used for the scan - which is not implemented in 2.0. But the parameters must be checked according to the specification.
+      GetUrlParameterNumber(ctx, ref data, "responseposition", "responsePosition", start, 1, out start, Template_Error_ScanNumber); // startRecord = responsePosition
       GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum, Template_Error_ScanNumber); // maximumRecords = maximumTerms
 
       if (data.ContainsKey("query"))
@@ -96,10 +98,28 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       ctx.Response.SendChunk(Template_Response_01, mimeType: _mime);
       ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
-      foreach (var hit in result.Hits)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", hit.id).Replace("{{url}}", hit.url).Replace("{{hit}}", hit.text));
+
+      StringBuilder stb;
+      for (int i = 0; i < result.Hits.Count; i++)
+      {
+        stb = new StringBuilder(Template_Response_03);
+        stb = stb.Replace("{{id}}", result.Hits[i].id);
+        stb = stb.Replace("{{url}}", result.Hits[i].url);
+        stb = stb.Replace("{{hit}}", result.Hits[i].text);
+        stb = stb.Replace("{{p}}", (result.Offset + i).ToString());
+
+        ctx.Response.SendChunk(stb.ToString());
+      }
+
       ctx.Response.SendChunk(Template_Response_04);
-      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()));
+
+      stb = new StringBuilder(Template_Response_05);
+      stb = stb.Replace("{{query}}", query);
+      stb = stb.Replace("{{start}}", (result.Offset + 1).ToString());
+      stb = stb.Replace("{{offset}}", start.ToString());
+      stb = stb.Replace("{{max}}", result.EstimatedTotalHits.ToString());
+
+      ctx.Response.SendFinalChunk(stb.ToString());
     }
   }
 }

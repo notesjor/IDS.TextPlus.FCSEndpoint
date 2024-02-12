@@ -1,0 +1,18 @@
+﻿<sru:nextRecordPosition>6</sru:nextRecordPosition>
+<sru:echoedSearchRetrieveRequest>
+  <sru:version>1.2</sru:version>
+  <sru:query>{{query}}</sru:query>
+  <sru:startRecord>{{offset}}</sru:startRecord>
+  <sru:maximumRecords>{{max}}</sru:maximumRecords>
+  <sru:xQuery xmlns="http://www.loc.gov/zing/cql/xcql/">
+    <searchClause>
+      <index>cql.serverChoice</index>
+      <relation>
+        <value>=</value>
+      </relation>
+      <term>{{query}}</term>
+    </searchClause>
+  </sru:xQuery>
+  <sru:recordSchema>http://clarin.eu/fcs/resource</sru:recordSchema>
+</sru:echoedSearchRetrieveRequest>
+</sru:searchRetrieveResponse>

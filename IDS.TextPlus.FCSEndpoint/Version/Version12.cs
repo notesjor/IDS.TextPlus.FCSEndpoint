@@ -31,21 +31,18 @@ namespace IDS.TextPlus.FCSEndpoint.Version
     public Version12()
     {
       DefaultRouteResponse = System.IO.File.ReadAllText("Snippets/12/12DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
-      
-      // TODO
-      EmptyResult = System.IO.File.ReadAllText("Snippets/20/20EmptyResult.xml", Encoding.UTF8);
-      EndpointDescriptionResponse = System.IO.File.ReadAllText("Snippets/20/20EndpointDescription.xml", Encoding.UTF8);
-      Error_OutOfRange = System.IO.File.ReadAllText("Snippets/20/20Error_OutOfRange.xml", Encoding.UTF8);
-      Error_QueryParser = System.IO.File.ReadAllText("Snippets/20/20Error_QueryParser.xml", Encoding.UTF8);
-      Template_Error_RecordXmlEscaping = System.IO.File.ReadAllText("Snippets/20/20Template_Error_recordXMLEscaping.xml", Encoding.UTF8);
-      Template_Error_Number = System.IO.File.ReadAllText("Snippets/20/20Template_Error_Number.xml", Encoding.UTF8);
-      Template_Error_ScanNumber = System.IO.File.ReadAllText("Snippets/20/20Template_Error_Scan_Number.xml", Encoding.UTF8);
-
-      Template_Response_01 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_01.xml", Encoding.UTF8);
-      Template_Response_02 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_02.xml", Encoding.UTF8);
-      Template_Response_03 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_03.xml", Encoding.UTF8);
-      Template_Response_04 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_04.xml", Encoding.UTF8);
-      Template_Response_05 = System.IO.File.ReadAllText("Snippets/20/20Template_Response_05.xml", Encoding.UTF8);
+      EndpointDescriptionResponse = DefaultRouteResponse;
+      Error_QueryParser = System.IO.File.ReadAllText("Snippets/12/12Error_QueryParser.xml", Encoding.UTF8);
+      Template_Error_RecordXmlEscaping = System.IO.File.ReadAllText("Snippets/12/12Template_Error_recordPacking.xml", Encoding.UTF8);
+      Template_Error_Number = System.IO.File.ReadAllText("Snippets/12/12Template_Error_Number.xml", Encoding.UTF8);
+      EmptyResult = System.IO.File.ReadAllText("Snippets/12/12EmptyResult.xml", Encoding.UTF8);
+      Error_OutOfRange = System.IO.File.ReadAllText("Snippets/12/12Error_OutOfRange.xml", Encoding.UTF8);
+      Template_Error_ScanNumber = System.IO.File.ReadAllText("Snippets/12/12Template_Error_Scan_Number.xml", Encoding.UTF8);
+      Template_Response_01 = System.IO.File.ReadAllText("Snippets/12/12Template_Response_01.xml", Encoding.UTF8);
+      Template_Response_02 = System.IO.File.ReadAllText("Snippets/12/12Template_Response_02.xml", Encoding.UTF8);
+      Template_Response_03 = System.IO.File.ReadAllText("Snippets/12/12Template_Response_03.xml", Encoding.UTF8);
+      Template_Response_04 = System.IO.File.ReadAllText("Snippets/12/12Template_Response_04.xml", Encoding.UTF8);
+      Template_Response_05 = System.IO.File.ReadAllText("Snippets/12/12Template_Response_05.xml", Encoding.UTF8);      
     }
 
     public override void ProcessRequest(HttpContext ctx, ref Dictionary<string, string> data)
@@ -56,9 +53,9 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         return;
       }
 
-      if (data.ContainsKey("recordxmlescaping") && data["recordxmlescaping"].ToLower() != "xml")
+      if (data.ContainsKey("recordpacking") && data["recordpacking"].ToLower() != "xml")
       {
-        ctx.Response.Send(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordxmlescaping"]));
+        ctx.Response.Send(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordpacking"]));
         return;
       }
 
@@ -68,9 +65,12 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum, Template_Error_ScanNumber); // maximumRecords = maximumTerms
 
       if (data.ContainsKey("query"))
+      {
         ExecuteQuery(ctx, data["query"], start, maximum);
-      else
-        ctx.Response.Send(DefaultRouteResponse, _mime);
+        return;
+      }
+      
+      ctx.Response.Send(DefaultRouteResponse, _mime);
     }
 
     private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
@@ -98,10 +98,28 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       ctx.Response.SendChunk(Template_Response_01, mimeType: _mime);
       ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
-      foreach (var hit in result.Hits)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", hit.id).Replace("{{url}}", hit.url).Replace("{{hit}}", hit.text));
+
+      StringBuilder stb;
+      for (int i = 0; i < result.Hits.Count; i++)
+      {
+        stb = new StringBuilder(Template_Response_03);
+        stb = stb.Replace("{{id}}", result.Hits[i].id);
+        stb = stb.Replace("{{url}}", result.Hits[i].url);
+        stb = stb.Replace("{{hit}}", result.Hits[i].text);
+        stb = stb.Replace("{{p}}", (result.Offset + i).ToString());
+
+        ctx.Response.SendChunk(stb.ToString());
+      }
+
       ctx.Response.SendChunk(Template_Response_04);
-      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()));
+
+      stb = new StringBuilder(Template_Response_05);
+      stb = stb.Replace("{{query}}", query);
+      stb = stb.Replace("{{start}}", (result.Offset + 1).ToString());
+      stb = stb.Replace("{{offset}}", start.ToString());
+      stb = stb.Replace("{{max}}", result.EstimatedTotalHits.ToString());
+
+      ctx.Response.SendFinalChunk(stb.ToString());
     }
   }
 }

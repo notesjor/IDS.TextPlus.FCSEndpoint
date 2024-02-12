@@ -12,5 +12,5 @@
 					</fcs:ResourceFragment>
 				</fcs:Resource>
 			</sruResponse:recordData>
-			<sruResponse:recordPosition>1</sruResponse:recordPosition>
+			<sruResponse:recordPosition>{{p}}</sruResponse:recordPosition>
 		</sruResponse:record>

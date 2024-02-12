@@ -43,12 +43,12 @@ namespace IDS.TextPlus.FCSEndpoint.Version.Abstract
       {
         if (!int.TryParse(data[name], out returnValue))
         {
-          ctx.Response.Send(template.Replace("{{name}}", "responseposition").Replace("{{message}}", "Invalid number format."), _mime);
+          ctx.Response.Send(template.Replace("{{name}}", nameSpec).Replace("{{message}}", "Invalid number format."), _mime);
           return true;
         }
         if (returnValue < minValue)
         {
-          ctx.Response.Send(template.Replace("{{name}}", "responseposition").Replace("{{message}}", $"Value is less than {minValue}."), _mime);
+          ctx.Response.Send(template.Replace("{{name}}", nameSpec).Replace("{{message}}", $"Value is less than {minValue}."), _mime);
           return true;
         }
       }
@@ -63,17 +63,17 @@ namespace IDS.TextPlus.FCSEndpoint.Version.Abstract
       {
         if (!int.TryParse(data[name], out returnValue))
         {
-          ctx.Response.Send(template.Replace("{{name}}", "responseposition").Replace("{{message}}", "Invalid number format."), _mime);
+          ctx.Response.Send(template.Replace("{{name}}", nameSpec).Replace("{{message}}", "Invalid number format."), _mime);
           return true;
         }
         if (returnValue < minValue)
         {
-          ctx.Response.Send(template.Replace("{{name}}", "responseposition").Replace("{{message}}", $"Value is less than {minValue}."), _mime);
+          ctx.Response.Send(template.Replace("{{name}}", nameSpec).Replace("{{message}}", $"Value is less than {minValue}."), _mime);
           return true;
         }
         if (returnValue > maxValue)
         {
-          ctx.Response.Send(template.Replace("{{name}}", "responseposition").Replace("{{message}}", $"Value is greater than {maxValue}."), _mime);
+          ctx.Response.Send(template.Replace("{{name}}", nameSpec).Replace("{{message}}", $"Value is greater than {maxValue}."), _mime);
           return true;
         }
       }
