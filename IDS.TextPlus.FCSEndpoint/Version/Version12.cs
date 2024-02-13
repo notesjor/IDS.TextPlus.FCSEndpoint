@@ -69,6 +69,11 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         ExecuteQuery(ctx, data["query"], start, maximum);
         return;
       }
+      if(data.ContainsKey("operation") && data["operation"] == "scan")
+      {
+        ExecuteQuery(ctx, "", start, maximum);
+        return;
+      }
       
       ctx.Response.Send(DefaultRouteResponse, _mime);
     }
@@ -99,27 +104,11 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
 
-      StringBuilder stb;
       for (int i = 0; i < result.Hits.Count; i++)
-      {
-        stb = new StringBuilder(Template_Response_03);
-        stb = stb.Replace("{{id}}", result.Hits[i].id);
-        stb = stb.Replace("{{url}}", result.Hits[i].url);
-        stb = stb.Replace("{{hit}}", result.Hits[i].text);
-        stb = stb.Replace("{{p}}", (result.Offset + i).ToString());
-
-        ctx.Response.SendChunk(stb.ToString());
-      }
+        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].id).Replace("{{url}}", result.Hits[i].url).Replace("{{hit}}", result.Hits[i].text).Replace("{{p}}", (result.Offset + i).ToString()));
 
       ctx.Response.SendChunk(Template_Response_04);
-
-      stb = new StringBuilder(Template_Response_05);
-      stb = stb.Replace("{{query}}", query);
-      stb = stb.Replace("{{start}}", (result.Offset + 1).ToString());
-      stb = stb.Replace("{{offset}}", start.ToString());
-      stb = stb.Replace("{{max}}", result.EstimatedTotalHits.ToString());
-
-      ctx.Response.SendFinalChunk(stb.ToString());
+      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));
     }
   }
 }
