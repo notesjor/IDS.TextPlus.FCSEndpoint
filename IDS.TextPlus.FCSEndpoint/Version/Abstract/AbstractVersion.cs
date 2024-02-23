@@ -12,30 +12,34 @@ namespace IDS.TextPlus.FCSEndpoint.Version.Abstract
 {
   public abstract class AbstractVersion
   {
-    protected RestClient _client = new RestClient(new RestClientOptions("http://lexik08.ids-mannheim.de:7700") { MaxTimeout = 5000 });
+    /// <summary>
+    /// MIME-Type for response
+    /// </summary>
     protected string _mime = "application/xml;charset=utf-8";
+    /// <summary>
+    /// Maximum records per response
+    /// </summary>
     protected int _maxRecords = 1000;
 
+    /// <summary>
+    /// This function is called for every new HTTP-Request
+    /// </summary>
+    /// <param name="ctx">Current HttpContext</param>
+    /// <param name="data">Dictionary (key -> lowerCase) of GET-Params</param>
     public abstract void ProcessRequest(HttpContext ctx, ref Dictionary<string, string> data);
 
-    protected SearchResponse SendSearchRequest(string query, int start, int maximum)
-    {
-      var request = new RestRequest("/indexes/fcs/search", Method.Post);
-      request.AddHeader("Content-Type", "application/json");
-      request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
-      request.AddStringBody(JsonConvert.SerializeObject(new SearchRequest
-      {
-        q = query,
-        limit = maximum,
-        offset = start - 1
-      }), ContentType.Json);
-      var response = _client.ExecuteAsync(request);
-      response.Wait();
-
-      var result = JsonConvert.DeserializeObject<SearchResponse>(response.Result.Content);
-      return result;
-    }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ctx">Current HttpContext</param>
+    /// <param name="data">Dictionary (key -> lowerCase) of GET-Params</param>
+    /// <param name="name">name (key) of Parameter (to check)</param>
+    /// <param name="nameSpec">name of Parameter in the FCs-Specs</param>
+    /// <param name="defaultValue">default Value of the Parameter (if not set)</param>
+    /// <param name="minValue">minimum Value - if Value is lower the client get an error message</param>
+    /// <param name="returnValue">Return value (use out var to get this value) if correct</param>
+    /// <param name="template">Template string for Error-Message</param>
+    /// <returns>Passes the parameter all tests?</returns>
     protected bool GetUrlParameterNumber(HttpContext ctx, ref Dictionary<string, string> data, string name, string nameSpec, int defaultValue, int minValue, out int returnValue, string template)
     {
       returnValue = defaultValue;
@@ -56,6 +60,19 @@ namespace IDS.TextPlus.FCSEndpoint.Version.Abstract
       return false;
     }
 
+    /// <summary>
+    /// Checks for different URL-Parameters
+    /// </summary>
+    /// <param name="ctx">Current HttpContext</param>
+    /// <param name="data">Dictionary (key -> lowerCase) of GET-Params</param>
+    /// <param name="name">name (key) of Parameter (to check)</param>
+    /// <param name="nameSpec">name of Parameter in the FCs-Specs</param>
+    /// <param name="defaultValue">default Value of the Parameter (if not set)</param>
+    /// <param name="minValue">minimum Value - if Value is lower the client get an error message</param>
+    /// <param name="maxValue">maximum Value - if Value is higher the client get an error message</param>
+    /// <param name="returnValue">Return value (use out var to get this value) if correct</param>
+    /// <param name="template">Template string for Error-Message</param>
+    /// <returns>Passes the parameter all tests?</returns>
     protected bool GetUrlParameterNumber(HttpContext ctx, ref Dictionary<string, string> data, string name, string nameSpec, int defaultValue, int minValue, int maxValue, out int returnValue, string template)
     {
       returnValue = defaultValue;

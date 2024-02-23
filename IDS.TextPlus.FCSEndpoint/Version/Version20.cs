@@ -1,4 +1,5 @@
-﻿using IDS.TextPlus.FCSEndpoint.Model;
+﻿using IDS.TextPlus.FCSEndpoint.Helper;
+using IDS.TextPlus.FCSEndpoint.Model;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
 using Newtonsoft.Json;
 using RestSharp;
@@ -81,7 +82,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         return;
       }
 
-      SearchResponse result = SendSearchRequest(query, start, maximum);
+      SearchResponse result = Search.Send(query, start, maximum);
 
       if (result?.Hits == null || result.Hits.Count == 0)
       {
