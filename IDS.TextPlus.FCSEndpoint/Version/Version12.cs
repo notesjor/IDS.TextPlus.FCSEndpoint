@@ -89,7 +89,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
       SearchResponse result = Search.Send(query, start, maximum);
 
-      if (result?.Hits == null || result.Hits.Count == 0)
+      if (result?.Hits == null || result.Hits.Length == 0)
       {
         if (start > 1 && start > result?.EstimatedTotalHits)
         {
@@ -105,8 +105,8 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
 
-      for (int i = 0; i < result.Hits.Count; i++)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].id).Replace("{{url}}", result.Hits[i].url).Replace("{{hit}}", result.Hits[i].text).Replace("{{p}}", (result.Offset + i).ToString()));
+      for (int i = 0; i < result.Hits.Length; i++)
+        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.id).Replace("{{url}}", result.Hits[i].Formatted.url).Replace("{{hit}}", result.Hits[i].Formatted.text).Replace("{{p}}", (result.Offset + i).ToString()));
 
       ctx.Response.SendChunk(Template_Response_04);
       ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));

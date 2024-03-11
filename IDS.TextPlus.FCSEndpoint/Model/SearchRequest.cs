@@ -12,8 +12,8 @@ namespace IDS.TextPlus.FCSEndpoint.Model
     public int limit { get; set; }
     public int offset { get; set; }
 
-    //public string[] attributesToHighlight { get; private set; } = new[] { "text" };
-    //public string highlightPreTag { get; private set; } = "<hits:Hit>";
-    //public string highlightPostTag { get; private set; } = "</hits:Hit>";
+    public string[] attributesToHighlight { get; private set; } = new[] { "text" };
+    public string highlightPreTag { get; private set; } = "<hits:Hit>";
+    public string highlightPostTag { get; private set; } = "</hits:Hit>";
   }
 }

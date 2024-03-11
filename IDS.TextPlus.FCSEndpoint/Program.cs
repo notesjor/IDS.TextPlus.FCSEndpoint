@@ -18,10 +18,10 @@ namespace IDS.TextPlus.FCSEndpoint
 
       var server = new Server("*", port, ProcessRequest);
       /* IDS specific endpoints - START */
-      server.AddEndpoint(HttpMethod.Get, "/fast", FastInfo);
-      server.AddEndpoint(HttpMethod.Get, "/fast/scan", FastInfoScan);
-      server.AddEndpoint(HttpMethod.Post, "/fast/scan", FastScan);
-      server.AddEndpoint(HttpMethod.Post, "/fast/search", FastSearch);
+      //TODO: server.AddEndpoint(HttpMethod.Get, "/fast", FastInfo);
+      //TODO: server.AddEndpoint(HttpMethod.Get, "/fast/scan", FastInfoScan);
+      //TODO: server.AddEndpoint(HttpMethod.Post, "/fast/scan", FastScan);
+      //TODO: server.AddEndpoint(HttpMethod.Post, "/fast/search", FastSearch);
       /* IDS specific endpoints - END */
 
       Console.WriteLine($"SERVER STARTED on PORT:{port}");

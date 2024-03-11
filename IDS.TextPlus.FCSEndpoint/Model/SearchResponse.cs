@@ -5,7 +5,7 @@ namespace IDS.TextPlus.FCSEndpoint.Model
   public class SearchResponse
   {
     [JsonProperty("hits")]
-    public IList<IDS.TextPlus.FCSEndpoint.Indexer.Document> Hits { get; set; }
+    public SearchResponseContainer[] Hits { get; set; }
 
     [JsonProperty("query")]
     public string Query { get; set; }
