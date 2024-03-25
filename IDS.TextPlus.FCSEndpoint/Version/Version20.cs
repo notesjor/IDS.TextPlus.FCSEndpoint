@@ -76,35 +76,46 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
     private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
     {
-      if (query.Contains("="))
+      try
       {
-        ctx.Response.Send(Error_QueryParser, _mime);
-        return;
-      }
-
-      SearchResponse result = Search.Send(query, start, maximum);
-
-      if (result?.Hits == null || result.Hits.Length == 0)
-      {
-        if (start > 1 && start > result?.EstimatedTotalHits)
+        if (query.Contains("="))
         {
-          ctx.Response.Send(Error_OutOfRange, _mime);
+          ctx.Response.Send(Error_QueryParser, _mime);
           return;
         }
 
-        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
-        return;
+        SearchResponse result = Search.Send(query, start, maximum);
+
+        if (result?.Hits == null || result.Hits.Length == 0)
+        {
+          if (start > 1 && start > result?.EstimatedTotalHits)
+          {
+            ctx.Response.Send(Error_OutOfRange, _mime);
+            return;
+          }
+
+          ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+          return;
+        }
+
+        var stb = new StringBuilder();
+
+        stb.Append(Template_Response_01);
+        stb.Append(result.EstimatedTotalHits.ToString());
+        stb.Append(Template_Response_02);
+
+        for (int i = 0; i < result.Hits.Length; i++)
+          stb.Append(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.Id.ToString()).Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", BuildHit(result.Hits[i].Formatted)).Replace("{{p}}", (result.Offset + i).ToString()));
+
+        stb.Append(Template_Response_04);
+        stb.Append(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));
+
+        ctx.Response.Send(stb.ToString(), _mime);
       }
-
-      ctx.Response.SendChunk(Template_Response_01, mimeType: _mime);
-      ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
-      ctx.Response.SendChunk(Template_Response_02);
-
-      for (int i = 0; i < result.Hits.Length; i++)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.id).Replace("{{url}}", result.Hits[i].Formatted.url).Replace("{{hit}}", result.Hits[i].Formatted.text).Replace("{{p}}", (result.Offset + i).ToString()));
-
-      ctx.Response.SendChunk(Template_Response_04);
-      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));
+      catch
+      {
+        ctx.Response.Send(System.Net.HttpStatusCode.InternalServerError);
+      }
     }
   }
 }

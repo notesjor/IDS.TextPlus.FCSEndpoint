@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Document.cs" Link="Model\Document.cs" />
+    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Documents.cs" Link="Model\Documents.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi" Version="1.6.13" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />

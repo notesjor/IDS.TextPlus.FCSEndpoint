@@ -106,7 +106,7 @@ namespace IDS.TextPlus.FCSEndpoint.Version
       ctx.Response.SendChunk(Template_Response_02);
 
       for (int i = 0; i < result.Hits.Length; i++)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.id).Replace("{{url}}", result.Hits[i].Formatted.url).Replace("{{hit}}", result.Hits[i].Formatted.text).Replace("{{p}}", (result.Offset + i).ToString()));
+        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.Id.ToString()).Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", BuildHit(result.Hits[i].Formatted)).Replace("{{p}}", (result.Offset + i).ToString()));
 
       ctx.Response.SendChunk(Template_Response_04);
       ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));
