@@ -81,12 +81,6 @@ namespace IDS.TextPlus.FCSEndpoint.Version
 
     private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
     {
-      if (query.Contains("="))
-      {
-        ctx.Response.Send(Error_QueryParser, _mime);
-        return;
-      }
-
       SearchResponse result = Search.Send(query, start, maximum);
 
       if (result?.Hits == null || result.Hits.Length == 0)

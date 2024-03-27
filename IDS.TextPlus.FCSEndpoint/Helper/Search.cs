@@ -11,6 +11,10 @@ namespace IDS.TextPlus.FCSEndpoint.Helper
 {
   public static class Search
   {
+    public static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
+    {
+      NullValueHandling = NullValueHandling.Ignore
+    };
     public static RestClient _client = new RestClient(new RestClientOptions() { MaxTimeout = 5000 });
     public static string _mime = "application/xml;charset=utf-8";
 
@@ -19,12 +23,29 @@ namespace IDS.TextPlus.FCSEndpoint.Helper
       var request = new RestRequest("http://lexik08.ids-mannheim.de/meilisearch/indexes/fcs/search", Method.Post);
       request.AddHeader("Content-Type", "application/json");
       request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
-      request.AddStringBody(JsonConvert.SerializeObject(new SearchRequest
+
+      var obj = new SearchRequest
       {
-        q = query,
         limit = maximum,
         offset = start - 1
-      }), ContentType.Json);
+      };
+
+      if (query.Contains("="))
+      {
+        //obj.q = "";
+        obj.filter = query;
+      }
+      else
+      {
+        obj.q = query;
+      }
+
+      if (query.Contains("lemma"))
+        obj.attributesToHighlight = new[] { "lemma" };
+      else
+        obj.attributesToHighlight = new[] { "lemma", "def" };
+
+      request.AddStringBody(JsonConvert.SerializeObject(obj, _serializerSettings), ContentType.Json);
       var response = _client.ExecuteAsync(request);
       response.Wait();
 

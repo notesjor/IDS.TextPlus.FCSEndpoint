@@ -71,8 +71,8 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
       task.Wait();
 
       var index = task.Result;
-      index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def" }).Wait();
-      index.UpdateFilterableAttributesAsync(new List<string> { "source" }).Wait();
+      index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def", "pos" }).Wait();
+      index.UpdateFilterableAttributesAsync(new List<string> { "lemma", "source", "pos",  }).Wait();
       
       index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000 }).Wait();
 

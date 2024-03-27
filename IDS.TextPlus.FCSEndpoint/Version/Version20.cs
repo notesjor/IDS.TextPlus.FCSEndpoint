@@ -78,12 +78,6 @@ namespace IDS.TextPlus.FCSEndpoint.Version
     {
       try
       {
-        if (query.Contains("="))
-        {
-          ctx.Response.Send(Error_QueryParser, _mime);
-          return;
-        }
-
         SearchResponse result = Search.Send(query, start, maximum);
 
         if (result?.Hits == null || result.Hits.Length == 0)
