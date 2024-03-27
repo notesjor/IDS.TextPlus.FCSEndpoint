@@ -26,10 +26,13 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
     public string Lemma { get; set; }
 
     [JsonProperty("pos")]
-    public string[] Pos { get; set; }
+    public string Pos { get; set; }
+
+    [JsonProperty("no")]
+    public int No { get; set; }
 
     [JsonProperty("def")]
-    public string[] Def { get; set; }
+    public string Def { get; set; }
 
     [JsonProperty("source")]
     public string Source { get; set; }

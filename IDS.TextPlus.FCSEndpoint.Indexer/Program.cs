@@ -30,22 +30,25 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
 
       foreach (var doc in docs)
       {
-        tmp.Add(new MDocument
-                {
-                  // Bei diesem Mapping ist noch nicht klar, ob es so bleiben soll
-                  Id = ulong.Parse(doc.Href),
-                  Url = $"https://www.owid.de/artikel/{doc.Href}",
+        for (var i = 0; i < doc.Pos.Length; i++)
+          tmp.Add(new MDocument
+          {
+            // Bei diesem Mapping ist noch nicht klar, ob es so bleiben soll
+            Id = ulong.Parse(doc.Href),
+            Url = $"https://www.owid.de/artikel/{doc.Href}",
 
-                  // Bei diesem Mapping ist noch nicht klar, wie es indiziert werden soll
-                  Lemma = string.Join(" ", doc.Lemma),
+            // Bei diesem Mapping ist noch nicht klar, wie es indiziert werden soll
+            Lemma = string.Join(" ", doc.Lemma),
 
-                  // Umbenennung
-                  Source = doc.Module,
+            // Umbenennung
+            Source = doc.Module,
 
-                  // Folgende Mappings sind eindeutig und klar
-                  Pos = doc.Pos,
-                  Def = doc.Def,
-                });
+            // Folgende Mappings sind eindeutig und klar
+            Pos = doc.Pos[i],
+            Def = doc.Def[i],
+
+            No = i + 1
+          });
 
         if (tmp.Count >= max)
         {
@@ -72,8 +75,8 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
 
       var index = task.Result;
       index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def", "pos" }).Wait();
-      index.UpdateFilterableAttributesAsync(new List<string> { "lemma", "source", "pos",  }).Wait();
-      
+      index.UpdateFilterableAttributesAsync(new List<string> { "lemma", "source", "pos", }).Wait();
+
       index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000 }).Wait();
 
       return index;
