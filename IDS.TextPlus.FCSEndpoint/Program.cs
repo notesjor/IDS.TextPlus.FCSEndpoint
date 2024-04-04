@@ -1,4 +1,5 @@
-﻿using IDS.TextPlus.FCSEndpoint.Version;
+﻿using IDS.TextPlus.FCSEndpoint.Parser;
+using IDS.TextPlus.FCSEndpoint.Version;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
 using Tfres;
 
@@ -17,12 +18,7 @@ namespace IDS.TextPlus.FCSEndpoint
       short port = 16319;
 
       var server = new Server("*", port, ProcessRequest);
-      /* IDS specific endpoints - START */
-      //TODO: server.AddEndpoint(HttpMethod.Get, "/fast", FastInfo);
-      //TODO: server.AddEndpoint(HttpMethod.Get, "/fast/scan", FastInfoScan);
-      //TODO: server.AddEndpoint(HttpMethod.Post, "/fast/scan", FastScan);
-      //TODO: server.AddEndpoint(HttpMethod.Post, "/fast/search", FastSearch);
-      /* IDS specific endpoints - END */
+      server.AddEndpoint(HttpMethod.Post, "/fast", FastPost);
 
       Console.WriteLine($"SERVER STARTED on PORT:{port}");
 

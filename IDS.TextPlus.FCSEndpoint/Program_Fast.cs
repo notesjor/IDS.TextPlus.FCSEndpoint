@@ -1,4 +1,8 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Helper;
+using IDS.TextPlus.FCSEndpoint.Model;
+using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +20,29 @@ namespace IDS.TextPlus.FCSEndpoint
     /// <summary>
     /// MIME-Type for response
     /// </summary>
-    protected string _mime = "application/xml;charset=utf-8";
-
-    private static void FastInfo(HttpContext context)
+    private static string _mime = "application/xml;charset=utf-8";
+    private static RestClient _client = new RestClient(new RestClientOptions() { MaxTimeout = 5000 });
+    private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
     {
-      throw new NotImplementedException();
-    }
+      NullValueHandling = NullValueHandling.Ignore
+    };
 
-    private static void FastInfoScan(HttpContext context)
+    private static void FastPost(HttpContext context)
     {
-      throw new NotImplementedException();
-    }
+      var post = context.Request.PostData<SearchRequest>();
+      post.highlightPreTag = "<hit>";
+      post.highlightPostTag = "</hit>";
 
-    private static void FastScan(HttpContext context)
-    {
-      throw new NotImplementedException();
-    }
+      var request = new RestRequest("http://lexik08.ids-mannheim.de/meilisearch/indexes/fcs/search", Method.Post);
+      request.AddHeader("Content-Type", "application/json");
+      request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
 
-    private static void FastSearch(HttpContext context)
-    {
-      
+      request.AddStringBody(JsonConvert.SerializeObject(post, _serializerSettings), ContentType.Json);
+
+      var response = _client.ExecuteAsync(request);
+      response.Wait();
+
+      context.Response.Send(response.Result.StatusCode, response.Result.Content, _mime);
     }
   }
 }

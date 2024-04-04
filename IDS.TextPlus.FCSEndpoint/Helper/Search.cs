@@ -11,12 +11,12 @@ namespace IDS.TextPlus.FCSEndpoint.Helper
 {
   public static class Search
   {
-    public static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
+    private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
     {
       NullValueHandling = NullValueHandling.Ignore
     };
-    public static RestClient _client = new RestClient(new RestClientOptions() { MaxTimeout = 5000 });
-    public static string _mime = "application/xml;charset=utf-8";
+    private static RestClient _client = new RestClient(new RestClientOptions() { MaxTimeout = 5000 });
+    private static string _mime = "application/xml;charset=utf-8";
 
     public static SearchResponse Send(string query, int start, int maximum)
     {
@@ -30,20 +30,7 @@ namespace IDS.TextPlus.FCSEndpoint.Helper
         offset = start - 1
       };
 
-      if (query.Contains("="))
-      {
-        //obj.q = "";
-        obj.filter = query;
-      }
-      else
-      {
-        obj.q = query;
-      }
-
-      if (query.Contains("lemma"))
-        obj.attributesToHighlight = new[] { "lemma" };
-      else
-        obj.attributesToHighlight = new[] { "lemma", "def" };
+      obj.SetQuery(query);
 
       request.AddStringBody(JsonConvert.SerializeObject(obj, _serializerSettings), ContentType.Json);
       var response = _client.ExecuteAsync(request);
