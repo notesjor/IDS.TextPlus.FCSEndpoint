@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\IDS.TextPlus.FCSEndpoint\Model\SearchResult.cs" Link="Model\SearchResult.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MeiliSearch" Version="0.15.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

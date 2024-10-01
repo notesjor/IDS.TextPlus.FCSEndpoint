@@ -10,6 +10,6 @@ namespace IDS.TextPlus.FCSEndpoint.Model
   public class SearchResponseContainer
   {
     [JsonProperty("_formatted")]
-    public IDS.TextPlus.FCSEndpoint.Indexer.MDocument Formatted { get; set; }
+    public IDS.TextPlus.FCSEndpoint.Model.SearchResult Formatted { get; set; }
   }
 }

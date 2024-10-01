@@ -15,7 +15,7 @@ namespace IDS.TextPlus.FCSEndpoint.Helper
     {
       NullValueHandling = NullValueHandling.Ignore
     };
-    private static RestClient _client = new RestClient(new RestClientOptions() { MaxTimeout = 5000 });
+    private static RestClient _client = new RestClient(new RestClientOptions() { Timeout = new TimeSpan(0, 0, 10) });
     private static string _mime = "application/xml;charset=utf-8";
 
     public static SearchResponse Send(string query, int start, int maximum)

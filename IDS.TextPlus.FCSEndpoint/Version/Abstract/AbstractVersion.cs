@@ -1,5 +1,4 @@
-﻿using IDS.TextPlus.FCSEndpoint.Indexer;
-using IDS.TextPlus.FCSEndpoint.Model;
+﻿using IDS.TextPlus.FCSEndpoint.Model;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -98,8 +97,5 @@ namespace IDS.TextPlus.FCSEndpoint.Version.Abstract
 
       return false;
     }
-
-    protected string BuildHit(MDocument doc) 
-      => $"{doc.Lemma}: [{doc.No}] ({doc.Pos}) {doc.Def}";
   }
 }

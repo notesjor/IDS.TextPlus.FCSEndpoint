@@ -23,6 +23,9 @@ namespace IDS.TextPlus.FCSEndpoint.Model
     public void SetQuery(string query)
     {
       var parts = FCSQuery.Parse(query);
+      if(parts.NumberOfSyntaxErrors > 0)
+        throw new TypeLoadException("Invalid query");
+
       var mq = parts.main_query();
       if (mq.ChildCount == 1)
       {

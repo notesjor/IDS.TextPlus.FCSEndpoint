@@ -21,7 +21,7 @@ namespace IDS.TextPlus.FCSEndpoint
     /// MIME-Type for response
     /// </summary>
     private static string _mime = "application/xml;charset=utf-8";
-    private static RestClient _client = new RestClient(new RestClientOptions() { MaxTimeout = 5000 });
+    private static RestClient _client = new RestClient(new RestClientOptions() { Timeout = new TimeSpan(0, 0, 15) });
     private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
     {
       NullValueHandling = NullValueHandling.Ignore

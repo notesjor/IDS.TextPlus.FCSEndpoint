@@ -3,6 +3,8 @@ using System.Reflection.Metadata;
 using Meilisearch;
 using System.Reflection.Metadata.Ecma335;
 using Newtonsoft.Json;
+using IDS.TextPlus.FCSEndpoint.Indexer.Model;
+using IDS.TextPlus.FCSEndpoint.Model;
 
 namespace IDS.TextPlus.FCSEndpoint.Indexer
 {
@@ -17,38 +19,49 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
       var client = new MeilisearchClient(meilisearchUrl, meilisearchKey);
       var index = EnsureIndex(client);
 
-      var docs = Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly)
-        .SelectMany(file => JsonConvert.DeserializeObject<LDocument[]>(File.ReadAllText(file, Encoding.UTF8)));
+      var docs = new List<Model.Document>();
+      var files = Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly);
+      foreach (var file in files)
+      {
+        var documentArray = JsonConvert.DeserializeObject<Model.Document[]>(File.ReadAllText(file, Encoding.UTF8));
+        docs.AddRange(documentArray);
+      }
 
       PushDocs(index, docs);
     }
 
-    private static void PushDocs(Meilisearch.Index index, IEnumerable<LDocument> docs)
+    private static void PushDocs(Meilisearch.Index index, IEnumerable<Model.Document> docs)
     {
-      var tmp = new List<MDocument>();
+      var tmp = new List<SearchResult>();
       var max = 1000;
 
       foreach (var doc in docs)
       {
-        for (var i = 0; i < doc.Pos.Length; i++)
-          tmp.Add(new MDocument
-          {
-            // Bei diesem Mapping ist noch nicht klar, ob es so bleiben soll
-            Id = ulong.Parse(doc.Href),
-            Url = $"https://www.owid.de/artikel/{doc.Href}",
+        var stb = new StringBuilder();
+        stb.Append(doc.Lemma);
+        if (!string.IsNullOrEmpty(doc.Segmentation))
+          stb.Append(" (").Append(doc.Segmentation).Append(")");
+        if (doc.Xr != null)
+        {
+          var synonyms = doc.Xr.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
+          if (synonyms.Length > 0)
+            stb.Append($" [{string.Join(", ", synonyms)}]");
+        }
+        if (!string.IsNullOrEmpty(doc.Pos))
+          stb.Append("; ").Append(doc.Pos);
+        if (!string.IsNullOrEmpty(doc.Gender))
+          stb.Append(" (").Append(doc.Gender).Append(")");
+        stb.Append($" - {doc.Def}");
 
-            // Bei diesem Mapping ist noch nicht klar, wie es indiziert werden soll
-            Lemma = string.Join(" ", doc.Lemma),
-
-            // Umbenennung
-            Source = doc.Module,
-
-            // Folgende Mappings sind eindeutig und klar
-            Pos = doc.Pos[i],
-            Def = doc.Def[i],
-
-            No = i + 1
-          });
+        tmp.Add(new SearchResult
+        {
+          Id = doc.Id,
+          Url = $"https://www.owid.de/artikel/{doc.Id}",
+          Source = doc.Source,
+          Text = stb.ToString(),
+          Lemma = doc.Lemma,
+          Pos = doc.Pos
+        });
 
         if (tmp.Count >= max)
         {

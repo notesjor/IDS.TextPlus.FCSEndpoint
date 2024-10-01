@@ -15,7 +15,7 @@ namespace IDS.TextPlus.FCSEndpoint.Parser
       var lexer = new FCSLexer(ais);
       var cts = new CommonTokenStream(lexer);
       var res = new FCSParser(cts);
-      res.RemoveErrorListeners();
+      //res.RemoveErrorListeners();
       return res;
     }
   }

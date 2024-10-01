@@ -99,12 +99,16 @@ namespace IDS.TextPlus.FCSEndpoint.Version
         stb.Append(Template_Response_02);
 
         for (int i = 0; i < result.Hits.Length; i++)
-          stb.Append(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.Id.ToString()).Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", BuildHit(result.Hits[i].Formatted)).Replace("{{p}}", (result.Offset + i).ToString()));
+          stb.Append(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.Id.ToString()).Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", result.Hits[i].Formatted.Text).Replace("{{p}}", (result.Offset + i).ToString()));
 
         stb.Append(Template_Response_04);
         stb.Append(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));
 
         ctx.Response.Send(stb.ToString(), _mime);
+      }
+      catch (TypeLoadException)
+      {
+        ctx.Response.Send(Error_QueryParser);
       }
       catch
       {
