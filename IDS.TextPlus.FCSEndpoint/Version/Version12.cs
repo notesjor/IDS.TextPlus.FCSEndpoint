@@ -23,10 +23,12 @@ public class Version12 : AbstractVersion
 
   public Version12()
   {
-    DefaultRouteResponse = File.ReadAllText("Snippets/12/12DefaultRoute.xml", Encoding.UTF8).Replace("{{max}}", _maxRecords.ToString());
+    DefaultRouteResponse = File.ReadAllText("Snippets/12/12DefaultRoute.xml", Encoding.UTF8)
+      .Replace("{{max}}", _maxRecords.ToString());
     EndpointDescriptionResponse = DefaultRouteResponse;
     Error_QueryParser = File.ReadAllText("Snippets/12/12Error_QueryParser.xml", Encoding.UTF8);
-    Template_Error_RecordXmlEscaping = File.ReadAllText("Snippets/12/12Template_Error_recordPacking.xml", Encoding.UTF8);
+    Template_Error_RecordXmlEscaping =
+      File.ReadAllText("Snippets/12/12Template_Error_recordPacking.xml", Encoding.UTF8);
     Template_Error_Number = File.ReadAllText("Snippets/12/12Template_Error_Number.xml", Encoding.UTF8);
     EmptyResult = File.ReadAllText("Snippets/12/12EmptyResult.xml", Encoding.UTF8);
     Error_OutOfRange = File.ReadAllText("Snippets/12/12Error_OutOfRange.xml", Encoding.UTF8);
@@ -53,9 +55,12 @@ public class Version12 : AbstractVersion
     }
 
     GetUrlParameterNumber(ctx, ref data, "startrecord", "startRecord", 1, 1, out var start, Template_Error_Number);
-    GetUrlParameterNumber(ctx, ref data, "responseposition", "responsePosition", start, 1, out start, Template_Error_ScanNumber); // startRecord = responsePosition
-    GetUrlParameterNumber(ctx, ref data, "maximumrecords", "maximumRecords", 10, 0, _maxRecords, out var maximum, Template_Error_Number);
-    GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum, Template_Error_ScanNumber); // maximumRecords = maximumTerms
+    GetUrlParameterNumber(ctx, ref data, "responseposition", "responsePosition", start, 1, out start,
+      Template_Error_ScanNumber); // startRecord = responsePosition
+    GetUrlParameterNumber(ctx, ref data, "maximumrecords", "maximumRecords", 10, 0, _maxRecords, out var maximum,
+      Template_Error_Number);
+    GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum,
+      Template_Error_ScanNumber); // maximumRecords = maximumTerms
 
     if (data.ContainsKey("query"))
     {
