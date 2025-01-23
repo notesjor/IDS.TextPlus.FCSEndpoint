@@ -73,6 +73,9 @@
     <None Update="Snippets\20\20Error_OutOfRange.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Snippets\20\20Error_QuerySyntax.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Snippets\20\20Error_QueryParser.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
