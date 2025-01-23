@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Reflection.Metadata;
 using Meilisearch;
 using System.Reflection.Metadata.Ecma335;
@@ -26,14 +27,20 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
         var documentArray = JsonConvert.DeserializeObject<Model.Document[]>(File.ReadAllText(file, Encoding.UTF8));
         docs.AddRange(documentArray);
       }
+      Console.WriteLine($"Read {docs.Count} documents.");
 
       PushDocs(index, docs);
+
+      var count = index.GetStatsAsync();
+      count.Wait();
+      Console.WriteLine($"Indexed {count.Result.NumberOfDocuments} documents.");
     }
 
     private static void PushDocs(Meilisearch.Index index, IEnumerable<Model.Document> docs)
     {
+      Task<TaskInfo> task;
       var tmp = new List<SearchResult>();
-      var max = 1000;
+      var max = 10000;
 
       foreach (var doc in docs)
       {
@@ -65,12 +72,19 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
 
         if (tmp.Count >= max)
         {
-          index.AddDocumentsAsync(tmp).Wait();
+          task = index.AddDocumentsAsync(tmp);
+          task.Wait();
+          Debug.Write(task);
           tmp.Clear();
         }
       }
+
       if (tmp.Count > 0)
-        index.AddDocumentsAsync(tmp).Wait();
+      {
+        task = index.AddDocumentsAsync(tmp);
+        task.Wait();
+        Debug.Write(task);
+      }
     }
 
     private static Meilisearch.Index EnsureIndex(MeilisearchClient client)
@@ -79,7 +93,7 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
 
       var task = client.GetIndexAsync("fcs");
       task.Wait();
-
+      
       task.Result.DeleteAsync().Wait();
 
       client.CreateIndexAsync("fcs", "id").Wait();
@@ -90,7 +104,7 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer
       index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def", "pos" }).Wait();
       index.UpdateFilterableAttributesAsync(new List<string> { "lemma", "source", "pos", }).Wait();
 
-      index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000 }).Wait();
+      index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 10000 }).Wait();
 
       return index;
     }
