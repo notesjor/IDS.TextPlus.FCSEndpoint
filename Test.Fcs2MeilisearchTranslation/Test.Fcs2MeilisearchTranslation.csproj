@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IDS.TextPlus.FCSEndpoint\IDS.TextPlus.FCSEndpoint.csproj" />
+  </ItemGroup>
+
 </Project>

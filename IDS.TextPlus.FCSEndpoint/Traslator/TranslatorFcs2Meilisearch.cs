@@ -22,6 +22,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
 
       var dic = new Dictionary<string, string>
       {
+        { "text", null },
         { "lemma", null },
         { "pos", null },
         { "source", null }
@@ -70,8 +71,18 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         }
       }
 
-      res.Filter = string.Join(" ",
-        dic.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} = '{x.Value}'"));
+      if (res.Query.Length > 0)
+        res.Query = res.Query.Trim();
+      if(res.Query.EndsWith("AND"))
+        res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
+      if(res.Query.EndsWith("OR"))
+        res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
+      res.Filter = string.Join(" AND ",
+        dic.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
+      if (res.Filter == "")
+        res.Filter = null;
+      if (string.IsNullOrWhiteSpace(res.Query))
+        res.Query = "*";
       return res;
     }
   }
