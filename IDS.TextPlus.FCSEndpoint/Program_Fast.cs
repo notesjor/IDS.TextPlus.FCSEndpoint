@@ -25,8 +25,11 @@ internal partial class Program
   private static void FastPost(HttpContext context)
   {
     var post = context.Request.PostData<SearchRequest>();
+    if(post.limit < 1)
+      post.limit = 10;
     post.highlightPreTag = "<hit>";
     post.highlightPostTag = "</hit>";
+    Console.WriteLine($"FAST 4: {post.q} (limit: {post.limit})");
 
     var request = new RestRequest("http://lexik08.ids-mannheim.de/meilisearch/indexes/fcs/search", Method.Post);
     request.AddHeader("Content-Type", "application/json");
@@ -37,6 +40,6 @@ internal partial class Program
     var response = _client.ExecuteAsync(request);
     response.Wait();
 
-    context.Response.Send(response.Result.StatusCode, response.Result.Content, _mime);
+    context.Response.Send(response.Result.StatusCode, response.Result.Content, "application/json");
   }
 }
