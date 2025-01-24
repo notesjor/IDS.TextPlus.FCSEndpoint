@@ -15,6 +15,7 @@ namespace Test.Fcs2MeilisearchTranslation
     [TestCase("pandemie OR corona", "pandemie OR corona", null)]
     [TestCase("fu AND source = neo", "fu", "source = neo")]
     [TestCase("(pandemie AND corona)", "pandemie AND corona", null)]
+    [TestCase("Auge AND source = neo OR source = sprw", "Auge", "source = neo OR sprw")]
     [TestCase("lemma = corona AND text = pandemie", "*", "text = pandemie AND lemma = corona")]
     public void ValidateExpression(string query, string outputQuery, string? outputFilter)
     {

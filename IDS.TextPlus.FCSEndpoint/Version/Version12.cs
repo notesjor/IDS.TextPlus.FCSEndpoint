@@ -20,6 +20,7 @@ public class Version12 : AbstractVersion
   private readonly string Template_Response_03;
   private readonly string Template_Response_04;
   private readonly string Template_Response_05;
+  private readonly string Error_QuerySyntax;
 
   public Version12()
   {
@@ -29,6 +30,7 @@ public class Version12 : AbstractVersion
     Error_QueryParser = File.ReadAllText("Snippets/12/12Error_QueryParser.xml", Encoding.UTF8);
     Template_Error_RecordXmlEscaping =
       File.ReadAllText("Snippets/12/12Template_Error_recordPacking.xml", Encoding.UTF8);
+    Error_QuerySyntax = File.ReadAllText("Snippets/12/12Error_QuerySyntax.xml", Encoding.UTF8);
     Template_Error_Number = File.ReadAllText("Snippets/12/12Template_Error_Number.xml", Encoding.UTF8);
     EmptyResult = File.ReadAllText("Snippets/12/12EmptyResult.xml", Encoding.UTF8);
     Error_OutOfRange = File.ReadAllText("Snippets/12/12Error_OutOfRange.xml", Encoding.UTF8);
@@ -81,6 +83,13 @@ public class Version12 : AbstractVersion
   {
     try
     {
+      // FCS specs require an error message if the query is empty - but the regular CQL parser does not throw an exception in this case.
+      if (query.EndsWith("="))
+      {
+        ctx.Response.Send(Error_QuerySyntax, _mime);
+        return;
+      }
+
       var result = Search.Send(query, start, maximum);
 
       if (result?.Hits == null || result.Hits.Length == 0)

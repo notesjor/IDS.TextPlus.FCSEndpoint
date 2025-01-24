@@ -56,6 +56,9 @@
     <None Update="Snippets\12\12Template_Response_05.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Snippets\12\12Error_QuerySyntax.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Snippets\20\20DefaultRoute.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

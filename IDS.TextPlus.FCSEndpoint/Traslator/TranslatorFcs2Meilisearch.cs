@@ -20,17 +20,19 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         return res;
       }
 
-      var dic = new Dictionary<string, string>
+      var facet = new Dictionary<string, string>
       {
         { "text", null },
         { "lemma", null },
         { "pos", null },
         { "source", null }
       };
+      var choice = new HashSet<string> { "AND", "OR" };
 
       res.Query = "";
       var currentKey = "";
       var next = 0;
+      string lastChoice = " ";
 
       for (var i = 0; i < mq.ChildCount; i++)
       {
@@ -40,45 +42,51 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
 
         if (next == 0)
         {
-          if (dic.ContainsKey(token))
+          if (facet.ContainsKey(token))
           {
             currentKey = token;
-            if (dic[currentKey] == null)
+            if (facet[currentKey] == null)
             {
               next = 2;
-              dic[currentKey] = "";
+              facet[currentKey] = "";
             }
             else
             {
-              var nt = mq.GetChild(++i).GetText();
-              dic[currentKey] = nt switch
-              {
-                "=" => $"{dic[currentKey]} AND",
-                "!=" => $"{dic[currentKey]} NOT",
-                _ => dic[currentKey]
-              };
+              i+=2;
+              var nt = mq.GetChild(i).GetText();
+              facet[currentKey] = $"{facet[currentKey]}{lastChoice}{nt}";
             }
           }
           else
           {
-            res.Query = $"{res.Query} {token}";
+            if (choice.Contains(token))
+            {
+              lastChoice = $" {token} ";
+              continue;
+            }
+
+            res.Query = $"{res.Query}{lastChoice}{token}";
           }
         }
         else
         {
-          dic[currentKey] = $"{dic[currentKey]} {token}";
+          if (lastChoice != " ")
+            res.Query = $"{res.Query}{lastChoice}{token}";
+          else
+            facet[currentKey] = $"{facet[currentKey]} {token}";
           next--;
         }
+        lastChoice = " ";
       }
 
       if (res.Query.Length > 0)
         res.Query = res.Query.Trim();
-      if(res.Query.EndsWith("AND"))
+      if (res.Query.EndsWith("AND"))
         res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
-      if(res.Query.EndsWith("OR"))
+      if (res.Query.EndsWith("OR"))
         res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
       res.Filter = string.Join(" AND ",
-        dic.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
+        facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
       if (res.Filter == "")
         res.Filter = null;
       if (string.IsNullOrWhiteSpace(res.Query))
