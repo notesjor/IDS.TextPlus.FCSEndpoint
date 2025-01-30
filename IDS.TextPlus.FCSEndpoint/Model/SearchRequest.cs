@@ -26,6 +26,7 @@ public class SearchRequest
   public void SetQuery(string query)
   {
     var parts = FCSQuery.Parse(query);
+
     if (parts.NumberOfSyntaxErrors > 0)
       throw new TypeLoadException("Invalid query");
 
