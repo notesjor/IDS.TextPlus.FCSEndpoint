@@ -13,7 +13,10 @@ namespace Test.Fcs2MeilisearchTranslation
     [Test]
     [TestCase("fu", "fu", null)]
     [TestCase("pandemie OR corona", "pandemie OR corona", null)]
+    [TestCase("pandemie AND NOT corona", "pandemie AND NOT corona", null)]
     [TestCase("fu AND source = neo", "fu", "source = neo")]
+    [TestCase("fu AND source != neo", "fu", "source != neo")]
+    [TestCase("fu AND source NOT neo", "fu", "source NOT neo")] // in FCS nicht zulässig (NOT -> !=)
     [TestCase("(pandemie AND corona)", "pandemie AND corona", null)]
     [TestCase("Auge AND source = neo OR source = sprw", "Auge", "source = neo OR sprw")]
     [TestCase("lemma = corona AND text = pandemie", "*", "text = pandemie AND lemma = corona")]

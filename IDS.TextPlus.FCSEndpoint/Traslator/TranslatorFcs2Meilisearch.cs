@@ -1,97 +1,116 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Parser;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Antlr4.Runtime;
 
 namespace IDS.TextPlus.FCSEndpoint.Traslator
 {
   public class TranslateFcs2Meilisearch
   {
-    private static readonly HashSet<string> _ingore = new() { "(", ")" };
+    private static readonly Dictionary<string, string> _facetKeys = new()
+          {
+              { "text", null },
+              { "lemma", null },
+              { "pos", null },
+              { "source", null }
+          };
 
     private TranslateFcs2Meilisearch() { }
 
-    public string Query { get; set; }
-    public string Filter { get; set; }
+    public string Query { get; private set; }
+    public string Filter { get; private set; }
 
     public static TranslateFcs2Meilisearch Create(FCSParser.Main_queryContext mq)
     {
-      var res = new TranslateFcs2Meilisearch();
-      if (mq.ChildCount == 1)
-      {
-        res.Query = mq.GetChild(0).GetText();
-        return res;
-      }
-
-      var facet = new Dictionary<string, string>
-      {
-        { "text", null },
-        { "lemma", null },
-        { "pos", null },
-        { "source", null }
-      };
-      var choice = new HashSet<string> { "AND", "OR" };
-
-      res.Query = "";
-      var currentKey = "";
-      var next = 0;
-      string lastChoice = " ";
+      var translator = new TranslateFcs2Meilisearch();
+      var queryBuilder = new StringBuilder();
+      var filterBuilder = new StringBuilder();
 
       for (var i = 0; i < mq.ChildCount; i++)
       {
-        var token = mq.GetChild(i).GetText();
-        if (_ingore.Contains(token))
-          continue;
-
-        if (next == 0)
+        var token = mq.children[i] as ParserRuleContext;
+        if (token != null)
         {
-          if (facet.ContainsKey(token))
-          {
-            currentKey = token;
-            if (facet[currentKey] == null)
-            {
-              next = 2;
-              facet[currentKey] = "";
-            }
-            else
-            {
-              i+=2;
-              var nt = mq.GetChild(i).GetText();
-              facet[currentKey] = $"{facet[currentKey]}{lastChoice}{nt}";
-            }
-          }
-          else
-          {
-            if (choice.Contains(token))
-            {
-              lastChoice = $" {token} ";
-              continue;
-            }
-
-            res.Query = $"{res.Query}{lastChoice}{token}";
-          }
+          translator.ProcessToken(token, queryBuilder, filterBuilder);
         }
-        else
-        {
-          if (lastChoice != " ")
-            res.Query = $"{res.Query}{lastChoice}{token}";
-          else
-            facet[currentKey] = $"{facet[currentKey]} {token}";
-          next--;
-        }
-        lastChoice = " ";
       }
 
-      if (res.Query.Length > 0)
-        res.Query = res.Query.Trim();
-      if (res.Query.EndsWith("AND"))
-        res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
-      if (res.Query.EndsWith("OR"))
-        res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
-      res.Filter = string.Join(" AND ",
-        facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
-      if (res.Filter == "")
-        res.Filter = null;
-      if (string.IsNullOrWhiteSpace(res.Query))
-        res.Query = "*";
-      return res;
+      translator.Query = queryBuilder.ToString();
+      translator.Filter = filterBuilder.ToString();
+
+      return translator;
+    }
+
+    private void ProcessToken(ParserRuleContext token, StringBuilder queryBuilder, StringBuilder filterBuilder)
+    {
+      switch (token)
+      {
+        case FCSParser.Query_disjunctionContext disjunction:
+          ProcessDisjunction(disjunction, queryBuilder, filterBuilder);
+          break;
+        case FCSParser.Query_sequenceContext sequence:
+          ProcessSequence(sequence, queryBuilder, filterBuilder);
+          break;
+        case FCSParser.Query_groupContext group:
+          ProcessGroup(group, queryBuilder, filterBuilder);
+          break;
+        case FCSParser.Query_simpleContext simple:
+          ProcessSimple(simple, queryBuilder, filterBuilder);
+          break;
+        default:
+          break;
+      }
+    }
+
+    private void ProcessDisjunction(FCSParser.Query_disjunctionContext disjunction, StringBuilder queryBuilder, StringBuilder filterBuilder)
+    {
+      for (var i = 0; i < disjunction.ChildCount; i++)
+      {
+        var child = disjunction.children[i];
+        ProcessToken(child as ParserRuleContext, queryBuilder, filterBuilder);
+        if (i < disjunction.ChildCount - 1)
+        {
+          queryBuilder.Append(" OR ");
+        }
+      }
+    }
+
+    private void ProcessSequence(FCSParser.Query_sequenceContext sequence, StringBuilder queryBuilder, StringBuilder filterBuilder)
+    {
+      for (var i = 0; i < sequence.ChildCount; i++)
+      {
+        var child = sequence.children[i];
+        ProcessToken(child as ParserRuleContext, queryBuilder, filterBuilder);
+        if (i < sequence.ChildCount - 1)
+        {
+          queryBuilder.Append(" ");
+        }
+      }
+    }
+
+    private void ProcessGroup(FCSParser.Query_groupContext group, StringBuilder queryBuilder, StringBuilder filterBuilder)
+    {
+      queryBuilder.Append("(");
+      for (var i = 0; i < group.ChildCount; i++)
+      {
+        var child = group.children[i];
+        ProcessToken(child as ParserRuleContext, queryBuilder, filterBuilder);
+      }
+      queryBuilder.Append(")");
+    }
+
+    private void ProcessSimple(FCSParser.Query_simpleContext simple, StringBuilder queryBuilder, StringBuilder filterBuilder)
+    {
+      var text = simple.GetText();
+      if (_facetKeys.ContainsKey(text))
+      {
+        filterBuilder.Append(text);
+      }
+      else
+      {
+        queryBuilder.Append(text);
+      }
     }
   }
 }
