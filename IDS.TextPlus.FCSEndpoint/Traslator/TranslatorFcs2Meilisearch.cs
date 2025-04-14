@@ -1,176 +1,97 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Parser;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
 
 namespace IDS.TextPlus.FCSEndpoint.Traslator
 {
   public class TranslateFcs2Meilisearch
   {
-    private static readonly HashSet<string> _facetKeys = new() { "text", "lemma", "pos", "source" };
-    private static readonly HashSet<string> _logicalOperators = new() { "AND", "OR", "NOT" };
+    private static readonly HashSet<string> _ingore = new() { "(", ")" };
 
     private TranslateFcs2Meilisearch() { }
 
-    public string Query { get; private set; }
-    public string Filter { get; private set; }
+    public string Query { get; set; }
+    public string Filter { get; set; }
 
     public static TranslateFcs2Meilisearch Create(FCSParser.Main_queryContext mq)
     {
-      var translator = new TranslateFcs2Meilisearch();
-      var queryBuilder = new StringBuilder();
-      var filterBuilder = new StringBuilder();
-
-      translator.ProcessContext(mq, ref queryBuilder, ref filterBuilder);
-
-      translator.Query = string.IsNullOrWhiteSpace(queryBuilder.ToString()) ? "*" : queryBuilder.ToString().Trim();
-      translator.Filter = string.IsNullOrWhiteSpace(filterBuilder.ToString()) ? null : filterBuilder.ToString().Trim();
-
-      return translator;
-    }
-
-    private void ProcessContext(ParserRuleContext context, ref StringBuilder queryBuilder,
-      ref StringBuilder filterBuilder)
-    {
-      for (var i = 0; i < context.ChildCount; i++)
+      var res = new TranslateFcs2Meilisearch();
+      if (mq.ChildCount == 1)
       {
-        var child = context.GetChild(i) as TerminalNodeImpl;
-        if (child != null)
-        {
-          ProcessToken(child, ref queryBuilder, ref filterBuilder);
-        }
-      }
-    }
-
-    private void ProcessToken(TerminalNodeImpl token, ref StringBuilder queryBuilder, ref StringBuilder filterBuilder)
-    {
-
-      /* Fehlerhaft
-      switch (token)
-      {
-        case FCSParser.Query_disjunctionContext disjunction:
-          ProcessDisjunction(disjunction, ref queryBuilder, ref filterBuilder);
-          break;
-        case FCSParser.Query_sequenceContext sequence:
-          ProcessSequence(sequence, ref queryBuilder, ref filterBuilder);
-          break;
-        case FCSParser.Query_groupContext group:
-          ProcessGroup(group, ref queryBuilder, ref filterBuilder);
-          break;
-        case FCSParser.Query_simpleContext simple:
-          ProcessSimple(simple, ref queryBuilder, ref filterBuilder);
-          break;
-        default:
-          break;
-      }*/
-    }
-
-    private void ProcessDisjunction(FCSParser.Query_disjunctionContext disjunction, ref StringBuilder queryBuilder,
-      ref StringBuilder filterBuilder)
-    {
-      var localQuery = new StringBuilder();
-      var localFilter = new StringBuilder();
-
-      for (var i = 0; i < disjunction.ChildCount; i++)
-      {
-        var child = disjunction.GetChild(i) as TerminalNodeImpl;
-        if (child != null)
-        {
-          ProcessToken(child, ref localQuery, ref localFilter);
-        }
-
-        if (i < disjunction.ChildCount - 1)
-        {
-          localQuery.Append(" OR ");
-          localFilter.Append(" OR ");
-        }
+        res.Query = mq.GetChild(0).GetText();
+        return res;
       }
 
-      AppendToBuilder(ref queryBuilder, localQuery.ToString());
-      AppendToBuilder(ref filterBuilder, localFilter.ToString());
-    }
-
-    private void ProcessSequence(FCSParser.Query_sequenceContext sequence, ref StringBuilder queryBuilder,
-      ref StringBuilder filterBuilder)
-    {
-      var localQuery = new StringBuilder();
-      var localFilter = new StringBuilder();
-
-      for (var i = 0; i < sequence.ChildCount; i++)
+      var facet = new Dictionary<string, string>
       {
-        var child = sequence.GetChild(i) as TerminalNodeImpl;
-        if (child != null)
+        { "text", null },
+        { "lemma", null },
+        { "pos", null },
+        { "source", null }
+      };
+      var choice = new HashSet<string> { "AND", "OR" };
+
+      res.Query = "";
+      var currentKey = "";
+      var next = 0;
+      string lastChoice = " ";
+
+      for (var i = 0; i < mq.ChildCount; i++)
+      {
+        var token = mq.GetChild(i).GetText();
+        if (_ingore.Contains(token))
+          continue;
+
+        if (next == 0)
         {
-          ProcessToken(child, ref localQuery, ref localFilter);
-        }
+          if (facet.ContainsKey(token))
+          {
+            currentKey = token;
+            if (facet[currentKey] == null)
+            {
+              next = 2;
+              facet[currentKey] = "";
+            }
+            else
+            {
+              i+=2;
+              var nt = mq.GetChild(i).GetText();
+              facet[currentKey] = $"{facet[currentKey]}{lastChoice}{nt}";
+            }
+          }
+          else
+          {
+            if (choice.Contains(token))
+            {
+              lastChoice = $" {token} ";
+              continue;
+            }
 
-        if (i < sequence.ChildCount - 1)
+            res.Query = $"{res.Query}{lastChoice}{token}";
+          }
+        }
+        else
         {
-          localQuery.Append(" AND ");
-          localFilter.Append(" AND ");
+          if (lastChoice != " ")
+            res.Query = $"{res.Query}{lastChoice}{token}";
+          else
+            facet[currentKey] = $"{facet[currentKey]} {token}";
+          next--;
         }
+        lastChoice = " ";
       }
 
-      AppendToBuilder(ref queryBuilder, localQuery.ToString());
-      AppendToBuilder(ref filterBuilder, localFilter.ToString());
-    }
-
-    private void ProcessGroup(FCSParser.Query_groupContext group, ref StringBuilder queryBuilder,
-      ref StringBuilder filterBuilder)
-    {
-      var localQuery = new StringBuilder();
-      var localFilter = new StringBuilder();
-
-      for (var i = 0; i < group.ChildCount; i++)
-      {
-        var child = group.GetChild(i) as TerminalNodeImpl;
-        if (child != null)
-        {
-          ProcessToken(child, ref localQuery, ref localFilter);
-        }
-      }
-
-      if (localQuery.Length > 0)
-      {
-        queryBuilder.Append("(").Append(localQuery).Append(")");
-      }
-
-      AppendToBuilder(ref filterBuilder, localFilter.ToString());
-    }
-
-    private void ProcessSimple(FCSParser.Query_simpleContext simple, ref StringBuilder queryBuilder,
-      ref StringBuilder filterBuilder)
-    {
-      var text = simple.GetText();
-
-      if (_facetKeys.Any(facet => text.StartsWith(facet + " =") || text.StartsWith(facet + " !=") || text.StartsWith(facet + " NOT")))
-      {
-        // Handle "NOT" as "!=" for invalid FCS syntax
-        if (text.Contains(" NOT "))
-        {
-          text = text.Replace(" NOT ", " != ");
-        }
-
-        AppendToBuilder(ref filterBuilder, text);
-      }
-      else
-      {
-        AppendToBuilder(ref queryBuilder, text);
-      }
-    }
-
-    private void AppendToBuilder(ref StringBuilder builder, string value)
-    {
-      if (!string.IsNullOrWhiteSpace(value))
-      {
-        if (builder.Length > 0)
-        {
-          builder.Append(" ");
-        }
-        builder.Append(value);
-      }
+      if (res.Query.Length > 0)
+        res.Query = res.Query.Trim();
+      if (res.Query.EndsWith("AND"))
+        res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
+      if (res.Query.EndsWith("OR"))
+        res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
+      res.Filter = string.Join(" AND ",
+        facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
+      if (res.Filter == "")
+        res.Filter = null;
+      if (string.IsNullOrWhiteSpace(res.Query))
+        res.Query = "*";
+      return res;
     }
   }
 }
