@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDS.TextPlus.FCSEndpoint.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Fcs2MeilisearchTranslation", "..\Test.Fcs2MeilisearchTranslation\Test.Fcs2MeilisearchTranslation.csproj", "{FA73D25D-D912-427C-BA4B-9D399F14726A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "..\TestApp\TestApp.csproj", "{436B3597-13FB-47C5-9A5A-54714459E66A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{FA73D25D-D912-427C-BA4B-9D399F14726A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA73D25D-D912-427C-BA4B-9D399F14726A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA73D25D-D912-427C-BA4B-9D399F14726A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{436B3597-13FB-47C5-9A5A-54714459E66A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{436B3597-13FB-47C5-9A5A-54714459E66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{436B3597-13FB-47C5-9A5A-54714459E66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{436B3597-13FB-47C5-9A5A-54714459E66A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
