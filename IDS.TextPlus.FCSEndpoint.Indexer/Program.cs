@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using IDS.TextPlus.FCSEndpoint.Model;
 using Meilisearch;
@@ -38,8 +39,24 @@ internal class Program
     var files = Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly);
     foreach (var file in files)
     {
-      var documentArray = JsonConvert.DeserializeObject<Document[]>(File.ReadAllText(file, Encoding.UTF8));
-      docs.AddRange(documentArray);
+      try
+      {
+        var documentArray = JsonConvert.DeserializeObject<Document[]>(File.ReadAllText(file, Encoding.UTF8));
+        docs.AddRange(documentArray);
+      }
+      catch // Temporärer Patch für Louis fehlerhafte Daten TODO
+      {
+        try
+        {
+          var documentArray = JsonConvert.DeserializeObject<Document[][]>(File.ReadAllText(file, Encoding.UTF8));
+          foreach (var document in documentArray)
+            docs.AddRange(document);
+        }
+        catch
+        {
+          // ignore
+        }
+      }
     }
 
     Console.WriteLine($"Read {docs.Count} documents.");
@@ -58,27 +75,27 @@ internal class Program
       stb.Append(doc.Lemma);
       if (!string.IsNullOrEmpty(doc.Segmentation))
         stb.Append(" (").Append(doc.Segmentation).Append(")");
-      if (doc.Xr != null)
+      if (doc.Related?.Count > 0)
       {
-        var synonyms = doc.Xr.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
+        var synonyms = doc.Related.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
         if (synonyms.Length > 0)
           stb.Append($" [{string.Join(", ", synonyms)}]");
       }
 
-      if (!string.IsNullOrEmpty(doc.Pos))
-        stb.Append("; ").Append(doc.Pos);
-      if (!string.IsNullOrEmpty(doc.Gender))
-        stb.Append(" (").Append(doc.Gender).Append(")");
+      if (doc.Pos?.Count > 0)
+        stb.Append("; ").Append(string.Join(" / ", doc.Pos.Select(x => x.Value)));
+      if (doc.Gender?.Count > 0)
+        stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
       stb.Append($" - {doc.Def}");
 
       tmp.Add(new SearchResult
       {
-        Id = doc.Id,
+        Id = doc.Id.ToString(),
         Url = $"https://www.owid.de/artikel/{doc.Id}",
         Source = doc.Source,
         Text = stb.ToString(),
         Lemma = doc.Lemma,
-        Pos = doc.Pos
+        Pos = string.Join(" ", doc.Pos.Select(x => x.Value))
       });
 
       if (tmp.Count >= max)
