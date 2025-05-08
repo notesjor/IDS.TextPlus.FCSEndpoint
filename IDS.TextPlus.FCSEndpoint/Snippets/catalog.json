@@ -3,7 +3,7 @@
     "pid": "owid/temporary-pid-001",
     "url": "https://www.owid.de/docs/elex/start.jsp",
     "languages": [ "deu" ],
-    "dataviews": "hits adv",
+    "dataviews": "hits lex",
     "lexfields": "word lemma pos",
     "info": {
       "deu": {
@@ -22,7 +22,7 @@
     "pid": "owid/temporary-pid-002",
     "url": "https://www.owid.de/docs/neo/start.jsp",
     "languages": [ "deu" ],
-    "dataviews": "hits adv",
+    "dataviews": "hits lex",
     "lexfields": "word lemma pos",
     "info": {
       "deu": {
@@ -41,7 +41,7 @@
     "pid": "owid/temporary-pid-003",
     "url": "https://www.owid.de/wb/sprw/start.html",
     "languages": [ "deu" ],
-    "dataviews": "hits adv",
+    "dataviews": "hits lex",
     "lexfields": "word lemma pos",
     "info": {
       "deu": {

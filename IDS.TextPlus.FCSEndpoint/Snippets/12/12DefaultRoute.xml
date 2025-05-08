@@ -42,43 +42,4 @@
 	<sru:echoedExplainRequest>
 		<sru:version>1.2</sru:version>
 	</sru:echoedExplainRequest>
-	<sru:extraResponseData>
-		<ed:EndpointDescription xmlns:ed="http://clarin.eu/fcs/endpoint-description" version="2">
-			<ed:Capabilities>
-				<ed:Capability>http://clarin.eu/fcs/capability/basic-search</ed:Capability>
-				<ed:Capability>http://clarin.eu/fcs/capability/advanced-search</ed:Capability>
-			</ed:Capabilities>
-			<ed:SupportedDataViews>
-				<ed:SupportedDataView id="hits" delivery-policy="send-by-default">application/x-clarin-fcs-hits+xml</ed:SupportedDataView>
-				<ed:SupportedDataView id="adv" delivery-policy="send-by-default">application/x-clarin-fcs-adv+xml</ed:SupportedDataView>
-			</ed:SupportedDataViews>
-			<ed:SupportedLayers>
-				<ed:SupportedLayer id="word" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/word">text</ed:SupportedLayer>
-        <ed:SupportedLayer id="lemma" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/lemma">lemma</ed:SupportedLayer>
-        <ed:SupportedLayer id="pos" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/pos">pos</ed:SupportedLayer>
-			</ed:SupportedLayers>
-			<ed:Resources>
-        <ed:Resource pid="hdl:00000/0000-0000-0000-0">
-          <ed:Title xml:lang="en">OWID</ed:Title>
-          <ed:Description xml:lang="en">OWID</ed:Description>
-          <ed:LandingPageURI>https://www.owid.de/</ed:LandingPageURI>
-          <ed:Languages>
-            <ed:Language>deu</ed:Language>
-          </ed:Languages>
-          <ed:AvailableDataViews ref="hits adv"/>
-          <ed:AvailableLayers ref="word lc"/>
-        </ed:Resource>
-				<ed:Resource pid="hdl:00000/0000-0000-0000-0">
-					<ed:Title xml:lang="en">OWID</ed:Title>
-					<ed:Description xml:lang="en">OWIDplus</ed:Description>
-					<ed:LandingPageURI>https://www.owid.de/plus</ed:LandingPageURI>
-					<ed:Languages>
-						<ed:Language>deu</ed:Language>
-					</ed:Languages>
-					<ed:AvailableDataViews ref="hits adv"/>
-					<ed:AvailableLayers ref="word lc"/>
-				</ed:Resource>
-			</ed:Resources>
-		</ed:EndpointDescription>
-	</sru:extraResponseData>
 </sru:explainResponse>

@@ -108,8 +108,10 @@ public class Version12 : AbstractVersion
       ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
 
+      var dict = SearchResourceHelper.KeyToPid;
+
       for (var i = 0; i < result.Hits.Length; i++)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.Id)
+        ctx.Response.SendChunk(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Formatted.Source])
           .Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", result.Hits[i].Formatted.Text)
           .Replace("{{p}}", (result.Offset + i).ToString()));
 

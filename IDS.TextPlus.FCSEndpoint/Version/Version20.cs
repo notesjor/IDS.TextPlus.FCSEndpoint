@@ -106,14 +106,20 @@ public class Version20 : AbstractVersion
       stb.Append(result.EstimatedTotalHits.ToString());
       stb.Append(Template_Response_02);
 
+      var dict = SearchResourceHelper.KeyToPid;
+
       for (var i = 0; i < result.Hits.Length; i++)
-        stb.Append(Template_Response_03.Replace("{{id}}", result.Hits[i].Formatted.Id)
-          .Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", result.Hits[i].Formatted.Text)
+        stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Formatted.Source])
+          .Replace("{{url}}", result.Hits[i].Formatted.Url)
+          .Replace("{{hit}}", result.Hits[i].Formatted.Text)
           .Replace("{{p}}", (result.Offset + i).ToString()));
 
       stb.Append(Template_Response_04);
-      stb.Append(Template_Response_05.Replace("{{query}}", query).Replace("{{start}}", (result.Offset + 1).ToString())
-        .Replace("{{offset}}", start.ToString()).Replace("{{max}}", result.EstimatedTotalHits.ToString()));
+      stb.Append(Template_Response_05.Replace("{{query}}", query)
+        .Replace("{{start}}", (result.Offset + 1).ToString())
+        .Replace("{{offset}}", start.ToString())
+        .Replace("{{max}}", result.EstimatedTotalHits.ToString())
+        .Replace("{{next}}", (start + maximum).ToString()));
 
       ctx.Response.Send(stb.ToString(), _mime);
     }

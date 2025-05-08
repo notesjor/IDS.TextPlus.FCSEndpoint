@@ -1,17 +1,8 @@
-﻿  <sruResponse:echoedSearchRetrieveRequest>
+﻿  <sruResponse:nextRecordPosition>{{next}}</sruResponse:nextRecordPosition>
+  <sruResponse:echoedSearchRetrieveRequest>
     <sruResponse:version>2.0</sruResponse:version>
-    <sruResponse:query>{{query}}</sruResponse:query>
     <sruResponse:startRecord>{{offset}}</sruResponse:startRecord>
     <sruResponse:maximumRecords>{{max}}</sruResponse:maximumRecords>
-    <sruResponse:xQuery>
-      <searchClause>
-        <index>cql.serverChoice</index>
-        <relation>
-          <value>scr</value>
-        </relation>
-        <term>{{query}}</term>
-      </searchClause>
-    </sruResponse:xQuery>
-    <sruResponse:startRecord>{{start}}</sruResponse:startRecord>
   </sruResponse:echoedSearchRetrieveRequest>
+  <sruResponse:resultCountPrecision>info:srw/vocabulary/resultCountPrecision/1/exact</sruResponse:resultCountPrecision>
 </sruResponse:searchRetrieveResponse>
