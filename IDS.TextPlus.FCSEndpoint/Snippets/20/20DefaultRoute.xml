@@ -5,18 +5,18 @@
     <sruResponse:recordXMLEscaping>xml</sruResponse:recordXMLEscaping>
     <sruResponse:recordData>
       <zr:explain xmlns:zr="http://explain.z3950.org/dtd/2.0/">
-        <zr:serverInfo protocol="SRU" version="2.0" transport="http">
-          <zr:host>sru.owid.de</zr:host>
-          <zr:port>80</zr:port>
+        <zr:serverInfo protocol="SRU" version="2.0" transport="https">
+          <zr:host>owid.de</zr:host>
+          <zr:port>443</zr:port>
           <zr:database>sru</zr:database>
         </zr:serverInfo>
         <zr:databaseInfo>
-          <zr:title lang="de">OWID - Online-Wortschatz-Informationssystem Deutsch</zr:title>
-          <zr:title lang="en" primary="true">OWID - Online German Vocabulary Information System</zr:title>
-          <zr:description lang="de">SRU/CQL-Suche in OWID</zr:description>
-          <zr:description lang="en" primary="true">SRU/CQL-Search in OWID</zr:description>
-          <zr:author lang="en">Leibniz Institute for the German Language, Mannheim</zr:author>
-          <zr:author lang="de" primary="true">Leibniz-Institut für Deutsche Sprache, Mannheim</zr:author>
+          <zr:title lang="en" primary="true">IDS Lexical Resources FCS 2.0 Endpoint</zr:title>
+          <zr:title lang="de">IDS Lexikalische Ressourcen FCS 2.0 Endpunkt</zr:title>
+          <zr:description lang="en" primary="true">Search within the lexical resources of the IDS</zr:description>
+          <zr:description lang="de">Suche in den lexikalischen Ressourcen des IDS</zr:description>
+          <zr:author lang="de">Leibniz-Institut für Deutsche Sprache</zr:author>
+          <zr:author lang="en" primary="true">Leibniz Institute for the German Language</zr:author>
         </zr:databaseInfo>
         <zr:indexInfo>
           <zr:set identifier="http://clarin.eu/fcs/resource" name="fcs">
