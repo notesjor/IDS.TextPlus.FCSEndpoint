@@ -1,4 +1,6 @@
-﻿using Tfres;
+﻿using IDS.TextPlus.FCSEndpoint.Helper;
+using System.Text;
+using Tfres;
 
 namespace IDS.TextPlus.FCSEndpoint.Version.Abstract;
 
@@ -98,5 +100,28 @@ public abstract class AbstractVersion
     }
 
     return false;
+  }
+
+  protected string BuildEndpointDescription(string version)
+  {
+    var doc = File.ReadAllText($"Snippets/{version}/{version}EndpointDescription.xml", Encoding.UTF8);
+    var ent = File.ReadAllText($"Snippets/{version}/{version}EndpointDescriptionResource.xml", Encoding.UTF8);
+    var lan = File.ReadAllText($"Snippets/{version}/{version}EndpointDescriptionResourceLanguage.xml", Encoding.UTF8);
+
+    var catalog = SearchResourceHelper.Catalog;
+
+    var resources = string.Join("\r\n", catalog.Values.Select(x => ent.Replace("{{pid}}", x.Pid)
+        .Replace("{{title_deu}}", x.Info["deu"]["Title"])
+        .Replace("{{title_eng}}", x.Info["eng"]["Title"])
+        .Replace("{{description_deu}}", x.Info["deu"]["Description"])
+        .Replace("{{description_eng}}", x.Info["eng"]["Description"])
+        .Replace("{{institution_deu}}", x.Info["deu"]["Institution"])
+        .Replace("{{institution_eng}}", x.Info["eng"]["Institution"])
+        .Replace("{{landingpage}}", x.Url)
+        .Replace("{{languages}}", string.Join("\r\n", x.Languages.Select(y => lan.Replace("{{langauge}}", y))))
+        .Replace("{{dataviews}}", x.DataViews)
+        .Replace("{{lexfields}}", x.LexFields)));
+
+    return doc.Replace("{{resources}}", resources);
   }
 }

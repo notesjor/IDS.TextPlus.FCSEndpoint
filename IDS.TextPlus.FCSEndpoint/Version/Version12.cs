@@ -26,7 +26,7 @@ public class Version12 : AbstractVersion
   {
     DefaultRouteResponse = File.ReadAllText("Snippets/12/12DefaultRoute.xml", Encoding.UTF8)
       .Replace("{{max}}", _maxRecords.ToString());
-    EndpointDescriptionResponse = DefaultRouteResponse;
+    EndpointDescriptionResponse = BuildEndpointDescription("12");
     Error_QueryParser = File.ReadAllText("Snippets/12/12Error_QueryParser.xml", Encoding.UTF8);
     Template_Error_RecordXmlEscaping =
       File.ReadAllText("Snippets/12/12Template_Error_recordPacking.xml", Encoding.UTF8);

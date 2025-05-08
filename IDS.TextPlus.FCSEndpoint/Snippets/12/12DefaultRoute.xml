@@ -54,8 +54,8 @@
 			</ed:SupportedDataViews>
 			<ed:SupportedLayers>
 				<ed:SupportedLayer id="word" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/word">text</ed:SupportedLayer>
-				<ed:SupportedLayer id="lemma" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/lemma">lemma</ed:SupportedLayer>
-				<ed:SupportedLayer id="pos" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/pos">pos</ed:SupportedLayer>
+        <ed:SupportedLayer id="lemma" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/lemma">lemma</ed:SupportedLayer>
+        <ed:SupportedLayer id="pos" result-id="http://wortschatz-leipzig.de/noske/fcs/layer/pos">pos</ed:SupportedLayer>
 			</ed:SupportedLayers>
 			<ed:Resources>
         <ed:Resource pid="hdl:00000/0000-0000-0000-0">

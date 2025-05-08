@@ -28,7 +28,7 @@ public class Version20 : AbstractVersion
     DefaultRouteResponse = File.ReadAllText("Snippets/20/20DefaultRoute.xml", Encoding.UTF8)
       .Replace("{{max}}", _maxRecords.ToString());
     EmptyResult = File.ReadAllText("Snippets/20/20EmptyResult.xml", Encoding.UTF8);
-    EndpointDescriptionResponse = File.ReadAllText("Snippets/20/20EndpointDescription.xml", Encoding.UTF8);
+    EndpointDescriptionResponse = BuildEndpointDescription("20");
 
     Error_OutOfRange = File.ReadAllText("Snippets/20/20Error_OutOfRange.xml", Encoding.UTF8);
     Error_QueryParser = File.ReadAllText("Snippets/20/20Error_QueryParser.xml", Encoding.UTF8);

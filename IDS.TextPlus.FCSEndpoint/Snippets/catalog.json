@@ -1,0 +1,59 @@
+{
+  "elex": {
+    "pid": "owid/temporary-pid-001",
+    "url": "https://www.owid.de/docs/elex/start.jsp",
+    "languages": [ "deu" ],
+    "dataviews": "hits adv",
+    "lexfields": "word lemma pos",
+    "info": {
+      "deu": {
+        "Title": "elexiko - Online-Wörterbuch zur deutschen Gegenwartssprache",
+        "Description": "elexiko ist ein Online-Informationssystem ('Wörterbuch') zur deutschen Gegenwartssprache, das den Wortschatz der deutschen Sprache anhand von aktuellen Sprachdaten (bis ins Jahr 2013) in einzelnen Modulen dokumentiert, erklärt und wissenschaftlich kommentiert.",
+        "Institution": "Leibniz-Institut für Deutsche Sprache"
+      },
+      "eng": {
+        "Title": "elexiko - Online dictionary of contemporary German language",
+        "Description": "elexiko is an online information system ('dictionary') for contemporary German that documents, explains and scientifically comments on the vocabulary of the German language using current language data (up to 2013) in individual modules.",
+        "Institution": "Leibniz Institute for the German Language"
+      }
+    }
+  },
+  "neo": {
+    "pid": "owid/temporary-pid-002",
+    "url": "https://www.owid.de/docs/neo/start.jsp",
+    "languages": [ "deu" ],
+    "dataviews": "hits adv",
+    "lexfields": "word lemma pos",
+    "info": {
+      "deu": {
+        "Title": "Neologismenwörterbuch",
+        "Description": "In diesem Wörterbuch finden Sie mehr als 2.100 neue Wörter, neue Phraseologismen sowie neue Bedeutungen etablierter Wörter, die zwischen 1991 und heute in den allgemein­sprach­lichen Teil des Wortschatzes der deutschen Standardsprache eingegangen sind.",
+        "Institution": "Leibniz-Institut für Deutsche Sprache"
+      },
+      "eng": {
+        "Title": "Neologismenwörterbuch (Dictionary of (German) neologisms)",
+        "Description": "In this dictionary you will find more than 2,100 new words, phrases and meanings of established words that have entered the general vocabulary of the German standard language between 1991 and today.",
+        "Institution": "Leibniz Institute for the German Language"
+      }
+    }
+  },
+  "sprw": {
+    "pid": "owid/temporary-pid-003",
+    "url": "https://www.owid.de/wb/sprw/start.html",
+    "languages": [ "deu" ],
+    "dataviews": "hits adv",
+    "lexfields": "word lemma pos",
+    "info": {
+      "deu": {
+        "Title": "Sprichwörterbuch",
+        "Description": "Das Sprichwörterbuch in OWID (SWB) ist die erste empirisch abgesicherte und nach Kriterien der wissenschaftlichen Lexikografie erarbeitete Onlinedokumentation aktuell gebräuchlicher fester Sätze der deutschen Sprache – im Kern Sprichwörter.",
+        "Institution": "Leibniz-Institut für Deutsche Sprache"
+      },
+      "eng": {
+        "Title": "Sprichwörterbuch (Proverb dictionary)",
+        "Description": "The Proverb Dictionary in OWID (Sprichwörterbuch) is the first empirically verified online documentation of currently used fixed phrases in the German language - essentially proverbs - compiled according to the criteria of scientific lexicography.",
+        "Institution": "Leibniz Institute for the German Language"
+      }
+    }
+  }
+}
