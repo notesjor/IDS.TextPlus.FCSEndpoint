@@ -48,6 +48,10 @@ public class Version20 : AbstractVersion
 
   public override void ProcessRequest(HttpContext ctx, ref Dictionary<string, string> data)
   {
+#if DEBUG
+    PrintDebug(data);
+#endif
+
     if (data.ContainsKey("x-fcs-endpoint-description"))
     {
       ctx.Response.Send(EndpointDescriptionResponse, _mime);
@@ -68,14 +72,22 @@ public class Version20 : AbstractVersion
       Template_Error_ScanNumber); // startRecord = responsePosition
     GetUrlParameterNumber(ctx, ref data, "maximumterms", "maximumTerms", maximum, 0, _maxRecords, out maximum,
       Template_Error_ScanNumber); // maximumRecords = maximumTerms
+    string context = null;
+    if (data.ContainsKey("x-fcs-context"))
+      context = data["x-fcs-context"];
 
     if (data.ContainsKey("query"))
-      ExecuteQuery(ctx, data["query"], start, maximum);
+      ExecuteQuery(ctx, data["query"], start, maximum, context);
     else
       ctx.Response.Send(DefaultRouteResponse, _mime);
   }
 
-  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
+  private void PrintDebug(Dictionary<string, string> data)
+  {
+    Console.WriteLine(string.Join("; ", data.Select(x => $"{x.Key}={x.Value}")));
+  }
+
+  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string context)
   {
     try
     {
@@ -86,7 +98,7 @@ public class Version20 : AbstractVersion
         return;
       }
 
-      var result = Search.Send(query, start, maximum);
+      var result = Search.Send(query, start, maximum, context);
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
