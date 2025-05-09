@@ -6,7 +6,7 @@ public class Related
 {
 
   /// <summary>
-  /// Examples: "synonym", "related"
+  /// Examples: "synonym", "related", "hypernym", "hyponym", "antonym"
   /// </summary>
   [JsonProperty("type")]
   public string Type { get; set; }

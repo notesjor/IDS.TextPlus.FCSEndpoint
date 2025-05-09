@@ -39,7 +39,7 @@ public class Document
   /// Examples: [], [], [], [{"schema":"https://grammis.ids-mannheim.de/terminologie","value":"nomen"},{"schema":"https://universaldependencies.org/u/feat/pos/","value":"NOUN"}], [{"schema":"https://grammis.ids-mannheim.de/terminologie","value":"nomen"},{"schema":"https://universaldependencies.org/u/feat/pos/","value":"NOUN"}]
   /// </summary>
   [JsonProperty("pos")]
-  public IList<Pos> Pos { get; set; }
+  public IList<SimpleValue> Pos { get; set; }
 
   /// <summary>
   /// Examples: "Sagt man dafür, dass auch das Aussehen und die Gestaltung von Speisen in einem entsprechenden Ambiente dazu beitragen, dass etwas als wohlschmeckend und appetitlich empfunden wird.", "Sagt man dafür, dass der Blick in die Augen eines Menschen Aufschluss über dessen Gefühlslage oder psychische Verfassung geben kann.", "Sagt man dafür, dass Reichtum oder materieller Besitz einem Menschen nach seinem Tod nichts mehr nützen und daher nicht überbewertet werden sollten.", "die erste Seite der Präsentation einer Person, Firma, Institution im Internet, die die wichtigsten Links zu weiterführenden Informationen enthält, Homepage", "Variante des Volleyballs, die von Zweiermannschaften auf Sand gespielt wird"
@@ -63,13 +63,13 @@ public class Document
   /// Examples: [{"schema":"https://grammis.ids-mannheim.de/systematische-grammatik/2263","value":"femininum"},{"schema":"https://universaldependencies.org/u/feat/Gender.html","value":"Fem"}], [{"schema":"https://grammis.ids-mannheim.de/systematische-grammatik/2263","value":"maskulinum"},{"schema":"https://universaldependencies.org/u/feat/Gender.html","value":"Masc"}], [{"schema":"https://grammis.ids-mannheim.de/systematische-grammatik/2263","value":"femininum"},{"schema":"https://universaldependencies.org/u/feat/Gender.html","value":"Fem"}], [{"schema":"https://grammis.ids-mannheim.de/systematische-grammatik/2263","value":"femininum"},{"schema":"https://universaldependencies.org/u/feat/Gender.html","value":"Fem"}], [{"schema":"https://grammis.ids-mannheim.de/systematische-grammatik/2263","value":"femininum"},{"schema":"https://universaldependencies.org/u/feat/Gender.html","value":"Fem"}]
   /// </summary>
   [JsonProperty("gender")]
-  public IList<Gender> Gender { get; set; }
+  public IList<SimpleValue> Gender { get; set; }
 
   /// <summary>
   /// Examples: [{"schema":"https://universaldependencies.org/u/feat/Number.html","value":"Sing"}], [{"schema":"https://universaldependencies.org/u/feat/Number.html","value":"Coll"}], [{"schema":"https://universaldependencies.org/u/feat/Number.html","value":"Coll"}], [{"schema":"https://universaldependencies.org/u/feat/Number.html","value":"Sing"}], [{"schema":"https://universaldependencies.org/u/feat/Number.html","value":"Sing"}]
   /// </summary>
   [JsonProperty("number")]
-  public IList<Number> Number { get; set; }
+  public IList<SimpleValue> Number { get; set; }
 
   /// <summary>
   /// Examples: [{"type":"synonym","target":"https://www.owid.de/artikel/42248","value":"Homepage"},{"type":"synonym","target":"https://www.owid.de/artikel/63768","value":"Leitseite"},{"type":"related","target":"https://www.owid.de/artikel/100008","value":"Internetstartseite"}], [{"type":"synonym","target":"https://www.owid.de/artikel/170966","value":"Beachvolleyball"},{"type":"related","target":"https://www.owid.de/artikel/100009","value":"Strandvolleyballanlage"},{"type":"related","target":"https://www.owid.de/artikel/100009","value":"Strandvolleyballer"},{"type":"related","target":"https://www.owid.de/artikel/100009","value":"Strandvolleyballfeld"},{"type":"related","target":"https://www.owid.de/artikel/100009","value":"Strandvolleyballturnier"}], [{"type":"related","target":"https://www.owid.de/artikel/101011","value":"Streetwearkollektion"},{"type":"related","target":"https://www.owid.de/artikel/101011","value":"Streetwearlabel"}], [{"type":"synonym","target":"https://www.owid.de/artikel/307995","value":"Thalasso"},{"type":"related","target":"https://www.owid.de/artikel/101352","value":"Thalassotherapieanwendung"},{"type":"related","target":"https://www.owid.de/artikel/101352","value":"Thalassotherapiezentrum"}]

@@ -95,7 +95,15 @@ internal class Program
         Source = doc.Source,
         Text = stb.ToString(),
         Lemma = doc.Lemma,
-        Pos = string.Join(" ", doc.Pos.Select(x => x.Value))
+        FacetGender = doc.Gender == null ? null : string.Join(" ", doc.Gender.Select(x => x.Value)),
+        Gender = doc.Gender,
+        FacetNumber = doc.Number == null ? null : string.Join(" ", doc.Number.Select(x => x.Value)),
+        Number = doc.Number,
+        FacetPos = doc.Pos == null ? null : string.Join(" ", doc.Pos.Select(x => x.Value)),
+        Pos = doc.Pos,
+        FacetRelated = doc.Related == null ? null : string.Join(" ", doc.Related.Select(x => x.Value)),
+        Related = doc.Related,
+        Citation = doc.Citation,
       });
 
       if (tmp.Count >= max)

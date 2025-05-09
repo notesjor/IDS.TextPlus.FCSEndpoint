@@ -1,0 +1,14 @@
+﻿<fcs:DataView type="application/x-clarin-fcs-lex+xml">
+  <lex:Entry xmlns:lex="http://clarin.eu/fcs/dataview/lex" xml:lang="{{lang}}">
+    <lex:Field type="ref">
+      <lex:Value type="landingpage">{{url}}</lex:Value>
+    </lex:Field>
+    {{extra_fields}}
+    <lex:Field type="lemma">
+      <lex:Value preferred="true">{{lemma}}</lex:Value>
+    </lex:Field>
+    <lex:Field type="entryId">
+      <lex:Value>{{id}}</lex:Value>
+    </lex:Field>
+  </lex:Entry>
+</fcs:DataView>

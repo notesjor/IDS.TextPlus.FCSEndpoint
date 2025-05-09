@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Text;
 using IDS.TextPlus.FCSEndpoint.Helper;
+using IDS.TextPlus.FCSEndpoint.Indexer.Model;
+using IDS.TextPlus.FCSEndpoint.Model;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
 using Tfres;
 
@@ -20,6 +22,7 @@ public class Version20 : AbstractVersion
   private readonly string Template_Response_01;
   private readonly string Template_Response_02;
   private readonly string Template_Response_03;
+  private readonly string Template_Response_03_ext;
   private readonly string Template_Response_04;
   private readonly string Template_Response_05;
 
@@ -42,6 +45,7 @@ public class Version20 : AbstractVersion
     Template_Response_01 = File.ReadAllText("Snippets/20/20Template_Response_01.xml", Encoding.UTF8);
     Template_Response_02 = File.ReadAllText("Snippets/20/20Template_Response_02.xml", Encoding.UTF8);
     Template_Response_03 = File.ReadAllText("Snippets/20/20Template_Response_03.xml", Encoding.UTF8);
+    Template_Response_03_ext = File.ReadAllText("Snippets/20/20Template_Response_03_ext.xml", Encoding.UTF8);
     Template_Response_04 = File.ReadAllText("Snippets/20/20Template_Response_04.xml", Encoding.UTF8);
     Template_Response_05 = File.ReadAllText("Snippets/20/20Template_Response_05.xml", Encoding.UTF8);
   }
@@ -75,9 +79,10 @@ public class Version20 : AbstractVersion
     string context = null;
     if (data.ContainsKey("x-fcs-context"))
       context = data["x-fcs-context"];
+    var provideDataView = data.ContainsKey("querytype") && data["querytype"].ToLower() == "lex";
 
     if (data.ContainsKey("query"))
-      ExecuteQuery(ctx, data["query"], start, maximum, context);
+      ExecuteQuery(ctx, data["query"], start, maximum, context, provideDataView);
     else
       ctx.Response.Send(DefaultRouteResponse, _mime);
   }
@@ -87,7 +92,7 @@ public class Version20 : AbstractVersion
     Console.WriteLine(string.Join("; ", data.Select(x => $"{x.Key}={x.Value}")));
   }
 
-  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string context)
+  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string? context, bool provideDataView)
   {
     try
     {
@@ -120,11 +125,20 @@ public class Version20 : AbstractVersion
 
       var dict = SearchResourceHelper.KeyToPid;
 
-      for (var i = 0; i < result.Hits.Length; i++)
-        stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Formatted.Source])
-          .Replace("{{url}}", result.Hits[i].Formatted.Url)
-          .Replace("{{hit}}", result.Hits[i].Formatted.Text)
-          .Replace("{{p}}", (result.Offset + i).ToString()));
+      if (provideDataView)
+        for (var i = 0; i < result.Hits.Length; i++)
+          stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
+            .Replace("{{url}}", result.Hits[i].Url)
+            .Replace("{{hit}}", result.Hits[i].Formatted.Text)
+            .Replace("{{p}}", (result.Offset + i).ToString())
+            .Replace("{{lex_dataview}}", LexDataView(result.Hits[i])));
+      else
+        for (var i = 0; i < result.Hits.Length; i++)
+          stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
+            .Replace("{{url}}", result.Hits[i].Url)
+            .Replace("{{hit}}", result.Hits[i].Formatted.Text)
+            .Replace("{{p}}", (result.Offset + i).ToString())
+            .Replace("{{lex_dataview}}", ""));
 
       stb.Append(Template_Response_04);
       stb.Append(Template_Response_05.Replace("{{query}}", query)
@@ -139,9 +153,46 @@ public class Version20 : AbstractVersion
     {
       ctx.Response.Send(Error_QueryParser);
     }
-    catch
+    catch (Exception ex)
     {
+#if DEBUG
+      Console.WriteLine(ex.Message);
+      Console.WriteLine(ex.StackTrace);
+#endif
       ctx.Response.Send(HttpStatusCode.InternalServerError);
     }
+  }
+
+  private string? LexDataView(SearchResponseContainer resultHit)
+  {
+    var stb = new StringBuilder(Template_Response_03_ext);
+    stb.Replace("{{lang}}", string.IsNullOrWhiteSpace(resultHit.Lang) ? "deu" : resultHit.Lang);
+    stb.Replace("{{url}}", resultHit.Url);
+    stb.Replace("{{lemma}}", resultHit.Lemma);
+    stb.Replace("{{id}}", resultHit.Id);
+
+    var fields = new List<string>();
+    AddFields(ref fields, resultHit.Pos, "pos");
+    AddFields(ref fields, resultHit.Number, "number");
+    AddFields(ref fields, resultHit.Gender, "gender");
+    stb.Replace("{{extra_fields}}", fields.Count > 0 ? string.Join("\r\n", fields) : "");
+
+    return stb.ToString();
+  }
+
+  private void AddFields(ref List<string> fields, IList<SimpleValue>? values, string type)
+  {
+    if (values == null || values.Count == 0)
+      return;
+
+    var stb = new StringBuilder($"<lex:Field type=\"{type}\">\r\n");
+    foreach (var x in values)
+      if (string.IsNullOrWhiteSpace(x.Schema))
+        stb.Append($"  <lex:Value>{x.Value}</lex:Value>\r\n");
+      else
+        stb.Append($"  <lex:Value vocabValueRef=\"{x.Schema}\">{x.Value}</lex:Value>\r\n");
+    stb.Append("</lex:Field>\r\n");
+
+    fields.Add(stb.ToString());
   }
 }

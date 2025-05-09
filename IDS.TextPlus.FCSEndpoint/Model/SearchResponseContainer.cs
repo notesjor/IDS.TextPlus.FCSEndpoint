@@ -2,7 +2,7 @@
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
-public class SearchResponseContainer
+public class SearchResponseContainer : SearchResult
 {
   [JsonProperty("_formatted")] public SearchResult Formatted { get; set; }
 }

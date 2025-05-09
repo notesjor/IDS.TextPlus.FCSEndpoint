@@ -2,7 +2,7 @@
 
 namespace IDS.TextPlus.FCSEndpoint.Indexer.Model;
 
-public class Number
+public class SimpleValue
 {
 
   /// <summary>
@@ -12,7 +12,7 @@ public class Number
   public string Schema { get; set; }
 
   /// <summary>
-  /// Examples: "Sing", "Coll"
+  /// Examples: "Sing", "Coll", "Ptan"
   /// </summary>
   [JsonProperty("value")]
   public string Value { get; set; }
