@@ -11,6 +11,7 @@ namespace Test.Fcs2MeilisearchTranslation
     }
 
     [Test]
+    // Eigene Tests (JOR)
     [TestCase("fu", "fu", null)]
     [TestCase("pandemie OR corona", "pandemie OR corona", null)]
     [TestCase("pandemie AND NOT corona", "pandemie AND NOT corona", null)]
@@ -20,6 +21,26 @@ namespace Test.Fcs2MeilisearchTranslation
     [TestCase("(pandemie AND corona)", "pandemie AND corona", null)]
     [TestCase("Auge AND source = neo OR source = sprw", "Auge", "source = neo OR sprw")]
     [TestCase("lemma = corona AND text = pandemie", "*", "text = pandemie AND lemma = corona")]
+    // Tests von: https://clarin-eric.github.io/fcs-misc/fcs-core-2.0-specs/fcs-core-2.0.html#_basic_search
+    [TestCase("cat", "cat", null)]
+    [TestCase("\"cat\"", "\"cat\"", null)]
+    [TestCase("cat AND dog", "cat AND dog", null)]
+    [TestCase("\"grumpy cat\"", "\"grumpy cat\"", null)]
+    [TestCase("\"grumpy cat\" AND dog", "\"grumpy cat\" AND dog", null)] // TODO: Der Parser übersieht die OR-Bedingung
+    [TestCase("\"grumpy cat\" OR \"lazy dog\"", "\"grumpy cat\" OR \"lazy dog\"", null)] // TODO: Der Parser übersieht die OR-Bedingung
+    [TestCase("cat AND (mouse OR \"lazy dog\")", "cat AND (mouse OR \"lazy dog\")", null)] // TODO: Klammerung > Priorität
+    // Tests von: https://clarin-eric.github.io/fcs-misc/fcs-core-2.0-specs/fcs-core-2.0.html#_fcs_ql
+    [TestCase("\"walking\"", "\"walking\"", null)]
+    [TestCase("[token = \"walking\"]", "token = \"walking\"", null)]
+    // [TestCase("\"Dog\" /c", "\"Dog\" /c", null)] // TODO: /c - nachschlagen&implementieren
+    //[TestCase("[word = \"Dog\" /c]", "word = \"Dog\" /c", null)] // TODO: /c - nachschlagen&implementieren
+    [TestCase("[pos = \"NOUN\"]", "*", "pos = \"NOUN\"")]
+    [TestCase("[pos != \"NOUN\"]", "*", "pos != \"NOUN\"")]
+    [TestCase("[lemma = \"walk\"]", "*", "lemma = \"walk\"")]
+    [TestCase("\"blaue|grüne\" [pos = \"NOUN\"]", "\"blaue|grüne\"", "pos = \"NOUN\"")]
+    //[TestCase("\"dogs\" []{3,} \"cats\" within s", "\"dogs\" []{3,} \"cats\" within s", null)] // TODO: z:pos - mEn für OWID nicht relevant - überprüfen
+    //[TestCase("[z:pos = \"ADJ\"]", "*", "z:pos = \"ADJ\"")] // TODO: z:pos - mEn für OWID nicht relevant - überprüfen
+    //[TestCase("[z:pos = \"ADJ\" & q:pos = \"ADJ\"]", "*", "z:pos = \"ADJ\" & q:pos = \"ADJ\"")] // TODO: z:pos - mEn für OWID nicht relevant - überprüfen
     public void ValidateExpression(string query, string outputQuery, string? outputFilter)
     {
       var translate = TranslateFcs2Meilisearch.Create(FCSQuery.Parse(query).main_query());
