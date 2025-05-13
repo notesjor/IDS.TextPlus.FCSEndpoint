@@ -79,7 +79,8 @@ public class Version20 : AbstractVersion
     string context = null;
     if (data.ContainsKey("x-fcs-context"))
       context = data["x-fcs-context"];
-    var provideDataView = data.ContainsKey("querytype") && data["querytype"].ToLower() == "lex";
+    var provideDataView = (data.ContainsKey("querytype") && data["querytype"].ToLower() == "lex")
+      || (data.ContainsKey("x-fcs-dataviews") && data["x-fcs-dataviews"].ToLower() == "lex");
 
     if (data.ContainsKey("query"))
       ExecuteQuery(ctx, data["query"], start, maximum, context, provideDataView);
