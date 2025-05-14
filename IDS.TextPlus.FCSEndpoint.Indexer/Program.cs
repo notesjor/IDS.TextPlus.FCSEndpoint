@@ -11,6 +11,8 @@ namespace IDS.TextPlus.FCSEndpoint.Indexer;
 
 internal class Program
 {
+  private static ulong _id = 0;
+
   private static void Main(string[] args)
   {
     var dir = GetClient(out var index);
@@ -75,9 +77,9 @@ internal class Program
       stb.Append(doc.Lemma);
       if (!string.IsNullOrEmpty(doc.Segmentation))
         stb.Append(" (").Append(doc.Segmentation).Append(")");
-      if (doc.Related?.Count > 0)
+      if (doc.Link?.Count > 0)
       {
-        var synonyms = doc.Related.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
+        var synonyms = doc.Link.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
         if (synonyms.Length > 0)
           stb.Append($" [{string.Join(", ", synonyms)}]");
       }
@@ -90,20 +92,27 @@ internal class Program
 
       tmp.Add(new SearchResult
       {
-        Id = doc.Id.ToString(),
+        Id = (_id++).ToString(),
+        OId = doc.Id.ToString(),
+        SId = doc.SId.ToString(),        
         Url = $"https://www.owid.de/artikel/{doc.Id}",
         Source = doc.Source,
         Text = stb.ToString(),
         Lemma = doc.Lemma,
-        FacetGender = doc.Gender == null ? null : string.Join(" ", doc.Gender.Select(x => x.Value)),
-        Gender = doc.Gender,
-        FacetNumber = doc.Number == null ? null : string.Join(" ", doc.Number.Select(x => x.Value)),
-        Number = doc.Number,
-        FacetPos = doc.Pos == null ? null : string.Join(" ", doc.Pos.Select(x => x.Value)),
-        Pos = doc.Pos,
-        FacetRelated = doc.Related == null ? null : string.Join(" ", doc.Related.Select(x => x.Value)),
-        Related = doc.Related,
+        Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
+        GenderFull = doc.Gender,
+        Number = doc.Number == null ? null :doc.Number.Select(x => x.Value).ToArray(),
+        NumberFull = doc.Number,
+        Pos = doc.Pos == null ? null :doc.Pos.Select(x => x.Value).ToArray(),
+        PosFull = doc.Pos,        
         Citation = doc.Citation,
+        Lang = doc.Lang,
+        Link = doc.Link,
+        Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
+        Hyperonym = doc.Link?.Where(x => x.Type == "hyperonym")?.Select(x => x.Value)?.ToArray(),
+        Hyponym = doc.Link?.Where(x => x.Type == "hyponym")?.Select(x => x.Value)?.ToArray(),
+        Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
+        Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray()
       });
 
       if (tmp.Count >= max)
@@ -125,6 +134,7 @@ internal class Program
 
   private static void PrintInfo(Index index)
   {
+    Thread.Sleep(2000);
     var count = index.GetStatsAsync();
     count.Wait();
     Console.WriteLine($"Indexed {count.Result.NumberOfDocuments} documents.");
@@ -140,14 +150,15 @@ internal class Program
     task.Result.DeleteAsync().Wait();
 
     client.CreateIndexAsync("fcs", "id").Wait();
+    Thread.Sleep(2000);
     task = client.GetIndexAsync("fcs");
     task.Wait();
 
     var index = task.Result;
-    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def", "pos" }).Wait();
-    index.UpdateFilterableAttributesAsync(new List<string> { "lemma", "source", "pos" }).Wait();
+    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def" }).Wait();
+    index.UpdateFilterableAttributesAsync(new List<string> { "oid", "sid", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
 
-    index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 10000 }).Wait();
+    index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000000 }).Wait();
 
     return index;
   }

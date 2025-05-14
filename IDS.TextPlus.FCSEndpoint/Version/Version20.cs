@@ -173,9 +173,9 @@ public class Version20 : AbstractVersion
     stb.Replace("{{id}}", resultHit.Id);
 
     var fields = new List<string>();
-    AddFields(ref fields, resultHit.Pos, "pos");
-    AddFields(ref fields, resultHit.Number, "number");
-    AddFields(ref fields, resultHit.Gender, "gender");
+    AddFields(ref fields, resultHit.PosFull, "pos");
+    AddFields(ref fields, resultHit.NumberFull, "number");
+    AddFields(ref fields, resultHit.GenderFull, "gender");
     stb.Replace("{{extra_fields}}", fields.Count > 0 ? string.Join("\r\n", fields) : "");
 
     return stb.ToString();

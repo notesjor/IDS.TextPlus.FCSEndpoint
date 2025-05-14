@@ -1,39 +1,52 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Indexer.Model;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
 public class SearchResult
 {
-  [JsonProperty("source")] public string Source { get; set; }
+  [JsonPropertyName("lemma")] public string Lemma { get; set; }
+  
+  [JsonPropertyName("id")] public string Id { get; set; }
 
-  [JsonProperty("lemma")] public string Lemma { get; set; }
+  [JsonPropertyName("oid")] public string OId { get; set; }
 
-  [JsonProperty("id")] public string Id { get; set; }
+  [JsonPropertyName("sid")] public string SId { get; set; }
+  
+  [JsonPropertyName("source")] public string Source { get; set; }    
 
-  [JsonProperty("url")] public string Url { get; set; }
+  [JsonPropertyName("url")] public string Url { get; set; }
 
-  [JsonProperty("text")] public string Text { get; set; }
+  [JsonPropertyName("text")] public string Text { get; set; }
 
-  [JsonProperty("lang")] public string Lang { get; set; }
+  [JsonPropertyName("lang")] public string Lang { get; set; }
 
-  [JsonProperty("facet_gender")] public string FacetGender { get; set; }
+  [JsonPropertyName("gender")] public string[] Gender { get; set; }
 
-  [JsonProperty("gender")] public IList<SimpleValue> Gender { get; set; }
+  [JsonPropertyName("gender_full")] public IList<SimpleValue> GenderFull { get; set; }
 
-  [JsonProperty("facet_number")] public string FacetNumber { get; set; }
+  [JsonPropertyName("number")] public string[] Number { get; set; }
 
-  [JsonProperty("number")] public IList<SimpleValue> Number { get; set; }
+  [JsonPropertyName("number_full")] public IList<SimpleValue> NumberFull { get; set; }
 
-  [JsonProperty("facet_pos")] public string FacetPos { get; set; }
+  [JsonPropertyName("pos")] public string[] Pos { get; set; }
 
-  [JsonProperty("pos")] public IList<SimpleValue> Pos { get; set; }
+  [JsonPropertyName("pos_full")] public IList<SimpleValue> PosFull { get; set; }
 
-  [JsonProperty("facet_related")] public string FacetRelated { get; set; }
+  [JsonPropertyName("citation")] public IList<Citation> Citation { get; set; }
 
-  [JsonProperty("related")] public IList<Related> Related { get; set; }
+  /// <summary>
+  /// Link beinhaltet die Daten zu related, hyperonym, hyponym, antonym und synonym
+  /// </summary>
+  [JsonPropertyName("link")] public IList<Link> Link { get; set; }
 
-  // [JsonProperty("facet_citation")] public string FacetCitation { get; set; }
+  [JsonPropertyName("related")] public string[] Related { get; set; }
 
-  [JsonProperty("citation")] public IList<Citation> Citation { get; set; }
+  [JsonPropertyName("hyperonym")] public string[] Hyperonym { get; set; }
+
+  [JsonPropertyName("hyponym")] public string[] Hyponym { get; set; }
+
+  [JsonPropertyName("antonym")] public string[] Antonym { get; set; }
+
+  [JsonPropertyName("synonym")] public string[] Synonym { get; set; }
 }

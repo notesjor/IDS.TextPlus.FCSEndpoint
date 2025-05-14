@@ -50,17 +50,17 @@
       <ed:Capabilities>
         <ed:Capability>http://clarin.eu/fcs/capability/basic-search</ed:Capability>
         <ed:Capability>http://clarin.eu/fcs/capability/lex-search</ed:Capability>
-        <!--<ed:Capability>http://clarin.eu/fcs/capability/advanced-search</ed:Capability>-->
       </ed:Capabilities>
       <ed:SupportedDataViews>
         <ed:SupportedDataView id="hits" delivery-policy="send-by-default">application/x-clarin-fcs-hits+xml</ed:SupportedDataView>
         <ed:SupportedDataView id="lex" delivery-policy="send-by-default">application/x-clarin-fcs-lex+xml</ed:SupportedDataView>
-        <!--<ed:SupportedDataView id="adv" delivery-policy="send-by-default">application/x-clarin-fcs-adv+xml</ed:SupportedDataView>-->
       </ed:SupportedDataViews>
       <ed:SupportedLexFields>
-        <ed:SupportedLexField id="entryId">entryId</ed:SupportedLexField>
-        <ed:SupportedLexField id="lang">lang</ed:SupportedLexField>
         <ed:SupportedLexField id="lemma">lemma</ed:SupportedLexField>
+        <ed:SupportedLexField id="entryId">entryId</ed:SupportedLexField>
+        <ed:SupportedLexField id="source">source</ed:SupportedLexField>
+        
+        <ed:SupportedLexField id="lang">lang</ed:SupportedLexField>
         <ed:SupportedLexField id="pos">pos</ed:SupportedLexField>
         <ed:SupportedLexField id="def">def</ed:SupportedLexField>
         <ed:SupportedLexField id="segmentation">segmentation</ed:SupportedLexField>
@@ -70,21 +70,11 @@
         <ed:SupportedLexField id="related">related</ed:SupportedLexField>
         <ed:SupportedLexField id="synonym">synonym</ed:SupportedLexField>
         <!--
-        <ed:SupportedLexField id="translation">translation</ed:SupportedLexField> - not available in the resources of OWID
-        <ed:SupportedLexField id="transcription">transcription</ed:SupportedLexField> - not available in the resources of OWID
-        <ed:SupportedLexField id="phonetic">phonetic</ed:SupportedLexField> - not available in the resources of OWID
-        <ed:SupportedLexField id="etymology">etymology</ed:SupportedLexField> - not available in the resources of OWID
-        <ed:SupportedLexField id="case">case</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="baseform">baseform</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="sentiment">sentiment</ed:SupportedLexField> - not available in the resources of OWID
-        <ed:SupportedLexField id="frequency">frequency</ed:SupportedLexField> - not available in the resources of OWID
         <ed:SupportedLexField id="antonym">antonym</ed:SupportedLexField> - todo
         <ed:SupportedLexField id="hyponym">hyponym</ed:SupportedLexField> - todo
         <ed:SupportedLexField id="hypernym">hypernym</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="meronym">meronym</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="holonym">holonym</ed:SupportedLexField> - todo
         <ed:SupportedLexField id="ref">ref</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField> - not available in the resources of OWID
+        <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField> - todo
         -->
       </ed:SupportedLexFields>
       <ed:Resources>

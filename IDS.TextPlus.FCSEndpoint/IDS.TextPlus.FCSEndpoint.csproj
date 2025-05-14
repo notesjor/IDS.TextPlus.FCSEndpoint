@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\Citation.cs" Link="Model\Citation.cs" />
-    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\Related.cs" Link="Model\Related.cs" />
+    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\Link.cs" Link="Model\Link.cs" />
     <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\SimpleValue.cs" Link="Model\SimpleValue.cs" />
   </ItemGroup>
 

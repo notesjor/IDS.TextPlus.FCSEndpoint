@@ -2,7 +2,7 @@
 
 namespace IDS.TextPlus.FCSEndpoint.Indexer.Model;
 
-public class Related
+public class Link
 {
 
   /// <summary>
