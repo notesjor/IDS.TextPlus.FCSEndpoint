@@ -22,10 +22,21 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
 
       var facet = new Dictionary<string, string>
       {
-        { "text", null },
+        //{ "text", null },
         { "lemma", null },
+        { "id", null },
+        { "oid", null },
+        { "sid", null },
+        { "source", null }, 
+        { "lang", null }, 
+        { "gender", null }, 
+        { "number", null },         
         { "pos", null },
-        { "source", null }
+        { "related", null },    
+        { "hyperonym", null }, 
+        { "hyponym", null }, 
+        { "antonym", null }, 
+        { "synonym", null }, 
       };
       var choice = new HashSet<string> { "AND", "OR" };
 

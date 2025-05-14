@@ -126,20 +126,12 @@ public class Version20 : AbstractVersion
 
       var dict = SearchResourceHelper.KeyToPid;
 
-      if (provideDataView)
-        for (var i = 0; i < result.Hits.Length; i++)
-          stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
-            .Replace("{{url}}", result.Hits[i].Url)
-            .Replace("{{hit}}", result.Hits[i].Formatted.Text)
-            .Replace("{{p}}", (result.Offset + i).ToString())
-            .Replace("{{lex_dataview}}", LexDataView(result.Hits[i])));
-      else
-        for (var i = 0; i < result.Hits.Length; i++)
-          stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
-            .Replace("{{url}}", result.Hits[i].Url)
-            .Replace("{{hit}}", result.Hits[i].Formatted.Text)
-            .Replace("{{p}}", (result.Offset + i).ToString())
-            .Replace("{{lex_dataview}}", ""));
+      for (var i = 0; i < result.Hits.Length; i++)
+        stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
+          .Replace("{{url}}", result.Hits[i].Url)
+          .Replace("{{hit}}", result.Hits[i].Formatted.Text)
+          .Replace("{{p}}", (result.Offset + i).ToString())
+          .Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i]) : ""));
 
       stb.Append(Template_Response_04);
       stb.Append(Template_Response_05.Replace("{{query}}", query)
@@ -170,21 +162,31 @@ public class Version20 : AbstractVersion
     stb.Replace("{{lang}}", string.IsNullOrWhiteSpace(resultHit.Lang) ? "deu" : resultHit.Lang);
     stb.Replace("{{url}}", resultHit.Url);
     stb.Replace("{{lemma}}", resultHit.Lemma);
-    stb.Replace("{{id}}", resultHit.Id);
+    stb.Replace("{{id}}", resultHit.OId);
 
-    var fields = new List<string>();
-    AddFields(ref fields, resultHit.PosFull, "pos");
-    AddFields(ref fields, resultHit.NumberFull, "number");
-    AddFields(ref fields, resultHit.GenderFull, "gender");
-    stb.Replace("{{extra_fields}}", fields.Count > 0 ? string.Join("\r\n", fields) : "");
+    var fields = new string[]{
+      AddFields(resultHit.PosFull, "pos"),
+      AddFields(resultHit.NumberFull, "number"),
+      AddFields(resultHit.GenderFull, "gender"),
+      AddFields(resultHit.Link),
+      AddFields(resultHit.Citation),
+      resultHit.Segmentation == null
+        ? string.Empty
+        : $"<lex:Field type=\"segmentation\">\r\n  <lex:Value>{resultHit.Segmentation}</lex:Value>\r\n</lex:Field>\r\n",
+      resultHit.Def == null
+        ? string.Empty
+        : $"<lex:Field type=\"definition\">\r\n  <lex:Value>{resultHit.Def}</lex:Value>\r\n</lex:Field>\r\n",
+    };
+
+    stb.Replace("{{extra_fields}}", string.Join("\r\n", fields));
 
     return stb.ToString();
   }
 
-  private void AddFields(ref List<string> fields, IList<SimpleValue>? values, string type)
+  private string AddFields(IList<SimpleValue>? values, string type)
   {
     if (values == null || values.Count == 0)
-      return;
+      return string.Empty;
 
     var stb = new StringBuilder($"<lex:Field type=\"{type}\">\r\n");
     foreach (var x in values)
@@ -194,6 +196,39 @@ public class Version20 : AbstractVersion
         stb.Append($"  <lex:Value vocabValueRef=\"{x.Schema}\">{x.Value}</lex:Value>\r\n");
     stb.Append("</lex:Field>\r\n");
 
-    fields.Add(stb.ToString());
+    return stb.ToString();
+  }
+
+  private string AddFields(IList<Link>? values)
+  {
+    if (values == null || values.Count == 0)
+      return string.Empty;
+
+    var types = values.Select(x => x.Type).Distinct().ToArray();
+
+    var stb = new StringBuilder();
+    foreach (var type in types)
+    {
+      stb.Append($"<lex:Field type=\"{type}\">\r\n");
+      foreach (var x in values)
+        stb.Append($"  <lex:Value ref=\"{x.Target}\">{x.Value}</lex:Value>\r\n");
+      stb.Append("</lex:Field>\r\n");
+    }
+
+    return stb.ToString();
+  }
+
+  private string AddFields(IList<Citation>? values)
+  {
+    if (values == null || values.Count == 0)
+      return string.Empty;
+
+    var stb = new StringBuilder("<lex:Field type=\"citation\">\r\n");
+    foreach (var x in values)
+      //stb.Append($"  <lex:Value type=\"example\" source=\"{x.Source.Replace("\"", "'")}\">{x.Example}</lex:Value>\r\n");
+      stb.Append($"  <lex:Value type=\"example\">{x.Example}</lex:Value>\r\n");
+    stb.Append("</lex:Field>\r\n");
+
+    return stb.ToString();
   }
 }

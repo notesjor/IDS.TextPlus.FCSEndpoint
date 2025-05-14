@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
+using IDS.TextPlus.FCSEndpoint.Indexer.Model;
 using IDS.TextPlus.FCSEndpoint.Model;
 using Meilisearch;
 using Newtonsoft.Json;
@@ -94,18 +96,20 @@ internal class Program
       {
         Id = (_id++).ToString(),
         OId = doc.Id.ToString(),
-        SId = doc.SId.ToString(),        
+        SId = doc.SId.ToString(),  
+        Segmentation = doc.Segmentation,
+        Def = doc.Def,
         Url = $"https://www.owid.de/artikel/{doc.Id}",
         Source = doc.Source,
-        Text = stb.ToString(),
-        Lemma = doc.Lemma,
+        Text = WebUtility.HtmlEncode(stb.ToString()),
+        Lemma = WebUtility.HtmlEncode(doc.Lemma),
         Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
         GenderFull = doc.Gender,
         Number = doc.Number == null ? null :doc.Number.Select(x => x.Value).ToArray(),
         NumberFull = doc.Number,
         Pos = doc.Pos == null ? null :doc.Pos.Select(x => x.Value).ToArray(),
         PosFull = doc.Pos,        
-        Citation = doc.Citation,
+        Citation = doc.Citation == null ? null : ProtectCitation(doc.Citation),
         Lang = doc.Lang,
         Link = doc.Link,
         Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
@@ -132,6 +136,20 @@ internal class Program
     }
   }
 
+  private static IList<Citation> ProtectCitation(IList<Citation> docCitation)
+  {
+    var res = new List<Citation>();
+    foreach (var citation in docCitation)
+    {
+      res.Add(new Citation
+      {
+        Source = WebUtility.HtmlEncode(citation.Source),
+        Example = WebUtility.HtmlEncode(citation.Example),
+      });
+    }
+    return res;
+  }
+
   private static void PrintInfo(Index index)
   {
     Thread.Sleep(2000);
@@ -155,7 +173,7 @@ internal class Program
     task.Wait();
 
     var index = task.Result;
-    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "def" }).Wait();
+    index.UpdateSearchableAttributesAsync(new List<string> { "lemma" }).Wait();
     index.UpdateFilterableAttributesAsync(new List<string> { "oid", "sid", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
 
     index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000000 }).Wait();

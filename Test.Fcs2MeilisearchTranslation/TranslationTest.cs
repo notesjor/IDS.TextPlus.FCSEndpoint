@@ -21,6 +21,7 @@ namespace Test.Fcs2MeilisearchTranslation
     [TestCase("(pandemie AND corona)", "pandemie AND corona", null)]
     [TestCase("Auge AND source = neo OR source = sprw", "Auge", "source = neo OR sprw")]
     [TestCase("lemma = corona AND text = pandemie", "*", "text = pandemie AND lemma = corona")]
+    [TestCase("pos=NOUN AND gender=Masc", "*", "gender = Masc AND pos = NOUN")]
     // Tests von: https://clarin-eric.github.io/fcs-misc/fcs-core-2.0-specs/fcs-core-2.0.html#_basic_search
     [TestCase("cat", "cat", null)]
     [TestCase("\"cat\"", "\"cat\"", null)]
