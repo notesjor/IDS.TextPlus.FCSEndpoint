@@ -59,7 +59,7 @@
         <ed:SupportedLexField id="lemma">lemma</ed:SupportedLexField>
         <ed:SupportedLexField id="entryId">entryId</ed:SupportedLexField>
         <ed:SupportedLexField id="source">source</ed:SupportedLexField>
-        
+        <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField>
         <ed:SupportedLexField id="lang">lang</ed:SupportedLexField>
         <ed:SupportedLexField id="pos">pos</ed:SupportedLexField>
         <ed:SupportedLexField id="def">def</ed:SupportedLexField>
@@ -69,13 +69,10 @@
         <ed:SupportedLexField id="citation">citation</ed:SupportedLexField>
         <ed:SupportedLexField id="related">related</ed:SupportedLexField>
         <ed:SupportedLexField id="synonym">synonym</ed:SupportedLexField>
-        <!--
-        <ed:SupportedLexField id="antonym">antonym</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="hyponym">hyponym</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="hypernym">hypernym</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="ref">ref</ed:SupportedLexField> - todo
-        <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField> - todo
-        -->
+        <ed:SupportedLexField id="antonym">antonym</ed:SupportedLexField>
+        <ed:SupportedLexField id="hyponym">hyponym</ed:SupportedLexField>
+        <ed:SupportedLexField id="hypernym">hypernym</ed:SupportedLexField>
+        <ed:SupportedLexField id="citation">citation</ed:SupportedLexField>
       </ed:SupportedLexFields>
       <ed:Resources>
         {{resources}}

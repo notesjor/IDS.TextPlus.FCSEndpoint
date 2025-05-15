@@ -9,6 +9,7 @@ namespace IDS.TextPlus.FCSEndpoint.Model;
 // - Neue Attribute müssen auchin der FAST-Search (Program_Fast.cs) hinzugefügt werden.
 // - Neue Attribute müssen ggf. auch in der Indexer-Logik (Indexer/Program.cs) hinzugefügt werden (was wird wie in Meilisearch indiziert).
 // - Neue Attribute müssen ggf. auch in der Translator-Logik (TranslateFcs2Meilisearch) aufgenommen werden - insbesondere wenn es Facetten sind.
+// - Neue Attribute müssen ggf. auch im catalog.json nachgetragen werden, damit sie via Explain angezeigt werden können.
 
 public class SearchResult
 {
@@ -18,9 +19,9 @@ public class SearchResult
 
   [JsonProperty("id")][JsonPropertyName("id")] public string Id { get; set; }
 
-  [JsonProperty("oid")][JsonPropertyName("oid")] public string OId { get; set; }
+  [JsonProperty("entryId")][JsonPropertyName("entryId")] public string OId { get; set; }
 
-  [JsonProperty("sid")][JsonPropertyName("sid")] public string SId { get; set; }
+  [JsonProperty("senseRef")][JsonPropertyName("senseRef")] public string SId { get; set; }
 
   [JsonProperty("source")][JsonPropertyName("source")] public string Source { get; set; }
 

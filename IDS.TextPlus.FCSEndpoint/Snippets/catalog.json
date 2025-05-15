@@ -4,7 +4,7 @@
     "url": "https://www.owid.de/docs/elex/start.jsp",
     "languages": [ "deu" ],
     "dataviews": "hits lex",
-    "lexfields": "word lemma pos",
+    "lexfields": "lemma entryId source senseRef lang pos def segmentation gender number citation related synonym antonym hyponym hypernym citation",
     "info": {
       "deu": {
         "Title": "elexiko - Online-Wörterbuch zur deutschen Gegenwartssprache",
@@ -23,7 +23,7 @@
     "url": "https://www.owid.de/docs/neo/start.jsp",
     "languages": [ "deu" ],
     "dataviews": "hits lex",
-    "lexfields": "word lemma pos",
+    "lexfields": "lemma entryId source senseRef lang pos def segmentation gender number citation related synonym antonym hyponym hypernym citation",
     "info": {
       "deu": {
         "Title": "Neologismenwörterbuch",
@@ -42,7 +42,7 @@
     "url": "https://www.owid.de/wb/sprw/start.html",
     "languages": [ "deu" ],
     "dataviews": "hits lex",
-    "lexfields": "word lemma pos",
+    "lexfields": "lemma entryId source senseRef lang def segmentation citation related citation",
     "info": {
       "deu": {
         "Title": "Sprichwörterbuch",

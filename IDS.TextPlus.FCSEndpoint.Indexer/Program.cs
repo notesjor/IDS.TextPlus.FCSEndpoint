@@ -221,7 +221,7 @@ internal class Program
 
     var index = task.Result;
     index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
-    index.UpdateFilterableAttributesAsync(new List<string> { "oid", "sid", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
+    index.UpdateFilterableAttributesAsync(new List<string> { "entryId", "senseRef", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
 
     index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000000 }).Wait();
 
