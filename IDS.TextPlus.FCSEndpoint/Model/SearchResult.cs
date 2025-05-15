@@ -14,6 +14,8 @@ public class SearchResult
 {
   [JsonProperty("lemma")][JsonPropertyName("lemma")] public string Lemma { get; set; }
 
+  [JsonProperty("lemma_fcs")][JsonPropertyName("lemma_fcs")] public string LammFcs { get; set; }
+
   [JsonProperty("id")][JsonPropertyName("id")] public string Id { get; set; }
 
   [JsonProperty("oid")][JsonPropertyName("oid")] public string OId { get; set; }

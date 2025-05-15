@@ -119,6 +119,7 @@ internal class Program
         Source = doc.Source,
         Text = WebUtility.HtmlEncode(stb.ToString()),
         Lemma = WebUtility.HtmlEncode(doc.Lemma),
+        LammFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
         Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
         Number = doc.Number == null ? null :doc.Number.Select(x => x.Value).ToArray(),
         Pos = doc.Pos == null ? null :doc.Pos.Select(x => x.Value).ToArray(),
@@ -219,7 +220,7 @@ internal class Program
     task.Wait();
 
     var index = task.Result;
-    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
+    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
     index.UpdateFilterableAttributesAsync(new List<string> { "oid", "sid", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
 
     index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000000 }).Wait();
