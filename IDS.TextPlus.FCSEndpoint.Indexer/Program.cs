@@ -219,7 +219,7 @@ internal class Program
     task = client.GetIndexAsync("fcs");
     task.Wait();
 
-    var index = task.Result;
+    var index = task.Result;                          
     index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
     index.UpdateFilterableAttributesAsync(new List<string> { "entryId", "senseRef", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
 

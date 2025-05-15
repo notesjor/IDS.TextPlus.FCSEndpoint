@@ -57,7 +57,7 @@ public partial class FCSLexer : Lexer {
 
 
 	public FCSLexer(ICharStream input)
-	: this(input, Console.Out, Console.Error) { }
+	: this(input, TextWriter.Null, TextWriter.Null) { }
 
 	public FCSLexer(ICharStream input, TextWriter output, TextWriter errorOutput)
 	: base(input, output, errorOutput)

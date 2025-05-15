@@ -92,7 +92,7 @@ public partial class FCSParser : Parser {
 		}
 	}
 
-		public FCSParser(ITokenStream input) : this(input, Console.Out, Console.Error) { }
+		public FCSParser(ITokenStream input) : this(input, TextWriter.Null, TextWriter.Null) { }
 
 		public FCSParser(ITokenStream input, TextWriter output, TextWriter errorOutput)
 		: base(input, output, errorOutput)

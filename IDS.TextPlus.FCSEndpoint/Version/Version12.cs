@@ -113,7 +113,7 @@ public class Version12 : AbstractVersion
       for (var i = 0; i < result.Hits.Length; i++)
         ctx.Response.SendChunk(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Formatted.Source])
           .Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", result.Hits[i].Formatted.Text)
-          .Replace("{{p}}", (result.Offset + i).ToString()));
+          .Replace("{{p}}", (result.Offset + i + 1).ToString()));
 
       ctx.Response.SendChunk(Template_Response_04);
       ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query)

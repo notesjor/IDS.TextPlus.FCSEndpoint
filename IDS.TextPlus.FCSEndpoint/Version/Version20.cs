@@ -132,7 +132,7 @@ public class Version20 : AbstractVersion
         stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
           .Replace("{{url}}", result.Hits[i].Url)
           .Replace("{{hit}}", result.Hits[i].Formatted.Text)
-          .Replace("{{p}}", (result.Offset + i).ToString())
+          .Replace("{{p}}", (result.Offset + i + 1).ToString())
           .Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i], dataViewFilter) : ""));
 
       stb.Append(Template_Response_04);

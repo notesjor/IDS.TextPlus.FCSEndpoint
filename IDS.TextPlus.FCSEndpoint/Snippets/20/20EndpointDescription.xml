@@ -72,7 +72,6 @@
         <ed:SupportedLexField id="antonym">antonym</ed:SupportedLexField>
         <ed:SupportedLexField id="hyponym">hyponym</ed:SupportedLexField>
         <ed:SupportedLexField id="hypernym">hypernym</ed:SupportedLexField>
-        <ed:SupportedLexField id="citation">citation</ed:SupportedLexField>
       </ed:SupportedLexFields>
       <ed:Resources>
         {{resources}}

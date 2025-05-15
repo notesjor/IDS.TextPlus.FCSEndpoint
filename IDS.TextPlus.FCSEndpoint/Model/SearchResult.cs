@@ -10,6 +10,7 @@ namespace IDS.TextPlus.FCSEndpoint.Model;
 // - Neue Attribute müssen ggf. auch in der Indexer-Logik (Indexer/Program.cs) hinzugefügt werden (was wird wie in Meilisearch indiziert).
 // - Neue Attribute müssen ggf. auch in der Translator-Logik (TranslateFcs2Meilisearch) aufgenommen werden - insbesondere wenn es Facetten sind.
 // - Neue Attribute müssen ggf. auch im catalog.json nachgetragen werden, damit sie via Explain angezeigt werden können.
+// - Neue Attribute müssen ggf. auch in der SearchRequest unter searchableAttributes aufgenommen werden, damit sie in der Suche entsprechend ihrer Priorität berücksichtigt werden.
 
 public class SearchResult
 {
