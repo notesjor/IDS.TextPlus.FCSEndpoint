@@ -6,6 +6,7 @@ using IDS.TextPlus.FCSEndpoint.Indexer.Model;
 using IDS.TextPlus.FCSEndpoint.Model;
 using Meilisearch;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Document = IDS.TextPlus.FCSEndpoint.Indexer.Model.Document;
 using Index = Meilisearch.Index;
 
@@ -92,6 +93,21 @@ internal class Program
         stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
       stb.Append($" - {doc.Def}");
 
+      var snippetes = new Dictionary<string, string>
+      {
+        { "pos", GenerateSnippet(doc.Pos, "pos") },
+        { "number", GenerateSnippet(doc.Number, "number") },
+        { "gender", GenerateSnippet(doc.Gender, "gender") },
+        { "related", GenerateSnippet(doc.Link?.Where(x => x.Type == "related")) },
+        { "hyperonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyperonym")) },
+        { "hyponym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyponym")) },
+        { "antonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "antonym")) },
+        { "synonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "synonym")) },
+        { "citation", GenerateSnippet(doc.Citation) },
+        { "segmentation", doc.Segmentation == null ? "" : $"<lex:Field type=\"segmentation\">\r\n  <lex:Value>{doc.Segmentation}</lex:Value>\r\n</lex:Field>\r\n" },
+        { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\">\r\n  <lex:Value>{doc.Def}</lex:Value>\r\n</lex:Field>\r\n"}
+      };
+
       tmp.Add(new SearchResult
       {
         Id = (_id++).ToString(),
@@ -104,19 +120,15 @@ internal class Program
         Text = WebUtility.HtmlEncode(stb.ToString()),
         Lemma = WebUtility.HtmlEncode(doc.Lemma),
         Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
-        GenderFull = doc.Gender,
         Number = doc.Number == null ? null :doc.Number.Select(x => x.Value).ToArray(),
-        NumberFull = doc.Number,
         Pos = doc.Pos == null ? null :doc.Pos.Select(x => x.Value).ToArray(),
-        PosFull = doc.Pos,        
-        Citation = doc.Citation == null ? null : ProtectCitation(doc.Citation),
         Lang = doc.Lang,
-        Link = doc.Link,
         Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
         Hyperonym = doc.Link?.Where(x => x.Type == "hyperonym")?.Select(x => x.Value)?.ToArray(),
         Hyponym = doc.Link?.Where(x => x.Type == "hyponym")?.Select(x => x.Value)?.ToArray(),
         Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
-        Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray()
+        Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray(),
+        FcsSnippets = snippetes,
       });
 
       if (tmp.Count >= max)
@@ -136,18 +148,52 @@ internal class Program
     }
   }
 
-  private static IList<Citation> ProtectCitation(IList<Citation> docCitation)
+  private static string GenerateSnippet(IEnumerable<Citation> values)
   {
-    var res = new List<Citation>();
-    foreach (var citation in docCitation)
+    if (values == null || !values.Any())
+      return string.Empty;
+
+    var stb = new StringBuilder("<lex:Field type=\"citation\">");
+    foreach (var x in values)
+      stb.Append($"<lex:Value type=\"example\" source=\"{WebUtility.HtmlEncode(x.Source)}\">{WebUtility.HtmlEncode(x.Example)}</lex:Value>");
+    stb.Append("</lex:Field>");
+
+    return stb.ToString();
+  }
+
+  private static string GenerateSnippet(IEnumerable<Link>? values)
+  {
+    if (values == null || !values.Any())
+      return string.Empty;
+
+    var types = values.Select(x => x.Type).Distinct().ToArray();
+
+    var stb = new StringBuilder();
+    foreach (var type in types)
     {
-      res.Add(new Citation
-      {
-        Source = WebUtility.HtmlEncode(citation.Source),
-        Example = WebUtility.HtmlEncode(citation.Example),
-      });
+      stb.Append($"<lex:Field type=\"{type}\">");
+      foreach (var x in values)
+        stb.Append($"<lex:Value ref=\"{x.Target}\">{x.Value}</lex:Value>");
+      stb.Append("</lex:Field>");
     }
-    return res;
+
+    return stb.ToString();
+  }
+
+  private static string GenerateSnippet(IEnumerable<SimpleValue>? values, string type)
+  {
+    if (values == null || !values.Any())
+      return string.Empty;
+
+    var stb = new StringBuilder($"<lex:Field type=\"{type}\">");
+    foreach (var x in values)
+      if (string.IsNullOrWhiteSpace(x.Schema))
+        stb.Append($"<lex:Value>{x.Value}</lex:Value>");
+      else
+        stb.Append($"<lex:Value vocabValueRef=\"{x.Schema}\">{x.Value}</lex:Value>");
+    stb.Append("</lex:Field>");
+
+    return stb.ToString();
   }
 
   private static void PrintInfo(Index index)

@@ -12,12 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\Citation.cs" Link="Model\Citation.cs" />
-    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\Link.cs" Link="Model\Link.cs" />
-    <Compile Include="..\IDS.TextPlus.FCSEndpoint.Indexer\Model\SimpleValue.cs" Link="Model\SimpleValue.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.22" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

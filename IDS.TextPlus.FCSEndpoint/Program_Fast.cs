@@ -29,6 +29,7 @@ internal partial class Program
       post.limit = 10;
     post.highlightPreTag = "<hit>";
     post.highlightPostTag = "</hit>";
+    post.attributesToRetrieve = new[] { "id", "lemma", "oid", "sid", "lang", "source", "url", "segmentation", "def", "gender", "number", "pos", "related", "hyperonym", "hyponym", "antonym", "synonym" };
     Console.WriteLine($"FAST 4: {post.q} (limit: {post.limit})");
 
     var request = new RestRequest("http://lexik08.ids-mannheim.de/meilisearch/indexes/fcs/search", Method.Post);

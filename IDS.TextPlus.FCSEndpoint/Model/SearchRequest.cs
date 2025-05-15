@@ -17,6 +17,7 @@ public class SearchRequest
   public string[] attributesToHighlight { get; set; } = { "lemma", "text" };
   public string highlightPreTag { get; set; } = "<hits:Hit>";
   public string highlightPostTag { get; set; } = "</hits:Hit>";
+  public string[] attributesToRetrieve { get; set; } = new string[] { "*" };
 
   /// <summary>
   /// Converts a FCS-Query to a MeiliSearch query.

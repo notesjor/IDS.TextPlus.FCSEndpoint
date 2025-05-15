@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Text;
 using IDS.TextPlus.FCSEndpoint.Helper;
-using IDS.TextPlus.FCSEndpoint.Indexer.Model;
 using IDS.TextPlus.FCSEndpoint.Model;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
 using Tfres;
@@ -81,9 +80,12 @@ public class Version20 : AbstractVersion
       context = data["x-fcs-context"];
     var provideDataView = (data.ContainsKey("querytype") && data["querytype"].ToLower() == "lex")
       || (data.ContainsKey("x-fcs-dataviews") && data["x-fcs-dataviews"].ToLower() == "lex");
+    HashSet<string> dataViewFilter = null;
+    if (data.ContainsKey("x-fcs-lex-fields"))
+      dataViewFilter = new HashSet<string>(data["x-fcs-lex-fields"].Split(',').Select(x => x.ToLower().Trim()));
 
     if (data.ContainsKey("query"))
-      ExecuteQuery(ctx, data["query"], start, maximum, context, provideDataView);
+      ExecuteQuery(ctx, data["query"], start, maximum, context, provideDataView, dataViewFilter);
     else
       ctx.Response.Send(DefaultRouteResponse, _mime);
   }
@@ -93,7 +95,7 @@ public class Version20 : AbstractVersion
     Console.WriteLine(string.Join("; ", data.Select(x => $"{x.Key}={x.Value}")));
   }
 
-  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string? context, bool provideDataView)
+  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string? context, bool provideDataView, HashSet<string> dataViewFilter)
   {
     try
     {
@@ -131,7 +133,7 @@ public class Version20 : AbstractVersion
           .Replace("{{url}}", result.Hits[i].Url)
           .Replace("{{hit}}", result.Hits[i].Formatted.Text)
           .Replace("{{p}}", (result.Offset + i).ToString())
-          .Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i]) : ""));
+          .Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i], dataViewFilter) : ""));
 
       stb.Append(Template_Response_04);
       stb.Append(Template_Response_05.Replace("{{query}}", query)
@@ -156,7 +158,7 @@ public class Version20 : AbstractVersion
     }
   }
 
-  private string? LexDataView(SearchResponseContainer resultHit)
+  private string? LexDataView(SearchResponseContainer resultHit, HashSet<string> dataViewFilter)
   {
     var stb = new StringBuilder(Template_Response_03_ext);
     stb.Replace("{{lang}}", string.IsNullOrWhiteSpace(resultHit.Lang) ? "deu" : resultHit.Lang);
@@ -164,70 +166,11 @@ public class Version20 : AbstractVersion
     stb.Replace("{{lemma}}", resultHit.Lemma);
     stb.Replace("{{id}}", resultHit.OId);
 
-    var fields = new string[]{
-      AddFields(resultHit.PosFull, "pos"),
-      AddFields(resultHit.NumberFull, "number"),
-      AddFields(resultHit.GenderFull, "gender"),
-      AddFields(resultHit.Link),
-      AddFields(resultHit.Citation),
-      resultHit.Segmentation == null
-        ? string.Empty
-        : $"<lex:Field type=\"segmentation\">\r\n  <lex:Value>{resultHit.Segmentation}</lex:Value>\r\n</lex:Field>\r\n",
-      resultHit.Def == null
-        ? string.Empty
-        : $"<lex:Field type=\"definition\">\r\n  <lex:Value>{resultHit.Def}</lex:Value>\r\n</lex:Field>\r\n",
-    };
+    var fields = dataViewFilter == null 
+      ? resultHit.FcsSnippets.Values 
+      : resultHit.FcsSnippets.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
 
     stb.Replace("{{extra_fields}}", string.Join("\r\n", fields));
-
-    return stb.ToString();
-  }
-
-  private string AddFields(IList<SimpleValue>? values, string type)
-  {
-    if (values == null || values.Count == 0)
-      return string.Empty;
-
-    var stb = new StringBuilder($"<lex:Field type=\"{type}\">\r\n");
-    foreach (var x in values)
-      if (string.IsNullOrWhiteSpace(x.Schema))
-        stb.Append($"  <lex:Value>{x.Value}</lex:Value>\r\n");
-      else
-        stb.Append($"  <lex:Value vocabValueRef=\"{x.Schema}\">{x.Value}</lex:Value>\r\n");
-    stb.Append("</lex:Field>\r\n");
-
-    return stb.ToString();
-  }
-
-  private string AddFields(IList<Link>? values)
-  {
-    if (values == null || values.Count == 0)
-      return string.Empty;
-
-    var types = values.Select(x => x.Type).Distinct().ToArray();
-
-    var stb = new StringBuilder();
-    foreach (var type in types)
-    {
-      stb.Append($"<lex:Field type=\"{type}\">\r\n");
-      foreach (var x in values)
-        stb.Append($"  <lex:Value ref=\"{x.Target}\">{x.Value}</lex:Value>\r\n");
-      stb.Append("</lex:Field>\r\n");
-    }
-
-    return stb.ToString();
-  }
-
-  private string AddFields(IList<Citation>? values)
-  {
-    if (values == null || values.Count == 0)
-      return string.Empty;
-
-    var stb = new StringBuilder("<lex:Field type=\"citation\">\r\n");
-    foreach (var x in values)
-      //stb.Append($"  <lex:Value type=\"example\" source=\"{x.Source.Replace("\"", "'")}\">{x.Example}</lex:Value>\r\n");
-      stb.Append($"  <lex:Value type=\"example\">{x.Example}</lex:Value>\r\n");
-    stb.Append("</lex:Field>\r\n");
 
     return stb.ToString();
   }
