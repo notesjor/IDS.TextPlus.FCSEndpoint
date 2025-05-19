@@ -1,6 +1,6 @@
 {
   "elex": {
-    "pid": "owid/temporary-pid-001",
+    "pid": "https://doi.org/10.14618/wb-elex",
     "url": "https://www.owid.de/docs/elex/start.jsp",
     "languages": [ "deu" ],
     "dataviews": "hits lex",
@@ -19,7 +19,7 @@
     }
   },
   "neo": {
-    "pid": "owid/temporary-pid-002",
+    "pid": "https://doi.org/10.14618/wb-neo",
     "url": "https://www.owid.de/docs/neo/start.jsp",
     "languages": [ "deu" ],
     "dataviews": "hits lex",
@@ -38,7 +38,7 @@
     }
   },
   "sprw": {
-    "pid": "owid/temporary-pid-003",
+    "pid": "https://doi.org/10.14618/wb-sprw",
     "url": "https://www.owid.de/wb/sprw/start.html",
     "languages": [ "deu" ],
     "dataviews": "hits lex",
