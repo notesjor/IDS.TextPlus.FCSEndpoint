@@ -120,6 +120,9 @@ public class Version20 : AbstractVersion
         return;
       }
 
+      var totalResults = result.EstimatedTotalHits;
+      var nextPage = start + maximum <= totalResults ? start + maximum : totalResults;
+
       var stb = new StringBuilder();
 
       stb.Append(Template_Response_01);
@@ -131,7 +134,7 @@ public class Version20 : AbstractVersion
       for (var i = 0; i < result.Hits.Length; i++)
         stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
           .Replace("{{url}}", result.Hits[i].Url)
-          .Replace("{{hit}}", result.Hits[i].Formatted.Text)
+          .Replace("{{hit}}", provideDataView ? LexDataViewHit(result.Hits[i]) : result.Hits[i].Formatted.Text)
           .Replace("{{p}}", (result.Offset + i + 1).ToString())
           .Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i], dataViewFilter) : ""));
 
@@ -140,7 +143,7 @@ public class Version20 : AbstractVersion
         .Replace("{{start}}", (result.Offset + 1).ToString())
         .Replace("{{offset}}", start.ToString())
         .Replace("{{max}}", result.EstimatedTotalHits.ToString())
-        .Replace("{{next}}", (start + maximum).ToString()));
+        .Replace("{{next}}", nextPage.ToString()));
 
       ctx.Response.Send(stb.ToString(), _mime);
     }
@@ -156,6 +159,24 @@ public class Version20 : AbstractVersion
 #endif
       ctx.Response.Send(HttpStatusCode.InternalServerError);
     }
+  }
+
+  private string LexDataViewHit(SearchResponseContainer resultHit)
+  {
+    var stb = new StringBuilder();
+    if(!string.IsNullOrWhiteSpace(resultHit.Lemma))
+      stb.AppendLine($"<hits:Hit kind=\"lex-lemma\">{resultHit.Lemma}</hits:Hit>");
+    if(!string.IsNullOrWhiteSpace(resultHit.Segmentation))
+      stb.AppendLine($"<hits:Hit kind=\"lex-segmentation\">{resultHit.Segmentation}</hits:Hit>");
+    if(resultHit.Synonym?.Length > 0)
+      stb.AppendLine($"<hits:Hit kind=\"lex-synonym\">{string.Join(", ", resultHit.Synonym)}</hits:Hit>");
+    if(resultHit.Pos?.Length > 0)
+      stb.AppendLine($"<hits:Hit kind=\"lex-pos\">{string.Join(", ", resultHit.Pos)}</hits:Hit>");
+    if(resultHit.Gender?.Length > 0)
+      stb.AppendLine($"<hits:Hit kind=\"lex-gender\">{string.Join(", ", resultHit.Gender)}</hits:Hit>");
+    if(!string.IsNullOrWhiteSpace(resultHit.Def))
+      stb.AppendLine($"<hits:Hit kind=\"lex-def\">{resultHit.Def}</hits:Hit>");
+    return stb.ToString();
   }
 
   private string? LexDataView(SearchResponseContainer resultHit, HashSet<string> dataViewFilter)
