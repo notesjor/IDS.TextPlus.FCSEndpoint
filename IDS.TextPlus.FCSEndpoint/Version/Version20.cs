@@ -166,9 +166,14 @@ public class Version20 : AbstractVersion
     stb.Replace("{{lemma}}", resultHit.Lemma);
     stb.Replace("{{id}}", resultHit.OId);
 
+    // TODO: Entfernen - aktuell unterstützt die Suche keine citation-Felder, daher werden die hier gefiltert.
+    var snippets = resultHit.FcsSnippets.Where(x=> x.Key != "citation")
+      .ToDictionary(x => x.Key, x => x.Value);
+    //
+
     var fields = dataViewFilter == null 
-      ? resultHit.FcsSnippets.Values 
-      : resultHit.FcsSnippets.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
+      ? snippets.Values 
+      : snippets.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
 
     stb.Replace("{{extra_fields}}", string.Join("\r\n", fields));
 
