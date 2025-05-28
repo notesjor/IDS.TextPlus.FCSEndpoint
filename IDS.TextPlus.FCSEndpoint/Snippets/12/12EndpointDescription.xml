@@ -55,15 +55,12 @@
         <ed:SupportedDataView id="hits" delivery-policy="send-by-default">application/x-clarin-fcs-hits+xml</ed:SupportedDataView>
         <ed:SupportedDataView id="lex" delivery-policy="send-by-default">application/x-clarin-fcs-lex+xml</ed:SupportedDataView>
       </ed:SupportedDataViews>
-      <ed:SupportedLayers>
-        <ed:SupportedLayer id="word" result-id="http://dwds.de/ns/fcs/layer/word" type="empty">word</ed:SupportedLayer>
-        <ed:SupportedLayer id="lemma" result-id="http://dwds.de/ns/fcs/layer/lemma" type="empty">lemma</ed:SupportedLayer>
-        <ed:SupportedLayer id="pos" result-id="http://dwds.de/ns/fcs/layer/pos" type="empty">pos</ed:SupportedLayer>
-      </ed:SupportedLayers>
       <ed:SupportedLexFields>
-        <ed:SupportedLexField id="entryId">entryId</ed:SupportedLexField>
-        <ed:SupportedLexField id="lang">lang</ed:SupportedLexField>
         <ed:SupportedLexField id="lemma">lemma</ed:SupportedLexField>
+        <ed:SupportedLexField id="entryId">entryId</ed:SupportedLexField>
+        <ed:SupportedLexField id="source">source</ed:SupportedLexField>
+        <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField>
+        <ed:SupportedLexField id="lang">lang</ed:SupportedLexField>
         <ed:SupportedLexField id="pos">pos</ed:SupportedLexField>
         <ed:SupportedLexField id="def">def</ed:SupportedLexField>
         <ed:SupportedLexField id="segmentation">segmentation</ed:SupportedLexField>
@@ -72,23 +69,9 @@
         <ed:SupportedLexField id="citation">citation</ed:SupportedLexField>
         <ed:SupportedLexField id="related">related</ed:SupportedLexField>
         <ed:SupportedLexField id="synonym">synonym</ed:SupportedLexField>
-        <!--
-        <ed:SupportedLexField id="translation">translation</ed:SupportedLexField>
-        <ed:SupportedLexField id="transcription">transcription</ed:SupportedLexField>
-        <ed:SupportedLexField id="phonetic">phonetic</ed:SupportedLexField>
-        <ed:SupportedLexField id="etymology">etymology</ed:SupportedLexField>
-        <ed:SupportedLexField id="case">case</ed:SupportedLexField>
-        <ed:SupportedLexField id="baseform">baseform</ed:SupportedLexField>
-        <ed:SupportedLexField id="sentiment">sentiment</ed:SupportedLexField>
-        <ed:SupportedLexField id="frequency">frequency</ed:SupportedLexField>
         <ed:SupportedLexField id="antonym">antonym</ed:SupportedLexField>
         <ed:SupportedLexField id="hyponym">hyponym</ed:SupportedLexField>
         <ed:SupportedLexField id="hypernym">hypernym</ed:SupportedLexField>
-        <ed:SupportedLexField id="meronym">meronym</ed:SupportedLexField>
-        <ed:SupportedLexField id="holonym">holonym</ed:SupportedLexField>
-        <ed:SupportedLexField id="ref">ref</ed:SupportedLexField>
-        <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField>
-        -->
       </ed:SupportedLexFields>
       <ed:Resources>
         {{resources}}
