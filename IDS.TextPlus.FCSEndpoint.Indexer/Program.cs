@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Xml;
 using IDS.TextPlus.FCSEndpoint.Indexer.Model;
 using IDS.TextPlus.FCSEndpoint.Model;
 using Meilisearch;
@@ -119,7 +120,8 @@ internal class Program
         Source = doc.Source,
         Text = WebUtility.HtmlEncode(stb.ToString()),
         Lemma = WebUtility.HtmlEncode(doc.Lemma),
-        LammFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
+        LemmaTokens = Tokenize(doc.Lemma),
+        LemmaFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
         Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
         Number = doc.Number == null ? null :doc.Number.Select(x => x.Value).ToArray(),
         Pos = doc.Pos == null ? null :doc.Pos.Select(x => x.Value).ToArray(),
@@ -147,6 +149,13 @@ internal class Program
       task.Wait();
       Debug.Write(task);
     }
+  }
+
+  private static string[] _sentenceMarks = { " ", ".", "!", "?", ";", ":", ",", ")", "(", "[", "]", "\"", "'", "„", "“", "‘", "’", "-" };
+
+  private static string[] Tokenize(string docLemma)
+  {
+    return docLemma.Split(_sentenceMarks, StringSplitOptions.RemoveEmptyEntries);
   }
 
   private static string GenerateSnippet(IEnumerable<Citation> values)
@@ -221,7 +230,7 @@ internal class Program
 
     var index = task.Result;                          
     index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
-    index.UpdateFilterableAttributesAsync(new List<string> { "entryId", "senseRef", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
+    index.UpdateFilterableAttributesAsync(new List<string> { "entryId", "senseRef", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym", "lemma_token" }).Wait();
 
     index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000000 }).Wait();
 

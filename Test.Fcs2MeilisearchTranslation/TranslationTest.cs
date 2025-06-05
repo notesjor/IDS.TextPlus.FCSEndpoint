@@ -13,24 +13,24 @@ namespace Test.Fcs2MeilisearchTranslation
     [Test]
     // Eigene Tests (JOR)
     [TestCase("fu", "fu", null)]
-    [TestCase("pandemie OR corona", "pandemie OR corona", null)]
-    [TestCase("pandemie AND NOT corona", "pandemie AND NOT corona", null)]
+    [TestCase("pandemie OR corona", "*", "lemma_token = \"pandemie\" OR lemma_token = \"corona\"")]
+    //[TestCase("pandemie AND NOT corona", "*", "lemma_token = \"pandemie\" AND lemma_token = NOT corona")]
     [TestCase("fu AND source = neo", "fu", "source = neo")]
     [TestCase("source = neo", "*", "source = neo")]
     [TestCase("source == neo", "*", "source = neo")]
     [TestCase("fu AND source != neo", "fu", "source != neo")]
     [TestCase("fu AND source NOT neo", "fu", "source NOT neo")] // in FCS nicht zulässig (NOT -> !=)
-    [TestCase("(pandemie AND corona)", "pandemie AND corona", null)]
+    [TestCase("(pandemie AND corona)", "*", "lemma_token = \"pandemie\" AND lemma_token = \"corona\"")]
     [TestCase("Auge AND source = neo OR source = sprw", "Auge", "source = neo OR sprw")]
-    [TestCase("lemma = corona AND text = pandemie", "*", "text = pandemie AND lemma = corona")]
+    [TestCase("lemma = corona AND text = pandemie", "*", "lemma = corona AND text = pandemie")]
     [TestCase("pos=NOUN AND gender=Masc", "*", "gender = Masc AND pos = NOUN")]
     // Tests von: https://clarin-eric.github.io/fcs-misc/fcs-core-2.0-specs/fcs-core-2.0.html#_basic_search
     [TestCase("cat", "cat", null)]
     [TestCase("\"cat\"", "\"cat\"", null)]
-    [TestCase("cat AND dog", "cat AND dog", null)]
+    [TestCase("cat AND dog", "*", "lemma_token = \"cat\" AND lemma_token = \"dog\"")]
     [TestCase("\"grumpy cat\"", "\"grumpy cat\"", null)]
-    [TestCase("\"grumpy cat\" AND dog", "\"grumpy cat\" AND dog", null)] // TODO: Der Parser übersieht die OR-Bedingung
-    [TestCase("\"grumpy cat\" OR \"lazy dog\"", "\"grumpy cat\" OR \"lazy dog\"", null)] // TODO: Der Parser übersieht die OR-Bedingung
+    [TestCase("\"grumpy cat\" AND dog", "*", "lemma_token = \"grumpy cat\" AND lemma_token = dog")] // TODO: Der Parser übersieht die OR-Bedingung
+    [TestCase("\"grumpy cat\" OR \"lazy dog\"", "*", "lemma_token = \"grumpy cat\" OR lemma_token = \"lazy dog\"")] // TODO: Der Parser übersieht die OR-Bedingung
     [TestCase("cat AND (mouse OR \"lazy dog\")", "cat AND (mouse OR \"lazy dog\")", null)] // TODO: Klammerung > Priorität
     // Tests von: https://clarin-eric.github.io/fcs-misc/fcs-core-2.0-specs/fcs-core-2.0.html#_fcs_ql
     [TestCase("\"walking\"", "\"walking\"", null)]

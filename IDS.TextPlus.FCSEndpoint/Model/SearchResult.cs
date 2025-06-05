@@ -16,7 +16,7 @@ public class SearchResult
 {
   [JsonProperty("lemma")][JsonPropertyName("lemma")] public string Lemma { get; set; }
 
-  [JsonProperty("lemma_fcs")][JsonPropertyName("lemma_fcs")] public string LammFcs { get; set; }
+  [JsonProperty("lemma_fcs")][JsonPropertyName("lemma_fcs")] public string LemmaFcs { get; set; }
 
   [JsonProperty("id")][JsonPropertyName("id")] public string Id { get; set; }
 
@@ -56,4 +56,6 @@ public class SearchResult
   /// FcsSnippet contains all the snippets for Lex-DataView
   /// </summary>
   [JsonProperty("fcs_snippet")][JsonPropertyName("fcs_snippet")] public Dictionary<string, string> FcsSnippets { get; set; }
+
+  [JsonProperty("lemma_token")][JsonPropertyName("lemma_token")] public string[] LemmaTokens { get; set; }
 }

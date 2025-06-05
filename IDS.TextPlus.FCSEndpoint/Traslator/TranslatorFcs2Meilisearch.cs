@@ -22,23 +22,28 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
 
       var facet = new Dictionary<string, string>
       {
-        //{ "text", null },
         { "lemma", null },
+        { "text", null },
         { "id", null },
         { "entryId", null },
         { "senseRef", null },
-        { "source", null }, 
-        { "lang", null }, 
-        { "gender", null }, 
-        { "number", null },         
+        { "source", null },
+        { "lang", null },
+        { "gender", null },
+        { "number", null },
         { "pos", null },
-        { "related", null },    
-        { "hyperonym", null }, 
-        { "hyponym", null }, 
-        { "antonym", null }, 
-        { "synonym", null }, 
+        { "related", null },
+        { "hyperonym", null },
+        { "hyponym", null },
+        { "antonym", null },
+        { "synonym", null },
       };
       var choice = new HashSet<string> { "AND", "OR" };
+      var isChoiceMode = false;
+      var choices = new List<string>();
+      var choiceOperator = "";
+
+      var hasFacettes = false;
 
       res.Query = "";
       var currentKey = "";
@@ -55,6 +60,8 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         {
           if (facet.ContainsKey(token))
           {
+            hasFacettes = true;
+
             currentKey = token;
             if (facet[currentKey] == null)
             {
@@ -63,7 +70,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
             }
             else
             {
-              i+=2;
+              i += 2;
               var nt = mq.GetChild(i).GetText();
               facet[currentKey] = $"{facet[currentKey]}{lastChoice}{nt}";
             }
@@ -72,22 +79,37 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
           {
             if (choice.Contains(token))
             {
+              isChoiceMode = true;
+              choiceOperator = token;
               lastChoice = $" {token} ";
               continue;
             }
 
             res.Query = $"{res.Query}{lastChoice}{token}";
+            choices.Add(token);
           }
         }
         else
         {
           if (lastChoice != " ")
+          {
             res.Query = $"{res.Query}{lastChoice}{token}";
+            choices.Add(token);
+          }
           else
             facet[currentKey] = $"{facet[currentKey]} {token}";
           next--;
         }
         lastChoice = " ";
+      }
+
+      res.Filter = string.Join(" AND ",
+        facet.Where(x => !string.IsNullOrWhiteSpace(x.Value)).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
+
+      if (!hasFacettes && isChoiceMode && choices.Count > 0)
+      {
+        res.Query = "*";
+        res.Filter = $"{(!string.IsNullOrWhiteSpace(res.Filter) ? $"{res.Filter} AND " : "")} {string.Join($" {choiceOperator} ", choices.Select(x => $"lemma_token = \"{x.Replace("\"", "")}\""))}".Trim();
       }
 
       if (res.Query.Length > 0)
@@ -96,9 +118,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
       if (res.Query.EndsWith("OR"))
         res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
-      res.Filter = string.Join(" AND ",
-        facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
-      if (res.Filter == "")
+      if (string.IsNullOrWhiteSpace(res.Filter))
         res.Filter = null;
       if (string.IsNullOrWhiteSpace(res.Query))
         res.Query = "*";
