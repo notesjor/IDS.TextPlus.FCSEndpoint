@@ -229,7 +229,8 @@ internal class Program
     task = client.GetIndexAsync("fcs");
     task.Wait();
 
-    var index = task.Result;                          
+    var index = task.Result;
+    // Bei Änderung von SearchableAttributes muss IDS.TextPlus.FCSEndpoint.Model.SearchRequest aktualisiert werden
     index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" }).Wait();
     index.UpdateFilterableAttributesAsync(new List<string> { "entryId", "senseRef", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym", "lemma_token" }).Wait();
 

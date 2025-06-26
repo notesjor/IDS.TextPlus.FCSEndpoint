@@ -20,7 +20,7 @@ public class SearchRequest
   public string highlightPreTag { get; set; } = "<hits:Hit>";
   public string highlightPostTag { get; set; } = "</hits:Hit>";
   public string[] attributesToRetrieve { get; set; } = { "*" };
-  public string[] attributesToSearchOn { get; set; } = { "lemma" };
+  public string[] attributesToSearchOn { get; set; } = { "lemma", "lemma_fcs" };
 
   public void SetSearchAll()
   {
@@ -49,6 +49,10 @@ public class SearchRequest
       var split = filter.Split(" = ", StringSplitOptions.RemoveEmptyEntries);
       if (split.Length == 2)
       {
+        var quest = new HashSet<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
+        if (!quest.Contains(split[0])) 
+          return;
+
         attributesToSearchOn = new[] { split[0] };
         q = split[1];
         filter = null;
