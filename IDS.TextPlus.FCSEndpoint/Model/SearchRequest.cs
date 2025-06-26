@@ -1,5 +1,7 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Parser;
 using IDS.TextPlus.FCSEndpoint.Traslator;
+using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
@@ -17,7 +19,13 @@ public class SearchRequest
   public string[] attributesToHighlight { get; set; } = { "lemma", "text" };
   public string highlightPreTag { get; set; } = "<hits:Hit>";
   public string highlightPostTag { get; set; } = "</hits:Hit>";
-  public string[] attributesToRetrieve { get; set; } = new string[] { "*" };
+  public string[] attributesToRetrieve { get; set; } = { "*" };
+  public string[] attributesToSearchOn { get; set; } = { "lemma" };
+
+  public void SetSearchAll()
+  {
+    attributesToSearchOn = null;
+  }
 
   /// <summary>
   /// Converts a FCS-Query to a MeiliSearch query.
@@ -34,5 +42,17 @@ public class SearchRequest
     var translator = TranslateFcs2Meilisearch.Create(parts.main_query());
     q = translator.Query;
     filter = translator.Filter;
+    if (!string.IsNullOrWhiteSpace(filter))
+      SetSearchAll();
+    if (attributesToSearchOn == null && q == "*")
+    {
+      var split = filter.Split(" = ", StringSplitOptions.RemoveEmptyEntries);
+      if (split.Length == 2)
+      {
+        attributesToSearchOn = new[] { split[0] };
+        q = split[1];
+        filter = null;
+      }
+    }
   }
 }

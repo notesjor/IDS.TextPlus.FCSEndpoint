@@ -30,7 +30,7 @@ public class SearchResult
 
   [JsonProperty("segmentation")][JsonPropertyName("segmentation")] public string Segmentation { get; set; }
 
-  [JsonProperty("def")][JsonPropertyName("def")] public string Def { get; set; }
+  [JsonProperty("definition")][JsonPropertyName("definition")] public string Definition { get; set; }
 
   [JsonProperty("text")][JsonPropertyName("text")] public string Text { get; set; }
 
@@ -58,4 +58,5 @@ public class SearchResult
   [JsonProperty("fcs_snippet")][JsonPropertyName("fcs_snippet")] public Dictionary<string, string> FcsSnippets { get; set; }
 
   [JsonProperty("lemma_token")][JsonPropertyName("lemma_token")] public string[] LemmaTokens { get; set; }
+  [JsonProperty("citation")][JsonPropertyName("citation")] public string Citation { get; set; }
 }

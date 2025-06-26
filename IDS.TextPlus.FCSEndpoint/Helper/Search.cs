@@ -14,7 +14,7 @@ public static class Search
   private static readonly RestClient _client = new(new RestClientOptions { Timeout = new TimeSpan(0, 0, 10) });
   private static string _mime = "application/xml;charset=utf-8";
 
-  public static SearchResponse Send(string query, int start, int maximum, string? context = null)
+  public static SearchResponse Send(string query, int start, int maximum, bool searchAll, string? context = null)
   {
     var request = new RestRequest("http://lexik08.ids-mannheim.de/meilisearch/indexes/fcs/search", Method.Post);
     request.AddHeader("Content-Type", "application/json");
@@ -23,8 +23,10 @@ public static class Search
     var obj = new SearchRequest
     {
       limit = maximum,
-      offset = start - 1,
+      offset = start - 1
     };
+    if(searchAll)
+      obj.SetSearchAll();
 
     obj.SetQuery(query);
     if (context != null)

@@ -106,7 +106,7 @@ public class Version20 : AbstractVersion
         return;
       }
 
-      var result = Search.Send(query, start, maximum, context);
+      var result = Search.Send(query, start, maximum, provideDataView, context);
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
@@ -174,8 +174,8 @@ public class Version20 : AbstractVersion
       stb.AppendLine($"<hits:Hit kind=\"lex-pos\">{string.Join(", ", resultHit.Pos)}</hits:Hit>");
     if(resultHit.Gender?.Length > 0)
       stb.AppendLine($"<hits:Hit kind=\"lex-gender\">{string.Join(", ", resultHit.Gender)}</hits:Hit>");
-    if(!string.IsNullOrWhiteSpace(resultHit.Def))
-      stb.AppendLine($"<hits:Hit kind=\"lex-def\">{resultHit.Def}</hits:Hit>");
+    if(!string.IsNullOrWhiteSpace(resultHit.Definition))
+      stb.AppendLine($"<hits:Hit kind=\"lex-def\">{resultHit.Definition}</hits:Hit>");
     return stb.ToString();
   }
 
@@ -187,10 +187,11 @@ public class Version20 : AbstractVersion
     stb.Replace("{{lemma}}", resultHit.Lemma);
     stb.Replace("{{id}}", resultHit.OId);
 
-    // TODO: Entfernen - aktuell unterstützt die Suche keine citation-Felder, daher werden die hier gefiltert.
-    var snippets = resultHit.FcsSnippets.Where(x=> x.Key != "citation")
-      .ToDictionary(x => x.Key, x => x.Value);
-    //
+    var snippets = resultHit.FcsSnippets;
+    //// NOTE: Der Aggregator unterstützte zeitweise keine citation-Snippets.
+    //var snippets = resultHit.FcsSnippets.Where(x=> x.Key !/= /"citation")
+    //  .ToDictionary(x => x.Key, x => x.Value);
+    ////
 
     var fields = dataViewFilter == null 
       ? snippets.Values 

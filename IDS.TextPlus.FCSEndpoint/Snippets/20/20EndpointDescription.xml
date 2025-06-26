@@ -62,7 +62,8 @@
         <ed:SupportedLexField id="senseRef">senseRef</ed:SupportedLexField>
         <ed:SupportedLexField id="lang">lang</ed:SupportedLexField>
         <ed:SupportedLexField id="pos">pos</ed:SupportedLexField>
-        <ed:SupportedLexField id="def">def</ed:SupportedLexField>
+		<ed:SupportedLexField id="def">def</ed:SupportedLexField>
+        <ed:SupportedLexField id="definition">definition</ed:SupportedLexField>
         <ed:SupportedLexField id="segmentation">segmentation</ed:SupportedLexField>
         <ed:SupportedLexField id="gender">gender</ed:SupportedLexField>
         <ed:SupportedLexField id="number">number</ed:SupportedLexField>

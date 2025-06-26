@@ -115,7 +115,7 @@ internal class Program
         OId = doc.Id.ToString(),
         SId = doc.SId.ToString(),  
         Segmentation = doc.Segmentation,
-        Def = doc.Def,
+        Definition = doc.Def,
         Url = $"https://www.owid.de/artikel/{doc.Id}",
         Source = doc.Source,
         Text = WebUtility.HtmlEncode(stb.ToString()),
@@ -132,6 +132,7 @@ internal class Program
         Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
         Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray(),
         FcsSnippets = snippetes,
+        Citation = string.Join("\r\n", doc.Citation.Select(x=>x.Example))
       });
 
       if (tmp.Count >= max)
@@ -229,7 +230,7 @@ internal class Program
     task.Wait();
 
     var index = task.Result;                          
-    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym" }).Wait();
+    index.UpdateSearchableAttributesAsync(new List<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" }).Wait();
     index.UpdateFilterableAttributesAsync(new List<string> { "entryId", "senseRef", "source", "number", "gender", "pos", "lang", "related", "hyperonym", "hyponym", "antonym", "synonym", "lemma_token" }).Wait();
 
     index.UpdatePaginationAsync(new Pagination { MaxTotalHits = 1000000 }).Wait();

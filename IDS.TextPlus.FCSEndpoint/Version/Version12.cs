@@ -90,7 +90,7 @@ public class Version12 : AbstractVersion
         return;
       }
 
-      var result = Search.Send(query, start, maximum);
+      var result = Search.Send(query, start, maximum, true);
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
