@@ -18,6 +18,12 @@ public class Document
   public int Id { get; set; }
 
   /// <summary>
+  /// Examples: https://www.owid.de/artikel/666
+  /// </summary>
+  [JsonProperty("url")]
+  public string Url { get; set; }
+
+  /// <summary>
   /// Examples: "de"
   /// </summary>
   [JsonProperty("lang")]

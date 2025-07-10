@@ -116,7 +116,7 @@ internal class Program
         SId = doc.SId.ToString(),  
         Segmentation = doc.Segmentation,
         Definition = doc.Def,
-        Url = $"https://www.owid.de/artikel/{doc.Id}",
+        Url = doc.Url,
         Source = doc.Source,
         Text = WebUtility.HtmlEncode(stb.ToString()),
         Lemma = WebUtility.HtmlEncode(doc.Lemma),
