@@ -1,23 +1,23 @@
-﻿using IDS.TextPlus.FCSEndpoint.Parser;
-using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace IDS.TextPlus.FCSEndpoint.Traslator
 {
-  public class TranslateFcs2Meilisearch
+  public class TranslatorFcs2Elasticsearch
   {
     private static readonly HashSet<string> _ingore = new() { "(", ")" };
-    private static readonly HashSet<string> choice = new HashSet<string> { "AND", "OR" };
-    private static readonly HashSet<string> allowFulltextsearch = new HashSet<string>() { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
 
-    private TranslateFcs2Meilisearch() { }
+    private TranslatorFcs2Elasticsearch() { }
 
     public string Query { get; set; }
-    public string Filter { get; set; }
-    public HashSet<string> AttributesToSearchOn { get; set; } = new HashSet<string> { "lemma", "lemma_fcs" };
+    public Dictionary<string, string> Filter { get; set; }
 
-    public static TranslateFcs2Meilisearch Create(FCSParser.Main_queryContext mq)
+    public static TranslatorFcs2Elasticsearch Create(FCSParser.Main_queryContext mq)
     {
-      var res = new TranslateFcs2Meilisearch();
+      var res = new TranslatorFcs2Elasticsearch();
       if (mq.ChildCount == 1)
       {
         res.Query = mq.GetChild(0).GetText();
@@ -44,6 +44,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         { "hypernym", null }
       };
 
+      var choice = new HashSet<string> { "AND", "OR" };
       var isChoiceMode = false;
       var choices = new List<string>();
       var choiceOperator = "";
@@ -108,17 +109,13 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         lastChoice = " ";
       }
 
-      foreach (var f in facet.Where(x => !string.IsNullOrWhiteSpace(x.Value) && allowFulltextsearch.Contains(x.Key)))
-        res.AttributesToSearchOn.Add(f.Key);
+      res.Filter = facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value);
 
-      res.Filter = string.Join(" AND ",
-        facet.Where(x => !string.IsNullOrWhiteSpace(x.Value)).ToDictionary(x => x.Key, x => x.Value.Trim()).Select(x => $"{x.Key} {x.Value}"));
-
-      if (!hasFacettes && isChoiceMode && choices.Count > 0)
+      /*if (!hasFacettes && isChoiceMode && choices.Count > 0)
       {
         res.Query = "*";
         res.Filter = $"{(!string.IsNullOrWhiteSpace(res.Filter) ? $"{res.Filter} AND " : "")} {string.Join($" {choiceOperator} ", choices.Select(x => $"lemma_token = \"{x.Replace("\"", "")}\""))}".Trim();
-      }
+      }*/
 
       if (res.Query.Length > 0)
         res.Query = res.Query.Trim();
@@ -126,7 +123,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
       if (res.Query.EndsWith("OR"))
         res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
-      if (string.IsNullOrWhiteSpace(res.Filter))
+      if (res.Filter.Count == 0)
         res.Filter = null;
       if (string.IsNullOrWhiteSpace(res.Query))
         res.Query = "*";

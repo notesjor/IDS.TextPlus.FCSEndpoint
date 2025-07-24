@@ -1,10 +1,10 @@
 ﻿<ed:Resource pid="{{pid}}">
-  <ed:Title xml:lang="de">{{title_deu}}</ed:Title>
   <ed:Title xml:lang="en">{{title_eng}}</ed:Title>
-  <ed:Description xml:lang="de">{{description_deu}}</ed:Description>
+  <ed:Title xml:lang="de" primary="true">{{title_deu}}</ed:Title>  
   <ed:Description xml:lang="en">{{description_eng}}</ed:Description>
-  <ed:Institution xml:lang="de">{{institution_deu}}</ed:Institution>
+  <ed:Description xml:lang="de" primary="true">{{description_deu}}</ed:Description>
   <ed:Institution xml:lang="en">{{institution_eng}}</ed:Institution>
+  <ed:Institution xml:lang="de" primary="true">{{institution_deu}}</ed:Institution>
   <ed:LandingPageURI>{{landingpage}}</ed:LandingPageURI>
   <ed:Languages>
     {{languages}}

@@ -45,7 +45,8 @@ public static class Search
       }
     }
 
-    request.AddStringBody(JsonConvert.SerializeObject(obj, _serializerSettings), ContentType.Json);
+    var json = JsonConvert.SerializeObject(obj, _serializerSettings);
+    request.AddStringBody(json, ContentType.Json);
     var response = _client.ExecuteAsync(request);
     response.Wait();
 

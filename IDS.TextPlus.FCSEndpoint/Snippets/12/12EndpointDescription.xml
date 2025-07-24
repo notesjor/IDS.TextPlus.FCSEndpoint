@@ -11,12 +11,12 @@
           <zr:database>sru</zr:database>
         </zr:serverInfo>
         <zr:databaseInfo>
-          <zr:title lang="en" primary="true">IDS Lexical Resources FCS 2.0 Endpoint</zr:title>
-          <zr:title lang="de">IDS Lexikalische Ressourcen FCS 2.0 Endpunkt</zr:title>
-          <zr:description lang="en" primary="true">Search within the lexical resources of the IDS</zr:description>
-          <zr:description lang="de">Suche in den lexikalischen Ressourcen des IDS</zr:description>
-          <zr:author lang="de">Leibniz-Institut für Deutsche Sprache</zr:author>
-          <zr:author lang="en" primary="true">Leibniz Institute for the German Language</zr:author>
+          <zr:title lang="de" primary="true">IDS Lexikalische Ressourcen FCS 2.0 Endpunkt</zr:title>
+          <zr:title lang="en">IDS Lexical Resources FCS 2.0 Endpoint</zr:title>
+          <zr:description lang="de" primary="true">Suche in den lexikalischen Ressourcen des IDS</zr:description>
+          <zr:description lang="en">Search within the lexical resources of the IDS</zr:description>
+          <zr:author lang="de" primary="true">Institut für Deutsche Sprache</zr:author>
+          <zr:author lang="en">Institute for the German language</zr:author>
         </zr:databaseInfo>
         <zr:indexInfo>
           <zr:set identifier="http://clarin.eu/fcs/resource" name="fcs">

@@ -1,13 +1,15 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Xml;
-using IDS.TextPlus.FCSEndpoint.Indexer.Model;
+﻿using IDS.TextPlus.FCSEndpoint.Indexer.Model;
 using IDS.TextPlus.FCSEndpoint.Model;
 using Meilisearch;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestSharp;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Xml;
 using Document = IDS.TextPlus.FCSEndpoint.Indexer.Model.Document;
 using Index = Meilisearch.Index;
 
@@ -19,32 +21,13 @@ internal class Program
 
   private static void Main(string[] args)
   {
-    var dir = GetClient(out var index);
+    var dir = GetClient(out var url, out var pass);
 
-    var docs = LoadLocalFiles(dir);
-
-    PushDocs(index, docs);
-
-    PrintInfo(index);
-  }
-
-  private static string GetClient(out Index index)
-  {
-    var dir = Ask("Enter the main-directory to index: ");
-    var meilisearchUrl = Ask("Enter the MeiliSearch URL: ");
-    var meilisearchKey = Ask("Enter the MeiliSearch key: ");
-
-    var client = new MeilisearchClient(meilisearchUrl, meilisearchKey);
-    index = EnsureIndex(client);
-    return dir;
-  }
-
-  private static List<Document> LoadLocalFiles(string dir)
-  {
-    var docs = new List<Document>();
     var files = Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly);
     foreach (var file in files)
     {
+      var docs = new List<Document>();
+
       try
       {
         var documentArray = JsonConvert.DeserializeObject<Document[]>(File.ReadAllText(file, Encoding.UTF8));
@@ -63,20 +46,37 @@ internal class Program
           // ignore
         }
       }
-    }
 
-    Console.WriteLine($"Read {docs.Count} documents.");
-    return docs;
+      Console.WriteLine($"Read {docs.Count} documents.");
+
+      PushDocs(url, pass, new Queue<Document>(docs));
+    }
   }
 
-  private static void PushDocs(Index index, IEnumerable<Document> docs)
+  private static string GetClient(out string url, out string pass)
+  {
+    var dir = Ask("Enter the main-directory to index: ");
+    var meilisearchUrl = Ask("Enter the MeiliSearch URL: ");
+    var meilisearchKey = Ask("Enter the MeiliSearch key: ");
+
+    var client = new MeilisearchClient(meilisearchUrl, meilisearchKey);
+    var index = EnsureIndex(client);
+    url = $"{meilisearchUrl}indexes/fcs/documents";
+    pass = meilisearchKey;
+
+    return dir;
+  }
+
+  private static void PushDocs(string url, string pass, Queue<Document> docs)
   {
     Task<TaskInfo> task;
     var tmp = new List<SearchResult>();
-    var max = 10000;
+    var max = 100;
 
-    foreach (var doc in docs)
+    while (docs.Count > 0)
     {
+      var doc = docs.Dequeue();
+
       var stb = new StringBuilder();
       stb.Append(doc.Lemma);
       if (!string.IsNullOrEmpty(doc.Segmentation))
@@ -111,9 +111,9 @@ internal class Program
 
       tmp.Add(new SearchResult
       {
-        Id = (_id++).ToString(),
-        OId = doc.Id.ToString(),
-        SId = doc.SId.ToString(),  
+        Id = _id++,
+        OId = doc.Id,
+        SId = doc.SId,
         Segmentation = doc.Segmentation,
         Definition = doc.Def,
         Url = doc.Url,
@@ -123,8 +123,8 @@ internal class Program
         LemmaTokens = Tokenize(doc.Lemma),
         LemmaFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
         Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
-        Number = doc.Number == null ? null :doc.Number.Select(x => x.Value).ToArray(),
-        Pos = doc.Pos == null ? null :doc.Pos.Select(x => x.Value).ToArray(),
+        Number = doc.Number == null ? null : doc.Number.Select(x => x.Value).ToArray(),
+        Pos = doc.Pos == null ? null : doc.Pos.Select(x => x.Value).ToArray(),
         Lang = doc.Lang,
         Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
         Hyperonym = doc.Link?.Where(x => x.Type == "hyperonym")?.Select(x => x.Value)?.ToArray(),
@@ -132,23 +132,53 @@ internal class Program
         Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
         Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray(),
         FcsSnippets = snippetes,
-        Citation = string.Join("\r\n", doc.Citation.Select(x=>x.Example))
+        Citation = doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x => x.Example)) // doc.Citation == null ? null : doc.Citation.First().Example //doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x=>x.Example))
       });
 
       if (tmp.Count >= max)
       {
-        task = index.AddDocumentsAsync(tmp);
-        task.Wait();
-        Debug.Write(task);
+        SendDocuments(url, pass, tmp);
         tmp.Clear();
+        Console.WriteLine($"QUEUE: {docs.Count}");
       }
     }
 
     if (tmp.Count > 0)
     {
-      task = index.AddDocumentsAsync(tmp);
-      task.Wait();
-      Debug.Write(task);
+      SendDocuments(url, pass, tmp);
+    }
+  }
+
+  private JsonSerializerSettings _settings = new JsonSerializerSettings
+  {
+    NullValueHandling = NullValueHandling.Ignore,
+    Formatting = Newtonsoft.Json.Formatting.None,
+  };
+
+  private static void SendDocuments(string url, string pass, List<SearchResult> docs, int count = 5)
+  {
+    var client = new RestClient();
+    var request = new RestRequest(url, Method.Post);
+    request.AddHeader("Content-Type", "application/json");
+    request.AddHeader("Authorization", $"Bearer {pass}");
+
+    var json = JsonConvert.SerializeObject(docs, Newtonsoft.Json.Formatting.Indented);
+    Console.WriteLine($"Sending: {json.Length / 1000} KB");
+    request.AddStringBody(json, ContentType.Json);
+    var response = client.ExecuteAsync(request);
+    response.Wait();
+
+    if (!response.Result.IsSuccessful)
+    {
+      if (count == 0)
+      {
+        Console.WriteLine($"Error: {response.Result.ErrorMessage} - No more retries left.");
+        return;
+      }
+
+      Console.WriteLine($"Error: {response.Result.ErrorMessage} - Retrying {count} more times.");
+      Thread.Sleep(60000);
+      SendDocuments(url, pass, docs, count - 1);
     }
   }
 
@@ -156,7 +186,7 @@ internal class Program
 
   private static string[] Tokenize(string docLemma)
   {
-    return docLemma.Split(_sentenceMarks, StringSplitOptions.RemoveEmptyEntries);
+    return docLemma == null ? null : docLemma.Split(_sentenceMarks, StringSplitOptions.RemoveEmptyEntries);
   }
 
   private static string GenerateSnippet(IEnumerable<Citation> values)
@@ -205,14 +235,6 @@ internal class Program
     stb.Append("</lex:Field>");
 
     return stb.ToString();
-  }
-
-  private static void PrintInfo(Index index)
-  {
-    Thread.Sleep(2000);
-    var count = index.GetStatsAsync();
-    count.Wait();
-    Console.WriteLine($"Indexed {count.Result.NumberOfDocuments} documents.");
   }
 
   private static Index EnsureIndex(MeilisearchClient client)

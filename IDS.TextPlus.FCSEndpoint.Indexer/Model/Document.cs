@@ -15,7 +15,7 @@ public class Document
   /// Examples: 401602, 401603, 401604, 100008, 100009
   /// </summary>
   [JsonProperty("id")]
-  public int Id { get; set; }
+  public string Id { get; set; }
 
   /// <summary>
   /// Examples: https://www.owid.de/artikel/666
@@ -33,7 +33,7 @@ public class Document
   /// Examples: 0, 1
   /// </summary>
   [JsonProperty("s_id")]
-  public int SId { get; set; }
+  public string SId { get; set; }
 
   /// <summary>
   /// Examples: "Das Auge isst mit.", "Die Augen sind der Spiegel der Seele.", "Das letzte Hemd hat keine Taschen.", "Startseite", "Strandvolleyball"

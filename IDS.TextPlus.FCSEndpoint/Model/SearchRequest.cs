@@ -42,6 +42,7 @@ public class SearchRequest
     var translator = TranslateFcs2Meilisearch.Create(parts.main_query());
     q = translator.Query;
     filter = translator.Filter;
+    attributesToSearchOn = translator.AttributesToSearchOn.ToArray();
     if (!string.IsNullOrWhiteSpace(filter))
       SetSearchAll();
     if (attributesToSearchOn == null && q == "*")

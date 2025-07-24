@@ -3,7 +3,7 @@ using IDS.TextPlus.FCSEndpoint.Traslator;
 
 namespace Test.Fcs2MeilisearchTranslation
 {
-  public class Tests
+  public class TranslationTestMeilisearch
   {
     [SetUp]
     public void Setup()
