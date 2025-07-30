@@ -71,7 +71,7 @@ internal class Program
   {
     Task<TaskInfo> task;
     var tmp = new List<SearchResult>();
-    var max = 100;
+    var max = 1000;
 
     while (docs.Count > 0)
     {
