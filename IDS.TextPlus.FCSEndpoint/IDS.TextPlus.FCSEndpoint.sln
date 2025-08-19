@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Fcs2MeilisearchTransla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "..\TestApp\TestApp.csproj", "{436B3597-13FB-47C5-9A5A-54714459E66A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OWID.API.FCS", "..\OWID.API.FCS\OWID.API.FCS.csproj", "{208300C7-A993-4B9B-9AC4-F98E4D7A4095}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{436B3597-13FB-47C5-9A5A-54714459E66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{436B3597-13FB-47C5-9A5A-54714459E66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{436B3597-13FB-47C5-9A5A-54714459E66A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{208300C7-A993-4B9B-9AC4-F98E4D7A4095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{208300C7-A993-4B9B-9AC4-F98E4D7A4095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{208300C7-A993-4B9B-9AC4-F98E4D7A4095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{208300C7-A993-4B9B-9AC4-F98E4D7A4095}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

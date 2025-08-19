@@ -1,0 +1,11 @@
+@OWID.API.FCS_HostAddress = http://localhost:5109
+
+GET {{OWID.API.FCS_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{OWID.API.FCS_HostAddress}}/todos/1
+Accept: application/json
+
+###
