@@ -5,7 +5,7 @@
     <sru:recordPacking>xml</sru:recordPacking>
     <sru:recordData>
       <zr:explain xmlns:zr="http://explain.z3950.org/dtd/2.0/">
-        <zr:serverInfo protocol="SRU" version="2.0" transport="http">
+        <zr:serverInfo protocol="SRU" version="2.0" transport="https">
           <zr:host>owid.de</zr:host>
           <zr:port>443</zr:port>
           <zr:database>sru</zr:database>
@@ -43,7 +43,7 @@
     </sru:recordData>
   </sru:record>
   <sru:echoedExplainRequest>
-    <sru:version>1.2</sru:version>
+    <sru:version>2.0</sru:version>
   </sru:echoedExplainRequest>
   <sru:extraResponseData>
     <ed:EndpointDescription xmlns:ed="http://clarin.eu/fcs/endpoint-description" version="1">
