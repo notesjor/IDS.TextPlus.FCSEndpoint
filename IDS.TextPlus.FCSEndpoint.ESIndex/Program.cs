@@ -1,4 +1,5 @@
-﻿using Elastic.Clients.Elasticsearch;
+﻿using System.Globalization;
+using Elastic.Clients.Elasticsearch;
 using IDS.TextPlus.FCSEndpoint.Indexer.Model;
 using System.Net;
 using System.Text;
@@ -44,7 +45,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
         Console.WriteLine($"Read {docs.Count} documents.");
 
-        PushDocs(client, new Queue<Document>(docs));
+        PushDocs(client, new Queue<Document>(docs), file);
       }
     }
 
@@ -58,34 +59,39 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
       return res;
     }
 
-    private static void PushDocs(ElasticsearchClient client, Queue<Document> docs)
+    private static void PushDocs(ElasticsearchClient client, Queue<Document> docs, string file)
     {
-      Task<TaskInfo> task;
       var tmp = new List<SearchResult>();
       var max = 10000;
 
-      while (docs.Count > 0)
+      // Speichere tmp als TSV mit CsvHelper
+      using (var fs = new FileStream(file.Replace(".json", ".tsv"), FileMode.Create, FileAccess.Write))
+      using (var sw = new StreamWriter(fs, Encoding.UTF8))
       {
-        var doc = docs.Dequeue();
+        sw.WriteLine("Lemma\tLemmaFcs\tId\tOId\tSId\tSource\tUrl\tSegmentation\tDefinition\tText\tLang\tGender\tNumber\tPos\tRelated\tHyperonym\tHyponym\tAntonym\tSynonym\tLemmaTokens\tCitation");
 
-        var stb = new StringBuilder();
-        stb.Append(doc.Lemma);
-        if (!string.IsNullOrEmpty(doc.Segmentation))
-          stb.Append(" (").Append(doc.Segmentation).Append(")");
-        if (doc.Link?.Count > 0)
+        while (docs.Count > 0)
         {
-          var synonyms = doc.Link.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
-          if (synonyms.Length > 0)
-            stb.Append($" [{string.Join(", ", synonyms)}]");
-        }
+          var doc = docs.Dequeue();
 
-        if (doc.Pos?.Count > 0)
-          stb.Append("; ").Append(string.Join(" / ", doc.Pos.Select(x => x.Value)));
-        if (doc.Gender?.Count > 0)
-          stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
-        stb.Append($" - {doc.Def}");
+          var stb = new StringBuilder();
+          stb.Append(doc.Lemma);
+          if (!string.IsNullOrEmpty(doc.Segmentation))
+            stb.Append(" (").Append(doc.Segmentation).Append(")");
+          if (doc.Link?.Count > 0)
+          {
+            var synonyms = doc.Link.Where(x => x.Type == "synonym").Select(x => x.Value).ToArray();
+            if (synonyms.Length > 0)
+              stb.Append($" [{string.Join(", ", synonyms)}]");
+          }
 
-        var snippetes = new Dictionary<string, string>
+          if (doc.Pos?.Count > 0)
+            stb.Append("; ").Append(string.Join(" / ", doc.Pos.Select(x => x.Value)));
+          if (doc.Gender?.Count > 0)
+            stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
+          stb.Append($" - {doc.Def}");
+
+          var snippetes = new Dictionary<string, string>
       {
         { "pos", GenerateSnippet(doc.Pos, "pos") },
         { "number", GenerateSnippet(doc.Number, "number") },
@@ -100,44 +106,53 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\">\r\n  <lex:Value>{doc.Def}</lex:Value>\r\n</lex:Field>\r\n"}
       };
 
-        tmp.Add(new SearchResult
-        {
-          Id = _id++,
-          OId = doc.Id,
-          SId = doc.SId,
-          Segmentation = doc.Segmentation,
-          Definition = doc.Def,
-          Url = doc.Url,
-          Source = doc.Source,
-          Text = WebUtility.HtmlEncode(stb.ToString()),
-          Lemma = WebUtility.HtmlEncode(doc.Lemma),
-          LemmaTokens = Tokenize(doc.Lemma),
-          LemmaFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
-          Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
-          Number = doc.Number == null ? null : doc.Number.Select(x => x.Value).ToArray(),
-          Pos = doc.Pos == null ? null : doc.Pos.Select(x => x.Value).ToArray(),
-          Lang = doc.Lang,
-          Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
-          Hyperonym = doc.Link?.Where(x => x.Type == "hyperonym")?.Select(x => x.Value)?.ToArray(),
-          Hyponym = doc.Link?.Where(x => x.Type == "hyponym")?.Select(x => x.Value)?.ToArray(),
-          Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
-          Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray(),
-          FcsSnippets = snippetes,
-          Citation = doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x => x.Example)) // doc.Citation == null ? null : doc.Citation.First().Example //doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x=>x.Example))
-        });
+          tmp.Add(new SearchResult
+          {
+            Id = _id++,
+            OId = doc.Id,
+            SId = doc.SId,
+            Segmentation = doc.Segmentation,
+            Definition = doc.Def,
+            Url = doc.Url,
+            Source = doc.Source,
+            Text = WebUtility.HtmlEncode(stb.ToString()),
+            Lemma = WebUtility.HtmlEncode(doc.Lemma),
+            LemmaTokens = Tokenize(doc.Lemma),
+            LemmaFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
+            Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
+            Number = doc.Number == null ? null : doc.Number.Select(x => x.Value).ToArray(),
+            Pos = doc.Pos == null ? null : doc.Pos.Select(x => x.Value).ToArray(),
+            Lang = doc.Lang,
+            Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
+            Hyperonym = doc.Link?.Where(x => x.Type == "hyperonym")?.Select(x => x.Value)?.ToArray(),
+            Hyponym = doc.Link?.Where(x => x.Type == "hyponym")?.Select(x => x.Value)?.ToArray(),
+            Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
+            Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray(),
+            FcsSnippets = snippetes,
+            Citation = doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x => x.Example)) // doc.Citation == null ? null : doc.Citation.First().Example //doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x=>x.Example))
+          });
 
-        if (tmp.Count >= max)
+          if (tmp.Count >= max)
+          {
+            client.IndexMany(tmp, _indexName);
+            WriteRecords(sw, ref tmp);
+            Console.WriteLine($"QUEUE: {docs.Count}");
+          }
+        }
+
+        if (tmp.Count > 0)
         {
           client.IndexMany(tmp, _indexName);
-          tmp.Clear();
-          Console.WriteLine($"QUEUE: {docs.Count}");
+          WriteRecords(sw, ref tmp);
         }
       }
+    }
 
-      if (tmp.Count > 0)
-      {
-        client.IndexMany(tmp, _indexName);
-      }
+    private static void WriteRecords(StreamWriter sw, ref List<SearchResult> tmp)
+    {
+      foreach (var x in tmp)
+        sw.WriteLine($"{x.Lemma}\t{x.LemmaFcs}\t{x.Id}\t{x.OId}\t{x.SId}\t{x.Source}\t{x.Url}\t{x.Segmentation}\t{x.Definition}\t{x.Text}\t{x.Lang}\t{(x.Gender != null ? string.Join("|", x.Gender) : "")}\t{(x.Number != null ? string.Join("|", x.Number) : "")}\t{(x.Pos != null ? string.Join("|", x.Pos) : "")}\t{(x.Related != null ? string.Join("|", x.Related) : "")}\t{(x.Hyperonym != null ? string.Join("|", x.Hyperonym) : "")}\t{(x.Hyponym != null ? string.Join("|", x.Hyponym) : "")}\t{(x.Antonym != null ? string.Join("|", x.Antonym) : "")}\t{(x.Synonym != null ? string.Join("|", x.Synonym) : "")}\t{(x.LemmaTokens != null ? string.Join("|", x.LemmaTokens) : "")}\t{(x.Citation != null ? string.Join("|", x.Citation) : "")}");
+      tmp.Clear();
     }
 
     private static string[] Tokenize(string docLemma)
