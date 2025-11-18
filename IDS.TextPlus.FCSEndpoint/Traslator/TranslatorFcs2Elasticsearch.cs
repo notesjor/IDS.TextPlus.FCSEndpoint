@@ -13,7 +13,17 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
     private TranslatorFcs2Elasticsearch() { }
 
     public string Query { get; set; }
-    public Dictionary<string, string> Filter { get; set; }
+    public Dictionary<string, string> FilterDict { get; set; }
+
+    public string Filter
+    {
+      get
+      {
+        if (FilterDict == null || FilterDict.Count == 0)
+          return null;
+        return string.Join(" ", FilterDict.Select(x => $"{x.Key} {string.Join(" ", x.Value)}")).Replace("  ", " ");
+      }
+    }
 
     public static TranslatorFcs2Elasticsearch Create(FCSParser.Main_queryContext mq)
     {
@@ -109,7 +119,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         lastChoice = " ";
       }
 
-      res.Filter = facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value);
+      res.FilterDict = facet.Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value);
 
       /*if (!hasFacettes && isChoiceMode && choices.Count > 0)
       {
@@ -123,8 +133,8 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         res.Query = res.Query.Length >= 4 ? res.Query.Substring(0, res.Query.Length - 4) : "*";
       if (res.Query.EndsWith("OR"))
         res.Query = res.Query.Length >= 3 ? res.Query.Substring(0, res.Query.Length - 3) : "*";
-      if (res.Filter.Count == 0)
-        res.Filter = null;
+      if (res.FilterDict.Count == 0)
+        res.FilterDict = null;
       if (string.IsNullOrWhiteSpace(res.Query))
         res.Query = "*";
       return res;

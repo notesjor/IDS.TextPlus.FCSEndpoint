@@ -116,7 +116,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             Url = doc.Url,
             Source = doc.Source,
             Text = WebUtility.HtmlEncode(stb.ToString()),
-            Lemma = WebUtility.HtmlEncode(doc.Lemma),
+            Lemma = doc.Lemma,
             LemmaTokens = Tokenize(doc.Lemma),
             LemmaFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
             Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
