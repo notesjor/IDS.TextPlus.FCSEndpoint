@@ -6,7 +6,7 @@
       "deu"
     ],
     "dataviews": "hits lex",
-    "lexfields": "lemma entryId source senseRef lang pos definition segmentation gender number citation related synonym antonym hyponym hypernym",
+    "lexfields": "lemma entryId source senseRef lang pos definition segmentation gender number citation link synonym antonym hyponym hypernym",
     "info": {
       "deu": {
         "Title": "elexiko - Online-Wörterbuch zur deutschen Gegenwartssprache",
@@ -27,7 +27,7 @@
       "deu"
     ],
     "dataviews": "hits lex",
-    "lexfields": "lemma entryId source senseRef lang pos definition segmentation gender number citation related synonym antonym hyponym hypernym",
+    "lexfields": "lemma entryId source senseRef lang pos definition segmentation gender number citation link synonym antonym hyponym hypernym",
     "info": {
       "deu": {
         "Title": "Neologismenwörterbuch",
@@ -48,7 +48,7 @@
       "deu"
     ],
     "dataviews": "hits lex",
-    "lexfields": "lemma entryId source senseRef lang definition segmentation citation related",
+    "lexfields": "lemma entryId source senseRef lang definition segmentation citation link",
     "info": {
       "deu": {
         "Title": "Sprichwörterbuch",
@@ -204,7 +204,7 @@
       },
       "eng": {
         "Title": "Key words of the German reunification era",
-        "Description": "The book \"Schlüsselwörter der Wendezeit\" was compiled at the Leibniz Institute for the German Language between 1993 and 1996 with the aim of presenting the public use of language during the period of reunification in the GDR and the Federal Republic of Germany in a consistently corpus-based and text-documentative manner. It is a text-orientated book, i.e. compiled on the basis of a defined text corpus of the \"Wendekorpus\", which presents, explains and documents the public use of selected lexemes in a specific period of the era or reunification. It is not a dictionary in the conventional sense, but rather a \"book about words\". The key words are presented in the dictionary in connection with linguistically and/or thematically related word material.",
+        "Description": "The book \"Schlüsselwörter der Wendezeit\" was compiled at the Leibniz Institute for the German Language between 1993 and 1996 with the aim of presenting the public use of language during the period of reunification in the GDR and the Federal Republic of Germany in a consistently corpus-based and text-documentative manner. It is a text-orientated book, i.e. compiled on the basis of a defined text corpus of the \"Wendekorpus\", which presents, explains and documents the public use of selected lexemes in a specific period of the era or reunification. It is not a dictionary in the conventional sense, but rather a \"book about words\". The key words are presented in the dictionary in connection with linguistically and/or thematically link word material.",
         "Institution": "Leibniz Institute for the German Language"
       }
     }

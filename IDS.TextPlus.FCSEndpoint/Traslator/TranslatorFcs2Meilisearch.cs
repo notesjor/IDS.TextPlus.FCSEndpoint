@@ -7,7 +7,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
   {
     private static readonly HashSet<string> _ingore = new() { "(", ")" };
     private static readonly HashSet<string> choice = new HashSet<string> { "AND", "OR" };
-    private static readonly HashSet<string> allowFulltextsearch = new HashSet<string>() { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
+    private static readonly HashSet<string> allowFulltextsearch = new HashSet<string>() { "lemma", "lemma_fcs", "link", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
 
     private TranslateFcs2Meilisearch() { }
 
@@ -37,7 +37,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         { "gender", null },
         { "number", null },
         { "citation", null },
-        { "related", null },
+        { "link", null },
         { "synonym", null },
         { "antonym", null },
         { "hyponym", null },

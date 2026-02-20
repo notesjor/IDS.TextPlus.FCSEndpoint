@@ -50,7 +50,7 @@ public class SearchRequest
       var split = filter.Split(" = ", StringSplitOptions.RemoveEmptyEntries);
       if (split.Length == 2)
       {
-        var quest = new HashSet<string> { "lemma", "lemma_fcs", "related", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
+        var quest = new HashSet<string> { "lemma", "lemma_fcs", "link", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
         if (!quest.Contains(split[0])) 
           return;
 

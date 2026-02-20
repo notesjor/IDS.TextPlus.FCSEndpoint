@@ -47,7 +47,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator
         { "gender", null },
         { "number", null },
         { "citation", null },
-        { "related", null },
+        { "link", null },
         { "synonym", null },
         { "antonym", null },
         { "hyponym", null },

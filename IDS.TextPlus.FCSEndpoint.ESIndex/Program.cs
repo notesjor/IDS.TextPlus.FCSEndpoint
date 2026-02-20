@@ -68,7 +68,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
       using (var fs = new FileStream(file.Replace(".json", ".tsv"), FileMode.Create, FileAccess.Write))
       using (var sw = new StreamWriter(fs, Encoding.UTF8))
       {
-        sw.WriteLine("Lemma\tLemmaFcs\tId\tOId\tSId\tSource\tUrl\tSegmentation\tDefinition\tText\tLang\tGender\tNumber\tPos\tRelated\tHyperonym\tHyponym\tAntonym\tSynonym\tLemmaTokens\tCitation");
+        sw.WriteLine("Lemma\tLemmaFcs\tId\tOId\tSId\tSource\tUrl\tSegmentation\tDefinition\tText\tLang\tGender\tNumber\tPos\tLink\tHyperonym\tHyponym\tAntonym\tSynonym\tLemmaTokens\tCitation");
 
         while (docs.Count > 0)
         {
@@ -96,7 +96,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         { "pos", GenerateSnippet(doc.Pos, "pos") },
         { "number", GenerateSnippet(doc.Number, "number") },
         { "gender", GenerateSnippet(doc.Gender, "gender") },
-        { "related", GenerateSnippet(doc.Link?.Where(x => x.Type == "related")) },
+        { "link", GenerateSnippet(doc.Link?.Where(x => x.Type == "link")) },
         { "hyperonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyperonym")) },
         { "hyponym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyponym")) },
         { "antonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "antonym")) },
@@ -118,12 +118,11 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             Text = WebUtility.HtmlEncode(stb.ToString()),
             Lemma = doc.Lemma,
             LemmaTokens = Tokenize(doc.Lemma),
-            LemmaFcs = doc.Segmentation == null ? doc.Lemma : string.Join(" ", doc.Segmentation.Split("|")),
             Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
             Number = doc.Number == null ? null : doc.Number.Select(x => x.Value).ToArray(),
             Pos = doc.Pos == null ? null : doc.Pos.Select(x => x.Value).ToArray(),
             Lang = doc.Lang,
-            Related = doc.Link?.Where(x => x.Type == "related")?.Select(x => x.Value)?.ToArray(),
+            Link = doc.Link?.Where(x => x.Type == "link")?.Select(x => x.Value)?.ToArray(),
             Hyperonym = doc.Link?.Where(x => x.Type == "hyperonym")?.Select(x => x.Value)?.ToArray(),
             Hyponym = doc.Link?.Where(x => x.Type == "hyponym")?.Select(x => x.Value)?.ToArray(),
             Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
@@ -151,7 +150,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
     private static void WriteRecords(StreamWriter sw, ref List<SearchResult> tmp)
     {
       foreach (var x in tmp)
-        sw.WriteLine($"{x.Lemma}\t{x.LemmaFcs}\t{x.Id}\t{x.OId}\t{x.SId}\t{x.Source}\t{x.Url}\t{x.Segmentation}\t{x.Definition}\t{x.Text}\t{x.Lang}\t{(x.Gender != null ? string.Join("|", x.Gender) : "")}\t{(x.Number != null ? string.Join("|", x.Number) : "")}\t{(x.Pos != null ? string.Join("|", x.Pos) : "")}\t{(x.Related != null ? string.Join("|", x.Related) : "")}\t{(x.Hyperonym != null ? string.Join("|", x.Hyperonym) : "")}\t{(x.Hyponym != null ? string.Join("|", x.Hyponym) : "")}\t{(x.Antonym != null ? string.Join("|", x.Antonym) : "")}\t{(x.Synonym != null ? string.Join("|", x.Synonym) : "")}\t{(x.LemmaTokens != null ? string.Join("|", x.LemmaTokens) : "")}\t{(x.Citation != null ? string.Join("|", x.Citation) : "")}");
+        sw.WriteLine($"{x.Lemma}\t{x.Id}\t{x.OId}\t{x.SId}\t{x.Source}\t{x.Url}\t{x.Segmentation}\t{x.Definition}\t{x.Text}\t{x.Lang}\t{(x.Gender != null ? string.Join("|", x.Gender) : "")}\t{(x.Number != null ? string.Join("|", x.Number) : "")}\t{(x.Pos != null ? string.Join("|", x.Pos) : "")}\t{(x.Link != null ? string.Join("|", x.Link) : "")}\t{(x.Hyperonym != null ? string.Join("|", x.Hyperonym) : "")}\t{(x.Hyponym != null ? string.Join("|", x.Hyponym) : "")}\t{(x.Antonym != null ? string.Join("|", x.Antonym) : "")}\t{(x.Synonym != null ? string.Join("|", x.Synonym) : "")}\t{(x.LemmaTokens != null ? string.Join("|", x.LemmaTokens) : "")}\t{(x.Citation != null ? string.Join("|", x.Citation) : "")}");
       tmp.Clear();
     }
 
@@ -218,18 +217,21 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
       var createIndexResponse = client.Indices.CreateAsync(_indexName, c => c
         .Mappings(m => m
-          .Properties(p => p
-            // Suchbare Felder (Text / Full-Text)
-            .Text("lemma")
-            .Text("lemma_fcs")
-            .Text("related")
-            .Text("hyperonym")
-            .Text("hyponym")
-            .Text("antonym")
-            .Text("synonym")
+          .Properties(p => p            
+            // Suchbare Felder (Text / Full-Text)            
             .Text("definition")
             .Text("citation")
             // Filterbare Felder (Keyword / exakter Wert)
+            .Keyword("lemma", k => k
+              .Fields(ff => ff
+                .Wildcard("query")
+              )
+            )
+            .Keyword("link")
+            .Keyword("hyperonym")
+            .Keyword("hyponym")
+            .Keyword("antonym")
+            .Keyword("synonym")
             .Keyword("entryId")
             .Keyword("senseRef")
             .Keyword("source")

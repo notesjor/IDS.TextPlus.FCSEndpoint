@@ -42,7 +42,7 @@ public class SearchResult
 
   [JsonProperty("pos")][JsonPropertyName("pos")] public string[] Pos { get; set; }
 
-  [JsonProperty("related")][JsonPropertyName("related")] public string[] Related { get; set; }
+  [JsonProperty("link")][JsonPropertyName("link")] public string[] Link { get; set; }
 
   [JsonProperty("hyperonym")][JsonPropertyName("hyperonym")] public string[] Hyperonym { get; set; }
 

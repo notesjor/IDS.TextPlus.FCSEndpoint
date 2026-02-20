@@ -6,7 +6,7 @@ public class Link
 {
 
   /// <summary>
-  /// Examples: "synonym", "related", "hypernym", "hyponym", "antonym"
+  /// Examples: "synonym", "link", "hypernym", "hyponym", "antonym"
   /// </summary>
   [JsonPropertyName("type")]
   public string Type { get; set; }

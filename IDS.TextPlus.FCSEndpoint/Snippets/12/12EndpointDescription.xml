@@ -68,7 +68,7 @@
         <ed:SupportedLexField id="gender">gender</ed:SupportedLexField>
         <ed:SupportedLexField id="number">number</ed:SupportedLexField>
         <ed:SupportedLexField id="citation">citation</ed:SupportedLexField>
-        <ed:SupportedLexField id="related">related</ed:SupportedLexField>
+        <ed:SupportedLexField id="link">link</ed:SupportedLexField>
         <ed:SupportedLexField id="synonym">synonym</ed:SupportedLexField>
         <ed:SupportedLexField id="antonym">antonym</ed:SupportedLexField>
         <ed:SupportedLexField id="hyponym">hyponym</ed:SupportedLexField>
