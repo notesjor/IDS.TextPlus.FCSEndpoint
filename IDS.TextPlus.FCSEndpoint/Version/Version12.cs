@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using IDS.TextPlus.FCSEndpoint.Helper;
+using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
 using Tfres;
 
@@ -90,7 +91,7 @@ public class Version12 : AbstractVersion
         return;
       }
 
-      var result = Search.Send(query, start, maximum, true);
+      var result = Search.Send(query, start, maximum);
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
@@ -120,7 +121,7 @@ public class Version12 : AbstractVersion
         .Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString())
         .Replace("{{max}}", result.EstimatedTotalHits.ToString()));
     }
-    catch (TypeLoadException)
+    catch (LexCqlParseException)
     {
       ctx.Response.Send(Error_QueryParser);
     }

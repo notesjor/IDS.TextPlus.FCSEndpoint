@@ -2,6 +2,7 @@
 using System.Text;
 using IDS.TextPlus.FCSEndpoint.Helper;
 using IDS.TextPlus.FCSEndpoint.Model;
+using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
 using Tfres;
 
@@ -106,7 +107,7 @@ public class Version20 : AbstractVersion
         return;
       }
 
-      var result = Search.Send(query, start, maximum, provideDataView, context);
+      var result = Search.Send(query, start, maximum, context);
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
@@ -147,7 +148,7 @@ public class Version20 : AbstractVersion
 
       ctx.Response.Send(stb.ToString(), _mime);
     }
-    catch (TypeLoadException)
+    catch (LexCqlParseException)
     {
       ctx.Response.Send(Error_QueryParser);
     }

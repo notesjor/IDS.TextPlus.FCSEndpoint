@@ -1,63 +1,70 @@
-﻿using IDS.TextPlus.FCSEndpoint.Parser;
-using IDS.TextPlus.FCSEndpoint.Traslator;
-using Newtonsoft.Json;
-using System.Text.Json.Serialization;
+﻿using IDS.TextPlus.FCSEndpoint.Traslator;
+using Newtonsoft.Json.Linq;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
 /// <summary>
-/// This class is a representation of a meilisearch request (https://www.meilisearch.com/docs/reference/api/search).
-/// 
+/// Builds an Elasticsearch search request body from a LexCQL query.
 /// </summary>
 public class SearchRequest
 {
-  public string q { get; set; }
-  public int limit { get; set; } = 10;
-  public int offset { get; set; } = 0;
-  public string filter { get; set; }
+  private JToken? _query;
 
-  public string[] attributesToHighlight { get; set; } = { "lemma", "text" };
-  public string highlightPreTag { get; set; } = "<hits:Hit>";
-  public string highlightPostTag { get; set; } = "</hits:Hit>";
-  public string[] attributesToRetrieve { get; set; } = { "*" };
-  public string[] attributesToSearchOn { get; set; } = { "lemma", "lemma_fcs" };
+  public int From { get; set; }
+  public int Size { get; set; } = 10;
 
-  public void SetSearchAll()
+  /// <summary>
+  /// Parses a LexCQL query string and builds the Elasticsearch query.
+  /// </summary>
+  public void SetQuery(string query)
   {
-    attributesToSearchOn = null;
+    var translator = TranslatorFcs2ElasticsearchV2.Parse(query);
+    _query = JToken.Parse(translator.ElasticsearchQuery.ToJsonString());
   }
 
   /// <summary>
-  /// Converts a FCS-Query to a MeiliSearch query.
+  /// Wraps the current query with an additional term filter for source.
   /// </summary>
-  /// <param name="query">FCS-query</param>
-  /// <exception cref="TypeLoadException">This exception is thrown if something is wrong with this query</exception>
-  public void SetQuery(string query)
+  public void AddSourceFilter(string source)
   {
-    var parts = FCSQuery.Parse(query);
-
-    if (parts.NumberOfSyntaxErrors > 0)
-      throw new TypeLoadException("Invalid query");
-
-    var translator = TranslateFcs2Meilisearch.Create(parts.main_query());
-    q = translator.Query;
-    filter = translator.Filter;
-    attributesToSearchOn = translator.AttributesToSearchOn.ToArray();
-    if (!string.IsNullOrWhiteSpace(filter))
-      SetSearchAll();
-    if (attributesToSearchOn == null && q == "*")
+    _query = new JObject
     {
-      var split = filter.Split(" = ", StringSplitOptions.RemoveEmptyEntries);
-      if (split.Length == 2)
+      ["bool"] = new JObject
       {
-        var quest = new HashSet<string> { "lemma", "lemma_fcs", "link", "hyperonym", "hyponym", "antonym", "synonym", "definition", "citation" };
-        if (!quest.Contains(split[0])) 
-          return;
-
-        attributesToSearchOn = new[] { split[0] };
-        q = split[1];
-        filter = null;
+        ["must"] = new JArray { _query },
+        ["filter"] = new JArray
+        {
+          new JObject
+          {
+            ["term"] = new JObject { ["source"] = new JObject { ["value"] = source } }
+          }
+        }
       }
-    }
+    };
+  }
+
+  /// <summary>
+  /// Serializes the complete Elasticsearch request body to JSON.
+  /// </summary>
+  public string ToRequestJson()
+  {
+    var body = new JObject
+    {
+      ["query"] = _query?.DeepClone(),
+      ["from"] = From,
+      ["size"] = Size,
+      ["highlight"] = new JObject
+      {
+        ["pre_tags"] = new JArray { "<hits:Hit>" },
+        ["post_tags"] = new JArray { "</hits:Hit>" },
+        ["fields"] = new JObject
+        {
+          ["lemma"] = new JObject(),
+          ["text"] = new JObject()
+        }
+      }
+    };
+
+    return body.ToString(Newtonsoft.Json.Formatting.None);
   }
 }
