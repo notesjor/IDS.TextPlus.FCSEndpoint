@@ -1,3 +1,1 @@
-﻿<sru:searchRetrieveResponse xmlns:sru="http://www.loc.gov/zing/srw/">
-  <sru:version>1.2</sru:version>
-  <sru:numberOfRecords>
+﻿<sru:searchRetrieveResponse xmlns:sru="http://www.loc.gov/zing/srw/"><sru:version>1.2</sru:version><sru:numberOfRecords>

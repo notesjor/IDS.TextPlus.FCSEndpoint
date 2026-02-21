@@ -1,8 +1,1 @@
-﻿  <sruResponse:nextRecordPosition>{{next}}</sruResponse:nextRecordPosition>
-  <sruResponse:echoedSearchRetrieveRequest>
-    <sruResponse:version>2.0</sruResponse:version>
-    <sruResponse:startRecord>{{offset}}</sruResponse:startRecord>
-    <sruResponse:maximumRecords>{{max}}</sruResponse:maximumRecords>
-  </sruResponse:echoedSearchRetrieveRequest>
-  <sruResponse:resultCountPrecision>info:srw/vocabulary/resultCountPrecision/1/exact</sruResponse:resultCountPrecision>
-</sruResponse:searchRetrieveResponse>
+﻿<sruResponse:nextRecordPosition>{{next}}</sruResponse:nextRecordPosition><sruResponse:echoedSearchRetrieveRequest><sruResponse:version>2.0</sruResponse:version><sruResponse:startRecord>{{offset}}</sruResponse:startRecord><sruResponse:maximumRecords>{{max}}</sruResponse:maximumRecords></sruResponse:echoedSearchRetrieveRequest><sruResponse:resultCountPrecision>info:srw/vocabulary/resultCountPrecision/1/exact</sruResponse:resultCountPrecision></sruResponse:searchRetrieveResponse>

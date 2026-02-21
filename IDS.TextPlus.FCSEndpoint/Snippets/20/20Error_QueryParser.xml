@@ -1,14 +1,1 @@
-﻿<sruResponse:searchRetrieveResponse xmlns:sruResponse="http://docs.oasis-open.org/ns/search-ws/sruResponse">
-  <sruResponse:version>2.0</sruResponse:version>
-  <sruResponse:numberOfRecords>0</sruResponse:numberOfRecords>
-  <sruResponse:diagnostics xmlns:diag="http://docs.oasis-open.org/ns/search-ws/diagnostic">
-    <diag:diagnostic>
-      <diag:uri>info:srw/diagnostic/1/10</diag:uri>
-      <diag:message>error parsing query</diag:message>
-    </diag:diagnostic>
-    <diag:diagnostic>
-      <diag:uri>info:srw/diagnostic/1/10</diag:uri>
-      <diag:message>Query could not be parsed.</diag:message>
-    </diag:diagnostic>
-  </sruResponse:diagnostics>
-</sruResponse:searchRetrieveResponse>
+﻿<sruResponse:searchRetrieveResponse xmlns:sruResponse="http://docs.oasis-open.org/ns/search-ws/sruResponse"><sruResponse:version>2.0</sruResponse:version><sruResponse:numberOfRecords>0</sruResponse:numberOfRecords><sruResponse:diagnostics xmlns:diag="http://docs.oasis-open.org/ns/search-ws/diagnostic"><diag:diagnostic><diag:uri>info:srw/diagnostic/1/10</diag:uri><diag:message>error parsing query</diag:message></diag:diagnostic><diag:diagnostic><diag:uri>info:srw/diagnostic/1/10</diag:uri><diag:message>Query could not be parsed.</diag:message></diag:diagnostic></sruResponse:diagnostics></sruResponse:searchRetrieveResponse>

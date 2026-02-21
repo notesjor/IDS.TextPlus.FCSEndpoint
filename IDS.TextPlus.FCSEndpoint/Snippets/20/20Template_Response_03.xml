@@ -1,18 +1,1 @@
-﻿		<sruResponse:record>
-			<sruResponse:recordSchema>http://clarin.eu/fcs/resource</sruResponse:recordSchema>
-			<sruResponse:recordXMLEscaping>xml</sruResponse:recordXMLEscaping>
-			<sruResponse:recordData>
-				<fcs:Resource xmlns:fcs="http://clarin.eu/fcs/resource" pid="{{res_pid}}">
-					<fcs:ResourceFragment ref="{{url}}">
-
-						<fcs:DataView type="application/x-clarin-fcs-hits+xml">
-							<hits:Result xmlns:hits="http://clarin.eu/fcs/dataview/hits">
-								{{hit}}
-							</hits:Result>
-						</fcs:DataView>
-{{lex_dataview}}
-					</fcs:ResourceFragment>
-				</fcs:Resource>
-			</sruResponse:recordData>
-			<sruResponse:recordPosition>{{p}}</sruResponse:recordPosition>
-		</sruResponse:record>
+﻿<sruResponse:record><sruResponse:recordSchema>http://clarin.eu/fcs/resource</sruResponse:recordSchema><sruResponse:recordXMLEscaping>xml</sruResponse:recordXMLEscaping><sruResponse:recordData><fcs:Resource xmlns:fcs="http://clarin.eu/fcs/resource" pid="{{res_pid}}"><fcs:ResourceFragment ref="{{url}}"><fcs:DataView type="application/x-clarin-fcs-hits+xml"><hits:Result xmlns:hits="http://clarin.eu/fcs/dataview/hits">{{hit}}</hits:Result></fcs:DataView>{{lex_dataview}}</fcs:ResourceFragment></fcs:Resource></sruResponse:recordData><sruResponse:recordPosition>{{p}}</sruResponse:recordPosition></sruResponse:record>

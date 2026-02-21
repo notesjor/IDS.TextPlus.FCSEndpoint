@@ -1,10 +1,1 @@
-﻿<sru:searchRetrieveResponse xmlns:sru="http://www.loc.gov/zing/srw/">
-  <sru:version>1.2</sru:version>
-  <sru:numberOfRecords>0</sru:numberOfRecords>
-  <sru:diagnostics xmlns:diag="http://www.loc.gov/zing/srw/diagnostic/">
-    <diag:diagnostic>
-      <diag:uri>info:srw/diagnostic/1/61</diag:uri>
-      <diag:message>First record position out of range</diag:message>
-    </diag:diagnostic>
-  </sru:diagnostics>
-</sru:searchRetrieveResponse>
+﻿<sru:searchRetrieveResponse xmlns:sru="http://www.loc.gov/zing/srw/"><sru:version>1.2</sru:version><sru:numberOfRecords>0</sru:numberOfRecords><sru:diagnostics xmlns:diag="http://www.loc.gov/zing/srw/diagnostic/"><diag:diagnostic><diag:uri>info:srw/diagnostic/1/61</diag:uri><diag:message>First record position out of range</diag:message></diag:diagnostic></sru:diagnostics></sru:searchRetrieveResponse>
