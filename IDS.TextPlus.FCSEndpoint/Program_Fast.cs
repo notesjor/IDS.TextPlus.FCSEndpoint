@@ -19,20 +19,11 @@ internal partial class Program
 
   private static void FastPost(HttpContext context)
   {
-    var post = JObject.Parse(context.Request.PostData<string>() ?? "{}");
+    var post = context.Request.PostDataAsString;
 
-    if ((post["limit"]?.Value<int>() ?? 0) < 1)
-      post["limit"] = 10;
-    post["highlightPreTag"] = "<hit>";
-    post["highlightPostTag"] = "</hit>";
-    post["attributesToRetrieve"] = new JArray("id", "lemma", "oid", "sid", "lang", "source", "url", "segmentation", "def", "gender", "number", "pos", "link", "hyperonym", "hyponym", "antonym", "synonym");
-    Console.WriteLine($"FAST 4: {post["q"]} (limit: {post["limit"]})");
-
-    var request = new RestRequest("http://lexik08.ids-mannheim.de/meilisearch/indexes/fcs/search", Method.Post);
-    request.AddHeader("Content-Type", "application/json");
-    request.AddHeader("Authorization", "Bearer 8jRAqq_GbtjdjveIOCxIlnztXjwFbcaMYp-e50HtbrQ");
-
-    request.AddStringBody(post.ToString(Formatting.None), ContentType.Json);
+    var request = new RestRequest("http://localhost:9200/fcs/_search", Method.Post);
+    request.AddHeader("Content-Type", "application/json");   
+    request.AddStringBody(post, ContentType.Json);
 
     var response = _client.ExecuteAsync(request);
     response.Wait();
