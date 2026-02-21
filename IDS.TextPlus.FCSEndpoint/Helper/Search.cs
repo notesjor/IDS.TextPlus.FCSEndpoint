@@ -39,7 +39,7 @@ public static class Search
     var request = new RestRequest("http://localhost:9200/fcs/_search", Method.Post);
     request.AddHeader("Content-Type", "application/json");
     request.AddStringBody(obj.ToRequestJson(), ContentType.Json);
-    Console.WriteLine(obj.ToRequestJson()); // DEBUG
+    // Console.WriteLine(obj.ToRequestJson()); // DEBUG
 
     var response = _client.ExecuteAsync(request);
     response.Wait();

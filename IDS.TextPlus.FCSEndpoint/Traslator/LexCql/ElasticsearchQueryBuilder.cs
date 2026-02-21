@@ -31,6 +31,7 @@ public static class ElasticsearchQueryBuilder
   {
     var field = cmp.Field;
     var value = cmp.Value;
+    var isExact = cmp.Relation == RelationOp.ExactEquals;
 
     JsonObject clause = cmp.Modifier switch
     {
@@ -38,6 +39,7 @@ public static class ElasticsearchQueryBuilder
       _ when ContainsWildcard(value) => BuildWildcardClause(field, value, cmp.Modifier == RelationModifier.IgnoreCase),
       RelationModifier.IgnoreCase => BuildMatchClause(field, value),
       RelationModifier.RespectCase => BuildTermClause(field, value),
+      _ when isExact => BuildTermClause(field, value),
       RelationModifier.None => BuildDefaultClause(field, value),
       _ => BuildDefaultClause(field, value)
     };
@@ -103,21 +105,20 @@ public static class ElasticsearchQueryBuilder
 
   /// <summary>
   /// Wildcard clause for patterns with * and ?.
+  /// Targets the field directly — works on keyword fields.
+  /// If a field has a dedicated wildcard sub-field (e.g. lemma.query), ES will use the main keyword field.
   /// </summary>
   private static JsonObject BuildWildcardClause(string field, string value, bool caseInsensitive)
   {
-    var inner = new JsonObject
-    {
-      [$"{field}.query"] = new JsonObject
-      {
-        ["value"] = value
-      }
-    };
+    var fieldObj = new JsonObject { ["value"] = value };
 
     if (caseInsensitive)
-      ((JsonObject)inner[field]!)["case_insensitive"] = true;
+      fieldObj["case_insensitive"] = true;
 
-    return new JsonObject { ["wildcard"] = inner };
+    return new JsonObject
+    {
+      ["wildcard"] = new JsonObject { [field] = fieldObj }
+    };
   }
 
   /// <summary>

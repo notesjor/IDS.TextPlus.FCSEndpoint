@@ -45,7 +45,7 @@ public static class LexCqlParser
   /// </summary>
   private static readonly TokenListParser<LexCqlToken, RelationOp> RelationOp =
     Token.EqualTo(LexCqlToken.NotEquals).Value(LexCql.RelationOp.NotEquals)
-      .Or(Token.EqualTo(LexCqlToken.DoubleEquals).Value(LexCql.RelationOp.Equals))
+      .Or(Token.EqualTo(LexCqlToken.DoubleEquals).Value(LexCql.RelationOp.ExactEquals))
       .Or(Token.EqualTo(LexCqlToken.Equals).Value(LexCql.RelationOp.Equals));
 
   /// <summary>
@@ -122,12 +122,15 @@ public static class LexCqlParser
 
   /// <summary>
   /// AND chain (higher precedence than OR).
+  /// Supports both explicit AND and implicit AND before NOT (e.g. <c>pos = NOUN NOT definition = Partner</c>).
   /// </summary>
   private static readonly TokenListParser<LexCqlToken, LexCqlExpression> AndChain =
-    Parse.Chain(
-      And.Value((Func<LexCqlExpression, LexCqlExpression, LexCqlExpression>)((l, r) => new AndExpression(l, r))),
-      Factor,
-      (op, left, right) => op(left, right));
+    from first in Factor
+    from rest in
+      And.IgnoreThen(Factor)  // explicit AND
+        .Or(NotFactor)        // implicit AND before NOT
+      .Many()
+    select rest.Aggregate(first, (left, right) => (LexCqlExpression)new AndExpression(left, right));
 
   /// <summary>
   /// OR chain (lowest precedence).

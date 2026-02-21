@@ -16,8 +16,10 @@ public enum RelationModifier
 /// </summary>
 public enum RelationOp
 {
-  /// <summary>= or == (field must equal value)</summary>
+  /// <summary>= (full-text / match search)</summary>
   Equals,
+  /// <summary>== (exact / term match)</summary>
+  ExactEquals,
   /// <summary>!= (field must not equal value)</summary>
   NotEquals
 }
