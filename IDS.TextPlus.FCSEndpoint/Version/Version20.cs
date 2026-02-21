@@ -123,30 +123,32 @@ public class Version20 : AbstractVersion
 
       var totalResults = result.EstimatedTotalHits;
       var nextPage = start + maximum <= totalResults ? start + maximum : totalResults;
-
-      var stb = new StringBuilder();
-
-      stb.Append(Template_Response_01);
-      stb.Append(result.EstimatedTotalHits.ToString());
-      stb.Append(Template_Response_02);
+      
+      ctx.Response.SendChunk(Template_Response_01, Encoding.UTF8, _mime);
+      ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
+      ctx.Response.SendChunk(Template_Response_02);
 
       var dict = SearchResourceHelper.KeyToPid;
 
       for (var i = 0; i < result.Hits.Length; i++)
-        stb.Append(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Source])
-          .Replace("{{url}}", result.Hits[i].Url)
-          .Replace("{{hit}}", provideDataView ? LexDataViewHit(result.Hits[i]) : result.Hits[i].Formatted.Text)
-          .Replace("{{p}}", (result.Offset + i + 1).ToString())
-          .Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i], dataViewFilter) : ""));
+      {
+        var stb = new StringBuilder(Template_Response_03);
+        stb.Replace("{{res_pid}}", dict[result.Hits[i].Source]);
+        stb.Replace("{{url}}", result.Hits[i].Url);
+        stb.Replace("{{hit}}", provideDataView ? LexDataViewHit(result.Hits[i]) : result.Hits[i].Formatted.Text);
+        stb.Replace("{{p}}", (result.Offset + i + 1).ToString());
+        stb.Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i], dataViewFilter) : "");
+        ctx.Response.SendChunk(stb.ToString());
+      }
 
-      stb.Append(Template_Response_04);
-      stb.Append(Template_Response_05.Replace("{{query}}", query)
-        .Replace("{{start}}", (result.Offset + 1).ToString())
-        .Replace("{{offset}}", start.ToString())
-        .Replace("{{max}}", result.EstimatedTotalHits.ToString())
-        .Replace("{{next}}", nextPage.ToString()));
-
-      ctx.Response.Send(stb.ToString(), _mime);
+      ctx.Response.SendChunk(Template_Response_04);
+      var stbF = new StringBuilder(Template_Response_05);
+      stbF.Replace("{{query}}", query);
+      stbF.Replace("{{start}}", (result.Offset + 1).ToString());
+      stbF.Replace("{{offset}}", start.ToString());
+      stbF.Replace("{{max}}", result.EstimatedTotalHits.ToString());
+      stbF.Replace("{{next}}", nextPage.ToString());
+      ctx.Response.SendFinalChunk(stbF.ToString());  
     }
     catch (LexCqlParseException)
     {
@@ -166,17 +168,17 @@ public class Version20 : AbstractVersion
   {
     var stb = new StringBuilder();
     if(!string.IsNullOrWhiteSpace(resultHit.Lemma))
-      stb.AppendLine($"<hits:Hit kind=\"lex-lemma\">{resultHit.Lemma}</hits:Hit>");
+      stb.Append($"<hits:Hit kind=\"lex-lemma\">{resultHit.Lemma}</hits:Hit>");
     if(!string.IsNullOrWhiteSpace(resultHit.Segmentation))
-      stb.AppendLine($"<hits:Hit kind=\"lex-segmentation\">{resultHit.Segmentation}</hits:Hit>");
+      stb.Append($"<hits:Hit kind=\"lex-segmentation\">{resultHit.Segmentation}</hits:Hit>");
     if(resultHit.Synonym?.Length > 0)
-      stb.AppendLine($"<hits:Hit kind=\"lex-synonym\">{string.Join(", ", resultHit.Synonym)}</hits:Hit>");
+      stb.Append($"<hits:Hit kind=\"lex-synonym\">{string.Join(", ", resultHit.Synonym)}</hits:Hit>");
     if(resultHit.Pos?.Length > 0)
-      stb.AppendLine($"<hits:Hit kind=\"lex-pos\">{string.Join(", ", resultHit.Pos)}</hits:Hit>");
+      stb.Append($"<hits:Hit kind=\"lex-pos\">{string.Join(", ", resultHit.Pos)}</hits:Hit>");
     if(resultHit.Gender?.Length > 0)
-      stb.AppendLine($"<hits:Hit kind=\"lex-gender\">{string.Join(", ", resultHit.Gender)}</hits:Hit>");
+      stb.Append($"<hits:Hit kind=\"lex-gender\">{string.Join(", ", resultHit.Gender)}</hits:Hit>");
     if(!string.IsNullOrWhiteSpace(resultHit.Definition))
-      stb.AppendLine($"<hits:Hit kind=\"lex-def\">{resultHit.Definition}</hits:Hit>");
+      stb.Append($"<hits:Hit kind=\"lex-def\">{resultHit.Definition}</hits:Hit>");
     return stb.ToString();
   }
 
@@ -198,7 +200,7 @@ public class Version20 : AbstractVersion
       ? snippets.Values 
       : snippets.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
 
-    stb.Replace("{{extra_fields}}", string.Join("\r\n", fields));
+    stb.Replace("{{extra_fields}}", string.Join("", fields));
 
     return stb.ToString();
   }

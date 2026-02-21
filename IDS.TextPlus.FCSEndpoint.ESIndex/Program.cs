@@ -92,19 +92,19 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
           stb.Append($" - {doc.Def}");
 
           var snippetes = new Dictionary<string, string>
-      {
-        { "pos", GenerateSnippet(doc.Pos, "pos") },
-        { "number", GenerateSnippet(doc.Number, "number") },
-        { "gender", GenerateSnippet(doc.Gender, "gender") },
-        { "link", GenerateSnippet(doc.Link?.Where(x => x.Type == "link")) },
-        { "hyperonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyperonym")) },
-        { "hyponym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyponym")) },
-        { "antonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "antonym")) },
-        { "synonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "synonym")) },
-        { "citation", GenerateSnippet(doc.Citation) },
-        { "segmentation", doc.Segmentation == null ? "" : $"<lex:Field type=\"segmentation\">\r\n  <lex:Value>{doc.Segmentation}</lex:Value>\r\n</lex:Field>\r\n" },
-        { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\">\r\n  <lex:Value>{doc.Def}</lex:Value>\r\n</lex:Field>\r\n"}
-      };
+          {
+            { "pos", GenerateSnippet(doc.Pos, "pos") },
+            { "number", GenerateSnippet(doc.Number, "number") },
+            { "gender", GenerateSnippet(doc.Gender, "gender") },
+            { "link", GenerateSnippet(doc.Link?.Where(x => x.Type == "link")) },
+            { "hyperonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyperonym")) },
+            { "hyponym", GenerateSnippet(doc.Link?.Where(x => x.Type == "hyponym")) },
+            { "antonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "antonym")) },
+            { "synonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "synonym")) },
+            { "citation", GenerateSnippet(doc.Citation) },
+            { "segmentation", doc.Segmentation == null ? "" : $"<lex:Field type=\"segmentation\"><lex:Value>{doc.Segmentation}</lex:Value></lex:Field>" },
+            { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\"><lex:Value>{doc.Def}</lex:Value></lex:Field>"}
+          };
 
           tmp.Add(new SearchResult
           {
@@ -217,7 +217,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
       var createIndexResponse = client.Indices.CreateAsync(_indexName, c => c
         .Mappings(m => m
-          .Properties(p => p            
+          .Properties(p => p
             // Suchbare Felder (Text / Full-Text)            
             .Text("definition")
             .Text("citation")
