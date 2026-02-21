@@ -18,7 +18,7 @@ public class SearchRequest
   /// </summary>
   public void SetQuery(string query)
   {
-    var translator = TranslatorFcs2ElasticsearchV2.Parse(query);
+    var translator = TranslatorFcs2Elasticsearch.Parse(query);
     _query = JToken.Parse(translator.ElasticsearchQuery.ToJsonString());
   }
 

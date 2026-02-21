@@ -10,9 +10,9 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator;
 /// Uses Superpower for tokenization and parsing, producing a clean AST
 /// that is then converted into Elasticsearch JSON.
 /// </summary>
-public class TranslatorFcs2ElasticsearchV2
+public class TranslatorFcs2Elasticsearch
 {
-  private TranslatorFcs2ElasticsearchV2() { }
+  private TranslatorFcs2Elasticsearch() { }
 
   /// <summary>
   /// The parsed AST of the LexCQL query.
@@ -41,7 +41,7 @@ public class TranslatorFcs2ElasticsearchV2
   /// <param name="query">The raw LexCQL query string.</param>
   /// <returns>A translator instance with the parsed result.</returns>
   /// <exception cref="LexCqlParseException">Thrown when the query cannot be parsed.</exception>
-  public static TranslatorFcs2ElasticsearchV2 Parse(string query)
+  public static TranslatorFcs2Elasticsearch Parse(string query)
   {
     if (string.IsNullOrWhiteSpace(query))
       throw new LexCqlParseException("Query must not be empty.");
@@ -51,7 +51,7 @@ public class TranslatorFcs2ElasticsearchV2
       var tokens = LexCqlTokenizer.Instance.Tokenize(query.Trim());
       var ast = LexCqlParser.Query.Parse(tokens);
 
-      return new TranslatorFcs2ElasticsearchV2 { Expression = ast };
+      return new TranslatorFcs2Elasticsearch { Expression = ast };
     }
     catch (LexCqlParseException)
     {
@@ -70,7 +70,7 @@ public class TranslatorFcs2ElasticsearchV2
   /// <param name="result">The translator instance if parsing succeeds; null otherwise.</param>
   /// <param name="error">The error message if parsing fails; null otherwise.</param>
   /// <returns>True if parsing succeeded; false otherwise.</returns>
-  public static bool TryParse(string query, out TranslatorFcs2ElasticsearchV2? result, out string? error)
+  public static bool TryParse(string query, out TranslatorFcs2Elasticsearch? result, out string? error)
   {
     try
     {
