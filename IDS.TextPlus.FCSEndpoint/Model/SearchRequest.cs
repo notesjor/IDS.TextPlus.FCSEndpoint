@@ -1,10 +1,11 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Traslator;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
 /// <summary>
-/// Builds an Elasticsearch search request body from a LexCQL query.
+///   Builds an Elasticsearch search request body from a LexCQL query.
 /// </summary>
 public class SearchRequest
 {
@@ -14,7 +15,7 @@ public class SearchRequest
   public int Size { get; set; } = 10;
 
   /// <summary>
-  /// Parses a LexCQL query string and builds the Elasticsearch query.
+  ///   Parses a LexCQL query string and builds the Elasticsearch query.
   /// </summary>
   public void SetQuery(string query)
   {
@@ -23,7 +24,7 @@ public class SearchRequest
   }
 
   /// <summary>
-  /// Wraps the current query with an additional term filter for source.
+  ///   Wraps the current query with an additional term filter for source.
   /// </summary>
   public void AddSourceFilter(string source)
   {
@@ -44,7 +45,7 @@ public class SearchRequest
   }
 
   /// <summary>
-  /// Serializes the complete Elasticsearch request body to JSON.
+  ///   Serializes the complete Elasticsearch request body to JSON.
   /// </summary>
   public string ToRequestJson()
   {
@@ -65,6 +66,6 @@ public class SearchRequest
       }
     };
 
-    return body.ToString(Newtonsoft.Json.Formatting.None);
+    return body.ToString(Formatting.None);
   }
 }

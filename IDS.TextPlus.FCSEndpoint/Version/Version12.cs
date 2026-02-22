@@ -13,6 +13,7 @@ public class Version12 : AbstractVersion
   private readonly string EndpointDescriptionResponse;
   private readonly string Error_OutOfRange;
   private readonly string Error_QueryParser;
+  private readonly string Error_QuerySyntax;
   private readonly string Template_Error_Number;
   private readonly string Template_Error_RecordXmlEscaping;
   private readonly string Template_Error_ScanNumber;
@@ -21,7 +22,6 @@ public class Version12 : AbstractVersion
   private readonly string Template_Response_03;
   private readonly string Template_Response_04;
   private readonly string Template_Response_05;
-  private readonly string Error_QuerySyntax;
 
   public Version12()
   {

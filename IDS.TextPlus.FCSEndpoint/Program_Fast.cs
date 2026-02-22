@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RestSharp;
+﻿using RestSharp;
 using Tfres;
 
 namespace IDS.TextPlus.FCSEndpoint;
@@ -22,7 +20,7 @@ internal partial class Program
     var post = context.Request.PostDataAsString;
 
     var request = new RestRequest("http://localhost:9200/fcs/_search", Method.Post);
-    request.AddHeader("Content-Type", "application/json");   
+    request.AddHeader("Content-Type", "application/json");
     request.AddStringBody(post, ContentType.Json);
 
     var response = _client.ExecuteAsync(request);

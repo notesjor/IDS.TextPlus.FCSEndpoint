@@ -80,7 +80,7 @@ public class Version20 : AbstractVersion
     if (data.ContainsKey("x-fcs-context"))
       context = data["x-fcs-context"];
     var provideDataView = (data.ContainsKey("querytype") && data["querytype"].ToLower() == "lex")
-      || (data.ContainsKey("x-fcs-dataviews") && data["x-fcs-dataviews"].ToLower() == "lex");
+                          || (data.ContainsKey("x-fcs-dataviews") && data["x-fcs-dataviews"].ToLower() == "lex");
     HashSet<string> dataViewFilter = null;
     if (data.ContainsKey("x-fcs-lex-fields"))
       dataViewFilter = new HashSet<string>(data["x-fcs-lex-fields"].Split(',').Select(x => x.ToLower().Trim()));
@@ -96,7 +96,8 @@ public class Version20 : AbstractVersion
     Console.WriteLine(string.Join("; ", data.Select(x => $"{x.Key}={x.Value}")));
   }
 
-  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string? context, bool provideDataView, HashSet<string> dataViewFilter)
+  private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum, string? context,
+    bool provideDataView, HashSet<string> dataViewFilter)
   {
     try
     {
@@ -123,7 +124,7 @@ public class Version20 : AbstractVersion
 
       var totalResults = result.EstimatedTotalHits;
       var nextPage = start + maximum <= totalResults ? start + maximum : totalResults;
-      
+
       ctx.Response.SendChunk(Template_Response_01, Encoding.UTF8, _mime);
       ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
       ctx.Response.SendChunk(Template_Response_02);
@@ -148,7 +149,7 @@ public class Version20 : AbstractVersion
       stbF.Replace("{{offset}}", start.ToString());
       stbF.Replace("{{max}}", result.EstimatedTotalHits.ToString());
       stbF.Replace("{{next}}", nextPage.ToString());
-      ctx.Response.SendFinalChunk(stbF.ToString());  
+      ctx.Response.SendFinalChunk(stbF.ToString());
     }
     catch (LexCqlParseException)
     {
@@ -167,17 +168,17 @@ public class Version20 : AbstractVersion
   private string LexDataViewHit(SearchResponseContainer resultHit)
   {
     var stb = new StringBuilder();
-    if(!string.IsNullOrWhiteSpace(resultHit.Lemma))
+    if (!string.IsNullOrWhiteSpace(resultHit.Lemma))
       stb.Append($"<hits:Hit kind=\"lex-lemma\">{resultHit.Lemma}</hits:Hit>");
-    if(!string.IsNullOrWhiteSpace(resultHit.Segmentation))
+    if (!string.IsNullOrWhiteSpace(resultHit.Segmentation))
       stb.Append($"<hits:Hit kind=\"lex-segmentation\">{resultHit.Segmentation}</hits:Hit>");
-    if(resultHit.Synonym?.Length > 0)
+    if (resultHit.Synonym?.Length > 0)
       stb.Append($"<hits:Hit kind=\"lex-synonym\">{string.Join(", ", resultHit.Synonym)}</hits:Hit>");
-    if(resultHit.Pos?.Length > 0)
+    if (resultHit.Pos?.Length > 0)
       stb.Append($"<hits:Hit kind=\"lex-pos\">{string.Join(", ", resultHit.Pos)}</hits:Hit>");
-    if(resultHit.Gender?.Length > 0)
+    if (resultHit.Gender?.Length > 0)
       stb.Append($"<hits:Hit kind=\"lex-gender\">{string.Join(", ", resultHit.Gender)}</hits:Hit>");
-    if(!string.IsNullOrWhiteSpace(resultHit.Definition))
+    if (!string.IsNullOrWhiteSpace(resultHit.Definition))
       stb.Append($"<hits:Hit kind=\"lex-def\">{resultHit.Definition}</hits:Hit>");
     return stb.ToString();
   }
@@ -196,8 +197,8 @@ public class Version20 : AbstractVersion
     //  .ToDictionary(x => x.Key, x => x.Value);
     ////
 
-    var fields = dataViewFilter == null 
-      ? snippets.Values 
+    var fields = dataViewFilter == null
+      ? snippets.Values
       : snippets.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
 
     stb.Replace("{{extra_fields}}", string.Join("", fields));

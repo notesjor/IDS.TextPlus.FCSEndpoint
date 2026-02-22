@@ -35,6 +35,7 @@ internal partial class Program
       Versions[data["version"]].ProcessRequest(ctx, ref data);
       return;
     }
+
     if (data.ContainsKey("operation") && data["operation"] == "explain")
     {
       Versions["2.0"].ProcessRequest(ctx, ref data);

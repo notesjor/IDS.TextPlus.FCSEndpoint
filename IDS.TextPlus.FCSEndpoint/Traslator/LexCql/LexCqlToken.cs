@@ -3,12 +3,11 @@ using Superpower.Display;
 namespace IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 
 /// <summary>
-/// Token kinds for the LexCQL query language.
+///   Token kinds for the LexCQL query language.
 /// </summary>
 public enum LexCqlToken
 {
-  [Token(Category = "identifier")]
-  Identifier,
+  [Token(Category = "identifier")] Identifier,
 
   [Token(Category = "string", Example = "\"hello\"")]
   QuotedString,
@@ -38,5 +37,5 @@ public enum LexCqlToken
   RParen,
 
   [Token(Category = "modifier", Example = "/")]
-  Slash,
+  Slash
 }

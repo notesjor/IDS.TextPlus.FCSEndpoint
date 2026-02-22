@@ -14,49 +14,94 @@ namespace IDS.TextPlus.FCSEndpoint.Model;
 
 public class SearchResult
 {
-  [JsonProperty("lemma")][JsonPropertyName("lemma")] public string Lemma { get; set; }
+  [JsonProperty("lemma")]
+  [JsonPropertyName("lemma")]
+  public string Lemma { get; set; }
 
-  [JsonProperty("lemma_fcs")][JsonPropertyName("lemma_fcs")] public string LemmaFcs { get; set; }
+  [JsonProperty("lemma_fcs")]
+  [JsonPropertyName("lemma_fcs")]
+  public string LemmaFcs { get; set; }
 
-  [JsonProperty("id")][JsonPropertyName("id")] public ulong Id { get; set; }
+  [JsonProperty("id")]
+  [JsonPropertyName("id")]
+  public ulong Id { get; set; }
 
-  [JsonProperty("entryId")][JsonPropertyName("entryId")] public string OId { get; set; }
+  [JsonProperty("entryId")]
+  [JsonPropertyName("entryId")]
+  public string OId { get; set; }
 
-  [JsonProperty("senseRef")][JsonPropertyName("senseRef")] public string SId { get; set; }
+  [JsonProperty("senseRef")]
+  [JsonPropertyName("senseRef")]
+  public string SId { get; set; }
 
-  [JsonProperty("source")][JsonPropertyName("source")] public string Source { get; set; }
+  [JsonProperty("source")]
+  [JsonPropertyName("source")]
+  public string Source { get; set; }
 
-  [JsonProperty("url")][JsonPropertyName("url")] public string Url { get; set; }
+  [JsonProperty("url")]
+  [JsonPropertyName("url")]
+  public string Url { get; set; }
 
-  [JsonProperty("segmentation")][JsonPropertyName("segmentation")] public string Segmentation { get; set; }
+  [JsonProperty("segmentation")]
+  [JsonPropertyName("segmentation")]
+  public string Segmentation { get; set; }
 
-  [JsonProperty("definition")][JsonPropertyName("definition")] public string Definition { get; set; }
+  [JsonProperty("definition")]
+  [JsonPropertyName("definition")]
+  public string Definition { get; set; }
 
-  [JsonProperty("text")][JsonPropertyName("text")] public string Text { get; set; }
+  [JsonProperty("text")]
+  [JsonPropertyName("text")]
+  public string Text { get; set; }
 
-  [JsonProperty("lang")][JsonPropertyName("lang")] public string Lang { get; set; }
+  [JsonProperty("lang")]
+  [JsonPropertyName("lang")]
+  public string Lang { get; set; }
 
-  [JsonProperty("gender")][JsonPropertyName("gender")] public string[] Gender { get; set; }  
+  [JsonProperty("gender")]
+  [JsonPropertyName("gender")]
+  public string[] Gender { get; set; }
 
-  [JsonProperty("number")][JsonPropertyName("number")] public string[] Number { get; set; }
+  [JsonProperty("number")]
+  [JsonPropertyName("number")]
+  public string[] Number { get; set; }
 
-  [JsonProperty("pos")][JsonPropertyName("pos")] public string[] Pos { get; set; }
+  [JsonProperty("pos")]
+  [JsonPropertyName("pos")]
+  public string[] Pos { get; set; }
 
-  [JsonProperty("link")][JsonPropertyName("link")] public string[] Link { get; set; }
+  [JsonProperty("link")]
+  [JsonPropertyName("link")]
+  public string[] Link { get; set; }
 
-  [JsonProperty("hyperonym")][JsonPropertyName("hyperonym")] public string[] Hyperonym { get; set; }
+  [JsonProperty("hyperonym")]
+  [JsonPropertyName("hyperonym")]
+  public string[] Hyperonym { get; set; }
 
-  [JsonProperty("hyponym")][JsonPropertyName("hyponym")] public string[] Hyponym { get; set; }
+  [JsonProperty("hyponym")]
+  [JsonPropertyName("hyponym")]
+  public string[] Hyponym { get; set; }
 
-  [JsonProperty("antonym")][JsonPropertyName("antonym")] public string[] Antonym { get; set; }
+  [JsonProperty("antonym")]
+  [JsonPropertyName("antonym")]
+  public string[] Antonym { get; set; }
 
-  [JsonProperty("synonym")][JsonPropertyName("synonym")] public string[] Synonym { get; set; }
+  [JsonProperty("synonym")]
+  [JsonPropertyName("synonym")]
+  public string[] Synonym { get; set; }
 
   /// <summary>
-  /// FcsSnippet contains all the snippets for Lex-DataView
+  ///   FcsSnippet contains all the snippets for Lex-DataView
   /// </summary>
-  [JsonProperty("fcs_snippet")][JsonPropertyName("fcs_snippet")] public Dictionary<string, string> FcsSnippets { get; set; }
+  [JsonProperty("fcs_snippet")]
+  [JsonPropertyName("fcs_snippet")]
+  public Dictionary<string, string> FcsSnippets { get; set; }
 
-  [JsonProperty("lemma_token")][JsonPropertyName("lemma_token")] public string[] LemmaTokens { get; set; }
-  [JsonProperty("citation")][JsonPropertyName("citation")] public string Citation { get; set; }
+  [JsonProperty("lemma_token")]
+  [JsonPropertyName("lemma_token")]
+  public string[] LemmaTokens { get; set; }
+
+  [JsonProperty("citation")]
+  [JsonPropertyName("citation")]
+  public string Citation { get; set; }
 }

@@ -6,12 +6,12 @@ using Superpower.Tokenizers;
 namespace IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 
 /// <summary>
-/// Tokenizer for LexCQL queries. Splits raw input into a stream of <see cref="LexCqlToken"/> tokens.
+///   Tokenizer for LexCQL queries. Splits raw input into a stream of <see cref="LexCqlToken" /> tokens.
 /// </summary>
 public static class LexCqlTokenizer
 {
   /// <summary>
-  /// Recognizer for a quoted string literal with backslash escaping (\", \\, \*, \?).
+  ///   Recognizer for a quoted string literal with backslash escaping (\", \\, \*, \?).
   /// </summary>
   private static readonly TextParser<Unit> QuotedStringToken =
     from open in Character.EqualTo('"')
@@ -22,8 +22,8 @@ public static class LexCqlTokenizer
     select Unit.Value;
 
   /// <summary>
-  /// Recognizer for an unquoted identifier (letters, digits, underscores).
-  /// Includes wildcard characters * and ? so bare terms like "Berg*" are captured as a single token.
+  ///   Recognizer for an unquoted identifier (letters, digits, underscores).
+  ///   Includes wildcard characters * and ? so bare terms like "Berg*" are captured as a single token.
   /// </summary>
   private static readonly TextParser<Unit> IdentifierToken =
     Character.LetterOrDigit
@@ -31,12 +31,12 @@ public static class LexCqlTokenizer
       .Or(Character.EqualTo('*'))
       .Or(Character.EqualTo('?'))
       .Or(Character.EqualTo('\\').IgnoreThen(Character.AnyChar)) // escaped chars in bare words
-      .Or(Character.EqualTo('\''))                                // apostrophe for words like "car's"
+      .Or(Character.EqualTo('\'')) // apostrophe for words like "car's"
       .AtLeastOnce()
       .Value(Unit.Value);
 
   /// <summary>
-  /// Pre-built tokenizer instance. Thread-safe and reusable.
+  ///   Pre-built tokenizer instance. Thread-safe and reusable.
   /// </summary>
   public static readonly Tokenizer<LexCqlToken> Instance = new TokenizerBuilder<LexCqlToken>()
     .Ignore(Span.WhiteSpace)
@@ -47,6 +47,6 @@ public static class LexCqlTokenizer
     .Match(Span.EqualTo("=="), LexCqlToken.DoubleEquals)
     .Match(Character.EqualTo('='), LexCqlToken.Equals)
     .Match(QuotedStringToken, LexCqlToken.QuotedString)
-    .Match(IdentifierToken, LexCqlToken.Identifier, requireDelimiters: true)
+    .Match(IdentifierToken, LexCqlToken.Identifier, true)
     .Build();
 }

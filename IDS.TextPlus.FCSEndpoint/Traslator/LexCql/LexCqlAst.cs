@@ -1,7 +1,7 @@
 namespace IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 
 /// <summary>
-/// Modifier that can follow a relation operator (e.g. =/ignoreCase).
+///   Modifier that can follow a relation operator (e.g. =/ignoreCase).
 /// </summary>
 public enum RelationModifier
 {
@@ -12,14 +12,16 @@ public enum RelationModifier
 }
 
 /// <summary>
-/// The relation operator between field and value.
+///   The relation operator between field and value.
 /// </summary>
 public enum RelationOp
 {
   /// <summary>= (full-text / match search)</summary>
   Equals,
+
   /// <summary>== (exact / term match)</summary>
   ExactEquals,
+
   /// <summary>!= (field must not equal value)</summary>
   NotEquals
 }
@@ -27,12 +29,12 @@ public enum RelationOp
 // ── AST node hierarchy ──────────────────────────────────────────────
 
 /// <summary>
-/// Base class for all LexCQL expression nodes.
+///   Base class for all LexCQL expression nodes.
 /// </summary>
 public abstract record LexCqlExpression;
 
 /// <summary>
-/// A field-relation-value comparison, e.g. <c>lemma=/ignoreCase "cat"</c>.
+///   A field-relation-value comparison, e.g. <c>lemma=/ignoreCase "cat"</c>.
 /// </summary>
 /// <param name="Field">The field name (e.g. "lemma", "pos"). Null only when implicit default is used.</param>
 /// <param name="Relation">The relation operator.</param>
@@ -46,16 +48,16 @@ public sealed record ComparisonExpression(
 ) : LexCqlExpression;
 
 /// <summary>
-/// Logical AND of two expressions.
+///   Logical AND of two expressions.
 /// </summary>
 public sealed record AndExpression(LexCqlExpression Left, LexCqlExpression Right) : LexCqlExpression;
 
 /// <summary>
-/// Logical OR of two expressions.
+///   Logical OR of two expressions.
 /// </summary>
 public sealed record OrExpression(LexCqlExpression Left, LexCqlExpression Right) : LexCqlExpression;
 
 /// <summary>
-/// Logical NOT (negation) of an expression.
+///   Logical NOT (negation) of an expression.
 /// </summary>
 public sealed record NotExpression(LexCqlExpression Inner) : LexCqlExpression;

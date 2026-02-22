@@ -15,7 +15,7 @@ public static class Search
   });
 
   /// <summary>
-  /// Sends a LexCQL query to Elasticsearch and returns the result.
+  ///   Sends a LexCQL query to Elasticsearch and returns the result.
   /// </summary>
   public static SearchResponse? Send(string query, int start, int maximum, string? context = null)
   {
@@ -48,7 +48,7 @@ public static class Search
   }
 
   /// <summary>
-  /// Maps the raw Elasticsearch JSON response to a <see cref="SearchResponse"/>.
+  ///   Maps the raw Elasticsearch JSON response to a <see cref="SearchResponse" />.
   /// </summary>
   private static SearchResponse? MapElasticsearchResponse(string? json, int offset)
   {
@@ -65,7 +65,6 @@ public static class Search
 
     var containers = new List<SearchResponseContainer>();
     if (hitArray != null)
-    {
       foreach (var hit in hitArray)
       {
         var sourceToken = hit["_source"];
@@ -90,7 +89,6 @@ public static class Search
         container.Formatted = formatted;
         containers.Add(container);
       }
-    }
 
     return new SearchResponse
     {

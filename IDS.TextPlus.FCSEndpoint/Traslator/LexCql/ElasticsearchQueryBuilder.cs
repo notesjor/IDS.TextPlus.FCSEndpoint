@@ -18,14 +18,17 @@ public static class ElasticsearchQueryBuilder
     return query.ToJsonString(options);
   }
 
-  private static JsonObject BuildNode(LexCqlExpression expression) => expression switch
+  private static JsonObject BuildNode(LexCqlExpression expression)
   {
-    ComparisonExpression cmp => BuildComparison(cmp),
-    AndExpression and => BuildBool("must", BuildNode(and.Left), BuildNode(and.Right)),
-    OrExpression or => BuildBool("should", BuildNode(or.Left), BuildNode(or.Right)),
-    NotExpression not => BuildMustNot(BuildNode(not.Inner)),
-    _ => throw new InvalidOperationException($"Unknown expression type: {expression.GetType().Name}")
-  };
+    return expression switch
+    {
+      ComparisonExpression cmp => BuildComparison(cmp),
+      AndExpression and => BuildBool("must", BuildNode(and.Left), BuildNode(and.Right)),
+      OrExpression or => BuildBool("should", BuildNode(or.Left), BuildNode(or.Right)),
+      NotExpression not => BuildMustNot(BuildNode(not.Inner)),
+      _ => throw new InvalidOperationException($"Unknown expression type: {expression.GetType().Name}")
+    };
+  }
 
   private static JsonObject BuildComparison(ComparisonExpression cmp)
   {
@@ -33,7 +36,7 @@ public static class ElasticsearchQueryBuilder
     var value = cmp.Value;
     var isExact = cmp.Relation == RelationOp.ExactEquals;
 
-    JsonObject clause = cmp.Modifier switch
+    var clause = cmp.Modifier switch
     {
       RelationModifier.Regex => BuildRegexpClause(field, value),
       _ when ContainsWildcard(value) => BuildWildcardClause(field, value, cmp.Modifier == RelationModifier.IgnoreCase),
@@ -52,24 +55,24 @@ public static class ElasticsearchQueryBuilder
   private static bool ContainsWildcard(string value)
   {
     for (var i = 0; i < value.Length; i++)
-    {
       if (value[i] is '*' or '?')
         return true;
-    }
     return false;
   }
 
   // ── Elasticsearch clause builders ──────────────────────────────────
 
   /// <summary>
-  /// Default clause
+  ///   Default clause
   /// </summary>
   private static JsonObject BuildDefaultClause(string field, string value)
-  => BuildMatchClause(field, value);
+  {
+    return BuildMatchClause(field, value);
+  }
 
   /// <summary>
-  /// Match clause: full-text search (case-insensitive by default through analyzers).
-  /// Used for /ignoreCase modifier.
+  ///   Match clause: full-text search (case-insensitive by default through analyzers).
+  ///   Used for /ignoreCase modifier.
   /// </summary>
   private static JsonObject BuildMatchClause(string field, string value)
   {
@@ -86,8 +89,8 @@ public static class ElasticsearchQueryBuilder
   }
 
   /// <summary>
-  /// Term clause: exact match (case-sensitive on keyword fields).
-  /// Used for /respectCase modifier.
+  ///   Term clause: exact match (case-sensitive on keyword fields).
+  ///   Used for /respectCase modifier.
   /// </summary>
   private static JsonObject BuildTermClause(string field, string value)
   {
@@ -104,9 +107,9 @@ public static class ElasticsearchQueryBuilder
   }
 
   /// <summary>
-  /// Wildcard clause for patterns with * and ?.
-  /// Targets the field directly — works on keyword fields.
-  /// If a field has a dedicated wildcard sub-field (e.g. lemma.query), ES will use the main keyword field.
+  ///   Wildcard clause for patterns with * and ?.
+  ///   Targets the field directly — works on keyword fields.
+  ///   If a field has a dedicated wildcard sub-field (e.g. lemma.query), ES will use the main keyword field.
   /// </summary>
   private static JsonObject BuildWildcardClause(string field, string value, bool caseInsensitive)
   {
@@ -122,7 +125,7 @@ public static class ElasticsearchQueryBuilder
   }
 
   /// <summary>
-  /// Regexp clause for /regex modifier.
+  ///   Regexp clause for /regex modifier.
   /// </summary>
   private static JsonObject BuildRegexpClause(string field, string value)
   {
