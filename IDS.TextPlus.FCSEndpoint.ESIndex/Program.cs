@@ -53,7 +53,9 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
     {
       dir = Ask("Enter the main-directory to index: ");
 
-      var res = new ElasticsearchClient(new Uri("http://localhost:9200/"));
+      var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200/"));
+
+      var res = new ElasticsearchClient(settings);
       EnsureIndex(res);
 
       return res;
@@ -156,7 +158,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
     private static string[] Tokenize(string docLemma)
     {
-      return docLemma == null ? null : docLemma.Split(_sentenceMarks, StringSplitOptions.RemoveEmptyEntries);
+      return docLemma == null ? Array.Empty<string>() : docLemma.Split(_sentenceMarks, StringSplitOptions.RemoveEmptyEntries);
     }
 
     private static string GenerateSnippet(IEnumerable<Citation> values)
@@ -209,13 +211,18 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
     private static void EnsureIndex(ElasticsearchClient client)
     {
-      if (client.Indices.Exists(_indexName).Exists)
+      try
       {
-        client.Indices.Delete(_indexName);
+        var deleteIndexResponse = client.Indices.Delete(_indexName);
         Thread.Sleep(2000);
+        Console.WriteLine($"Index deletion response: {deleteIndexResponse.IsValidResponse}");
+      }
+      catch
+      {
+        // ignore
       }
 
-      var createIndexResponse = client.Indices.CreateAsync(_indexName, c => c
+      var createIndexResponse = client.Indices.Create(_indexName, c => c
         .Mappings(m => m
           .Properties(p => p
             // Suchbare Felder (Text / Full-Text)            
@@ -248,7 +255,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         // Hier evtl. weitere Settings für Performance
         )
       );
-      createIndexResponse.Wait();
+      Console.WriteLine($"Index creation response: {createIndexResponse.IsValidResponse}");
     }
 
     private static string Ask(string question)

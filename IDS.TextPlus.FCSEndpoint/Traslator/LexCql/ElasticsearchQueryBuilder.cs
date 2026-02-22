@@ -120,7 +120,7 @@ public static class ElasticsearchQueryBuilder
 
     return new JsonObject
     {
-      ["wildcard"] = new JsonObject { [field] = fieldObj }
+      ["wildcard"] = new JsonObject { [$"{field}.query"] = fieldObj }
     };
   }
 

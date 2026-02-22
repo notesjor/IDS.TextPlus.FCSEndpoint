@@ -112,7 +112,7 @@ public class Version20 : AbstractVersion
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
-        if (start > result?.EstimatedTotalHits || start > 1)
+        if (start > 1 && start > result?.EstimatedTotalHits)
         {
           ctx.Response.Send(Error_OutOfRange, _mime);
           return;
