@@ -1,11 +1,12 @@
-﻿using System.Globalization;
-using Elastic.Clients.Elasticsearch;
+﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Tasks;
 using IDS.TextPlus.FCSEndpoint.Indexer.Model;
+using IDS.TextPlus.FCSEndpoint.Model;
+using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
-using Elastic.Clients.Elasticsearch.Tasks;
-using IDS.TextPlus.FCSEndpoint.Model;
 
 namespace IDS.TextPlus.FCSEndpoint.ESIndex
 {
@@ -117,7 +118,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             Definition = doc.Def,
             Url = doc.Url,
             Source = doc.Source,
-            Text = WebUtility.HtmlEncode(stb.ToString()),
+            Text = HtmlEncoder.Default.Encode(stb.ToString()),
             Lemma = doc.Lemma,
             LemmaTokens = Tokenize(doc.Lemma),
             Gender = doc.Gender == null ? null : doc.Gender.Select(x => x.Value).ToArray(),
@@ -168,7 +169,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
       var stb = new StringBuilder("<lex:Field type=\"citation\">");
       foreach (var x in values)
-        stb.Append($"<lex:Value type=\"example\" source=\"{WebUtility.HtmlEncode(x.Source)}\">{WebUtility.HtmlEncode(x.Example)}</lex:Value>");
+        stb.Append($"<lex:Value type=\"example\" source=\"{HtmlEncoder.Default.Encode(x.Source)}\">{HtmlEncoder.Default.Encode(x.Example)}</lex:Value>");
       stb.Append("</lex:Field>");
 
       return stb.ToString();
