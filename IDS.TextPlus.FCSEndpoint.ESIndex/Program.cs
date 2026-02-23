@@ -238,7 +238,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
                 .Filter("lowercase")
               )
               .Custom("lemma_analyzer", ca => ca
-                .Tokenizer("whitespace")
+                .Tokenizer("standard")
                 .Filter("lowercase")
               )
             )
@@ -260,7 +260,8 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             .Text("lemma", k => k
               .Analyzer("lemma_analyzer")
               .Fields(ff => ff
-                .Wildcard("query")
+                .Wildcard("wildcard")
+                .Keyword("keyword")
               )
             )
             // Filterbare Felder (Keyword / exakter Wert)            

@@ -194,7 +194,7 @@ public static class LexCqlParser
 
     var sb = new StringBuilder(input.Length);
     for (var i = 0; i < input.Length; i++)
-      if (input[i] == '\\' && i + 1 < input.Length)
+      if (input[i] == '\\' && i + 1 < input.Length && input[i + 1] is '"' or '\\' or '*' or '?')
       {
         sb.Append(input[i + 1]);
         i++; // skip next character

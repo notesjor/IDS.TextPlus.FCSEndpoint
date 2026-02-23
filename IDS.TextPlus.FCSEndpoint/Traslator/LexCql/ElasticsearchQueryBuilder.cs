@@ -120,7 +120,7 @@ public static class ElasticsearchQueryBuilder
 
     return new JsonObject
     {
-      ["wildcard"] = new JsonObject { [$"{field}.query"] = fieldObj }
+      ["wildcard"] = new JsonObject { [$"{field}.wildcard"] = fieldObj }
     };
   }
 
@@ -133,9 +133,11 @@ public static class ElasticsearchQueryBuilder
     {
       ["regexp"] = new JsonObject
       {
-        [field] = new JsonObject
+        [$"{(field == "lemma" ? "lemma.keyword" : field)}"] = new JsonObject
         {
-          ["value"] = value
+          ["value"] = value,
+          ["max_determinized_states"] = 100,
+          ["rewrite"] = "constant_score"
         }
       }
     };
