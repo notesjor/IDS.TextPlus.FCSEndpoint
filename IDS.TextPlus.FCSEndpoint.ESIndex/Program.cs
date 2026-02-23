@@ -223,17 +223,47 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
       }
 
       var createIndexResponse = client.Indices.Create(_indexName, c => c
+        .Settings(s => s
+          .NumberOfShards(1)
+          .NumberOfReplicas(1)
+          .Analysis(a => a
+            .Tokenizers(to => to
+              .Pattern("segmentation_tokenizer", pt => pt
+                .Pattern("\\|")
+              )
+            )
+            .Analyzers(an => an
+              .Custom("segmentation_analyzer", ca => ca
+                .Tokenizer("segmentation_tokenizer")
+                .Filter("lowercase")
+              )
+              .Custom("lemma_analyzer", ca => ca
+                .Tokenizer("whitespace")
+                .Filter("lowercase")
+              )
+            )
+          )
+        )
         .Mappings(m => m
           .Properties(p => p
             // Suchbare Felder (Text / Full-Text)            
             .Text("definition")
             .Text("citation")
-            // Filterbare Felder (Keyword / exakter Wert)
-            .Keyword("lemma", k => k
+            .Text("text", k =>
+              k.Index(false)
+              .Store()
+            )
+            .Text("segmentation", k =>
+            {
+              k.Analyzer("segmentation_analyzer");
+            })
+            .Text("lemma", k => k
+              .Analyzer("lemma_analyzer")
               .Fields(ff => ff
                 .Wildcard("query")
               )
             )
+            // Filterbare Felder (Keyword / exakter Wert)            
             .Keyword("link")
             .Keyword("hyperonym")
             .Keyword("hyponym")
@@ -248,11 +278,6 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             .Keyword("lang")
             .Keyword("lemma_token")
           )
-        )
-        .Settings(s => s
-            .NumberOfShards(1)
-            .NumberOfReplicas(1)
-        // Hier evtl. weitere Settings für Performance
         )
       );
       Console.WriteLine($"Index creation response: {createIndexResponse.IsValidResponse}");

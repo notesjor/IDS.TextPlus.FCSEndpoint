@@ -58,10 +58,11 @@ public class SearchRequest
       {
         ["pre_tags"] = new JArray { "<hits:Hit>" },
         ["post_tags"] = new JArray { "</hits:Hit>" },
+        ["require_field_match"] = false,
         ["fields"] = new JObject
-        {
+        {          
+          ["text"] = new JObject(),
           ["lemma"] = new JObject(),
-          ["text"] = new JObject()
         }
       }
     };

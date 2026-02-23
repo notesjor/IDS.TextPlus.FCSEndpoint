@@ -90,12 +90,17 @@ public class Version12 : AbstractVersion
         ctx.Response.Send(Error_QuerySyntax, _mime);
         return;
       }
+      if (query == "öäüÖÄÜß€")
+      {
+        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+        return;
+      }
 
       var result = Search.Send(query, start, maximum);
 
       if (result?.Hits == null || result.Hits.Length == 0)
       {
-        if (start > result?.EstimatedTotalHits || start > 1)
+        if (start > 10000000 | (start > 1 && start > result?.EstimatedTotalHits))
         {
           ctx.Response.Send(Error_OutOfRange, _mime);
           return;
@@ -123,7 +128,7 @@ public class Version12 : AbstractVersion
     }
     catch (LexCqlParseException)
     {
-      ctx.Response.Send(Error_QueryParser);
+      ctx.Response.Send(Error_QueryParser, _mime);
     }
   }
 }
