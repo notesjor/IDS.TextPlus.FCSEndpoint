@@ -59,6 +59,7 @@ public class SearchRequest
         ["pre_tags"] = new JArray { "<hits:Hit>" },
         ["post_tags"] = new JArray { "</hits:Hit>" },
         ["require_field_match"] = false,
+        ["fragment_size"] = 0,
         ["fields"] = new JObject
         {          
           ["text"] = new JObject(),

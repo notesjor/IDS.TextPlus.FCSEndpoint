@@ -169,7 +169,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
       var stb = new StringBuilder("<lex:Field type=\"citation\">");
       foreach (var x in values)
-        stb.Append($"<lex:Value type=\"example\" source=\"{HtmlEncoder.Default.Encode(x.Source)}\">{HtmlEncoder.Default.Encode(x.Example)}</lex:Value>");
+        stb.Append($"<lex:Value type=\"example\" source=\"{(string.IsNullOrEmpty(x.Source) ? "" : HtmlEncoder.Default.Encode(x.Source))}\">{(string.IsNullOrEmpty(x.Example) ? "" : HtmlEncoder.Default.Encode(x.Example))}</lex:Value>");
       stb.Append("</lex:Field>");
 
       return stb.ToString();
