@@ -129,6 +129,11 @@ public static class ElasticsearchQueryBuilder
   /// </summary>
   private static JsonObject BuildRegexpClause(string field, string value)
   {
+    if(value.StartsWith("^"))
+      value = value[1..]; // Remove leading ^ to avoid ES regex engine issues
+    if(value.EndsWith("$"))
+      value = value[..^1]; // Remove trailing $ to avoid ES regex engine issues
+
     return new JsonObject
     {
       ["regexp"] = new JsonObject
