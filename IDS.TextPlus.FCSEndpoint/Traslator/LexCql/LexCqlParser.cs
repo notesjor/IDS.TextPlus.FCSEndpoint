@@ -42,7 +42,7 @@ public static class LexCqlParser
       .Or(Token.EqualTo(LexCqlToken.Equals).Value(LexCql.RelationOp.Equals));
 
   /// <summary>
-  ///   Parses an optional modifier: /ignoreCase, /respectCase, /regex
+  ///   Parses an optional modifier: /ignoreCase, /respectCase, /regexp
   /// </summary>
   private static readonly TokenListParser<LexCqlToken, RelationModifier> Modifier =
     (from slash in Token.EqualTo(LexCqlToken.Slash)
@@ -163,8 +163,8 @@ public static class LexCqlParser
     {
       "ignoreCase" => RelationModifier.IgnoreCase,
       "respectCase" => RelationModifier.RespectCase,
-      "regex" => RelationModifier.Regex,
-      _ => throw new LexCqlParseException($"Unknown modifier: '{name}'. Allowed: ignoreCase, respectCase, regex.")
+      "regexp" => RelationModifier.Regex,
+      _ => throw new LexCqlParseException($"Unknown modifier: '{name}'. Allowed: ignoreCase, respectCase, regexp.")
     };
   }
 
