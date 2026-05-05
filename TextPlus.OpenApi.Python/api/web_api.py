@@ -21,7 +21,6 @@ from typing_extensions import Annotated
 from openapi_client.models.get_statistics_for_type_default_response import GetStatisticsForTypeDefaultResponse
 from openapi_client.models.init_data import InitData
 from openapi_client.models.language_map import LanguageMap
-from openapi_client.models.list[str] import List[str]
 from openapi_client.models.resource import Resource
 from openapi_client.models.scan_search_statistics import ScanSearchStatistics
 

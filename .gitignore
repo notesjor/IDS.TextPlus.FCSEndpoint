@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+tmp_install
+textplus_openapi_python.egg-info
+dist
+build

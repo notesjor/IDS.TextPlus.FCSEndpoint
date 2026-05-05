@@ -17,14 +17,13 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from openapi_client.models.null<str> import null<str>
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic_core import to_jsonable_python
 
-class ConsortiaList(null<str>):
+class ConsortiaList(BaseModel):
     """
     ConsortiaList
     """ # noqa: E501
