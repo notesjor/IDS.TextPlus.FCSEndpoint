@@ -15,4 +15,6 @@ public class SearchResouce
   [JsonProperty("lexfields")] public string LexFields { get; set; } = string.Empty;
 
   [JsonProperty("info")] public Dictionary<string, Dictionary<string, string>> Info { get; set; } = new();
+
+  [JsonProperty("examples")] public Dictionary<string, string>[] Examples { get; set; } = Array.Empty<Dictionary<string, string>>();
 }

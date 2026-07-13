@@ -18,7 +18,19 @@
         "Description": "elexiko is an online information system ('dictionary') for contemporary German that documents, explains and scientifically comments on the vocabulary of the German language using current language data (up to 2013) in individual modules.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+	"examples": [
+		{
+			"query": "lemma = \"See\" AND gender = \"Masc\"",
+			"en": "",
+			"de": ""
+		},
+		{
+			"query": " lemma = \"*in\" AND pos = \"NOUN\" AND (definition = \"Person\" OR definiiton = \"Mensch\" OR definition = \"Frau\")",
+			"en": "",
+			"de": ""
+		}
+	]
   },
   "neo": {
     "pid": "https://doi.org/10.14618/wb-neo",

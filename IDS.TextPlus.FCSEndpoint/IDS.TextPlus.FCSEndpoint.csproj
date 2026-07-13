@@ -12,11 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.19.18" />
-    <PackageReference Include="Microsoft.OpenApi" Version="3.5.2" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="9.4.2" />
+    <PackageReference Include="Microsoft.OpenApi" Version="3.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
-    <PackageReference Include="Superpower" Version="3.1.0" />
+    <PackageReference Include="Superpower" Version="3.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,6 +79,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Snippets\20\20EndpointDescription.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Snippets\20\20EndpointDescriptionResourceExample.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Snippets\20\20EndpointDescriptionResource.xml">

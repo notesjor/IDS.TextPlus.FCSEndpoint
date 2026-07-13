@@ -6,9 +6,9 @@ namespace IDS.TextPlus.FCSEndpoint.Helper;
 
 public static class SearchResourceHelper
 {
-  public static Dictionary<string, SearchResouce>? _catalog;
-  public static Dictionary<string, string>? _keyToPid;
-  public static Dictionary<string, string>? _pidToKey;
+  private static Dictionary<string, SearchResouce>? _catalog;
+  private static Dictionary<string, string>? _keyToPid;
+  private static Dictionary<string, string>? _pidToKey;
 
   public static Dictionary<string, SearchResouce> Catalog
     => _catalog ??= Load("Snippets/catalog.json");

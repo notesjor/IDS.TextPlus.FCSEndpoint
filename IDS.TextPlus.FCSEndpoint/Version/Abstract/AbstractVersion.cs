@@ -110,7 +110,7 @@ public abstract class AbstractVersion
 
     var catalog = SearchResourceHelper.Catalog;
 
-    var resources = string.Join("\r\n", catalog.Values.Select(x => ent.Replace("{{pid}}", x.Pid)
+    var resources = string.Join("", catalog.Values.Select(x => ent.Replace("{{pid}}", x.Pid)
       .Replace("{{title_deu}}", x.Info["deu"]["Title"])
       .Replace("{{title_eng}}", x.Info["eng"]["Title"])
       .Replace("{{description_deu}}", x.Info["deu"]["Description"])
@@ -118,10 +118,40 @@ public abstract class AbstractVersion
       .Replace("{{institution_deu}}", x.Info["deu"]["Institution"])
       .Replace("{{institution_eng}}", x.Info["eng"]["Institution"])
       .Replace("{{landingpage}}", x.Url)
-      .Replace("{{languages}}", string.Join("\r\n", x.Languages.Select(y => lan.Replace("{{langauge}}", y))))
+      .Replace("{{languages}}", string.Join("", x.Languages.Select(y => lan.Replace("{{langauge}}", y))))
       .Replace("{{dataviews}}", x.DataViews)
-      .Replace("{{lexfields}}", x.LexFields)));
+      .Replace("{{lexfields}}", x.LexFields)
+      .Replace("{{examplequeries}}", GenerateExamples(version, x.Examples))));
 
     return doc.Replace("{{resources}}", resources);
+  }
+
+  private string GenerateExamples(string version, Dictionary<string, string>[] examples)
+  {
+    if (version == "12") // Version 1.2 don't support query examples
+      return "";
+
+    var doc = File.ReadAllText($"Snippets/{version}/{version}EndpointDescriptionResourceExample.xml", Encoding.UTF8);
+    var stb = new StringBuilder();
+
+    foreach(var example in examples)
+    {
+      if (!example.TryGetValue("query", out var query))
+        continue;
+
+      if (!example.TryGetValue("eng", out var eng))
+        continue;
+
+      if (!example.TryGetValue("deu", out var deu))
+        continue;
+
+      stb.Append(doc
+        .Replace("{{query}}", query)
+        .Replace("{{eng}}", eng)
+        .Replace("{{deu}}", deu)
+        );
+    }
+
+    return stb.ToString();
   }
 }
