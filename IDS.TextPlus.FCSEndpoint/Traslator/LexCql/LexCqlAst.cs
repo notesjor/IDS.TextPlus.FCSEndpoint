@@ -22,6 +22,9 @@ public enum RelationOp
   /// <summary>== (exact / term match)</summary>
   ExactEquals,
 
+  /// <summary>IS (mapping operator, e.g. "lemma IS Berg")</summary>
+  IsMapping,
+
   /// <summary>!= (field must not equal value)</summary>
   NotEquals
 }

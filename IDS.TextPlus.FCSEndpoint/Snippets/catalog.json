@@ -19,18 +19,18 @@
         "Institution": "Leibniz Institute for the German Language"
       }
     },
-	"examples": [
-		{
-			"query": "lemma = \"See\" AND gender = \"Masc\"",
-			"en": "",
-			"de": ""
-		},
-		{
-			"query": " lemma = \"*in\" AND pos = \"NOUN\" AND (definition = \"Person\" OR definiiton = \"Mensch\" OR definition = \"Frau\")",
-			"en": "",
-			"de": ""
-		}
-	]
+   "examples": [
+      {
+        "query": "lemma = See AND gender = Masc",
+        "eng": "Matches entries with the lemma \"See\" (masculine, \"der See\")",
+        "deu": "Treffer mit dem Lemma \"See\" (Maskulinum, \"der See\")"
+      },
+      {
+        "query": "lemma = *in AND pos = NOUN AND (definition = Person OR definiiton = Mensch OR definition = Frau",
+        "eng": "Matches entries in which the lemma is a noun ending with \"-in\" and the tokens \"Person\", \"Mensch\" or \"Frau\" occur in the definition",
+        "deu": "Treffer, bei denen das Lemma ein Nomen ist, das mit \"-in\" endet und bei denen die Tokens \"Person\", \"Mensch\" oder \"Frau\" in der Definition vorkommen"
+      }
+    ]
   },
   "neo": {
     "pid": "https://doi.org/10.14618/wb-neo",
@@ -51,7 +51,19 @@
         "Description": "In this dictionary you will find more than 2,100 new words, phrases and meanings of established words that have entered the general vocabulary of the German standard language between 1991 and today.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "pos = NOUN AND definition = Gerät",
+        "eng": "Matches entries in which the lemma is a noun and the token \"Gerät\" occurs in the definition",
+        "deu": "Treffer mit einem Nomen als Lemma, bei denen der Token \"Gerät\" in der Definition vorkommt"
+      },
+      {
+        "query": "lemma = divers AND citation = Geschlecht",
+        "eng": "Matches entries with the lemma \"divers\" in which the token \"Geschlecht\" occurs in an example",
+        "deu": "Treffer mit dem Lemma *divers*, bei denen der Token \"Geschlecht\" in einem Beleg vorkommt"
+      }
+    ]
   },
   "sprw": {
     "pid": "https://doi.org/10.14618/wb-sprw",
@@ -72,7 +84,19 @@
         "Description": "The Proverb Dictionary in OWID (Sprichwörterbuch) is the first empirically verified online documentation of currently used fixed phrases in the German language - essentially proverbs - compiled according to the criteria of scientific lexicography.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = \"Wege Rom\"",
+        "eng": "Matches entries in which the tokens \"Wege\" and \"Rom\" occur in the lemma field",
+        "deu": "Treffer, bei denen die Tokens \"Wege\" und \"Rom\" im Lemma-Feld vorkommen"
+      },
+      {
+        "query": "definition = Gerüchte",
+        "eng": "Matches entries in which the token \"Gerüchte\" occurs in the definition",
+        "deu": "Treffer, bei denen der Token \"Gerüchte\" in der Definition vorkommt"
+      }
+    ]
   },
   "paro": {
     "pid": "https://doi.org/10.14618/wb-paro",
@@ -93,7 +117,19 @@
         "Description": "\"Paronyms – dynamic in contrast\" is a new and innovative reference work covering linguistic doubts and uncertainties. Orthographically and/or semantically similar words (e.g. farbig-farblich, kindlich-kindisch, universal-universell, Mehrheit-Mehrzahl) are analysed and documented in their current usage based on a corpus.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = ernstlich OR lemma = ernsthaft",
+        "eng": "Matches entries with the lemma \"ernstlich\" or \"ernsthaft\"",
+        "deu": "Treffer mit dem Lemma \"ernstlich\" oder \"ernsthaft\"<br>"
+      },
+      {
+        "query": "lemma = gewohnt AND synonym = gängig",
+        "eng": "Matches entries with the lemma \"gewohnt\" as a synonym of \"gängig\"",
+        "deu": "Treffer mit dem Lemma \"gewohnt\" als Synonym von \"gängig\""
+      }
+    ]
   },
   "komvb": {
     "pid": "https://doi.org/10.14618/wb-komvb",
@@ -114,7 +150,19 @@
         "Description": "The online reference work \"Kommunikationsverben\" is the electronic version of the \"Handbuch deutscher Kommunikationsverben\". It contains 241 articles on German verbs that refer to communicative actions. The focus is on speech act verbs. The special feature of this reference work is that the semantic description takes place on two levels: the conceptual level (represented by the reference situation types) and the lexical level (represented in the word articles). These different levels are reflected in the access structures to the contents of the reference work.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = abdanken AND citation = König",
+        "eng": "Matches entries with the lemma \"abdanken\" in which the token \"König\" occurs in an example",
+        "deu": "Treffer mit dem Lemma \"abdanken\", bei denen der Token \"König\" in einem Beleg vorkommt"
+      },
+      {
+        "query": "synonym = vortragen",
+        "eng": "Matches entries with synonyms of \"vortragen\"",
+        "deu": "Treffer mit Synonymen von \"vortragen\""
+      }
+    ]
   },
   "dfwb": {
     "pid": "https://doi.org/10.14618/wb-dfwb",
@@ -135,7 +183,19 @@
         "Description": "The Deutsches Fremdwörterbuch (DFWB) describes and documents the central foreign language vocabulary of today's sophisticated everyday language, both in its current use and in its historical development from the respective period of borrowing to the present day. The spectrum of meaning and usage of this vocabulary is presented in a detailed and differentiated manner, the history of meaning is compiled from historical primary and secondary sources and documented as completely as possible using numerous sources.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = Ambivalenz OR lemma = ambivalent",
+        "eng": "Matches entries with the lemma \"Ambivalenz\" or \"ambivalent\"",
+        "deu": "Treffer mit dem Lemma \"Ambivalenz\" oder \"ambivalent\""
+      },
+      {
+        "query": "lemma = Dekadent AND citation = Moderne",
+        "eng": "Matches entries with the lemma \"Dekadent\" in which the token \"Moderne\" occurs in an example",
+        "deu": "Treffer mit dem Lemma \"Dekadent\", bei denen der Token \"Moderne\" in einem Beleg vorkommt"
+      }
+    ]
   },
   "disk18": {
     "pid": "https://doi.org/10.14618/wb-disk18",
@@ -156,7 +216,19 @@
         "Description": "The discourse dictionary on the early Weimar Republic marks the beginning of a linguistic history of democracy in the 20th century. The articles form the basis of a discourse dictionary on the early Weimar period, which represents a central epoch in the linguistic history of democracy. The articles selected for this first stage of publication represent the discourse on democracy from 1918 to 1925, categorised according to the participants in the discourse. Discourse participants are those groups of people who lend certain discourses typical of the period their subject matter, density and dynamism. They form a complex structure of heterogeneous sub-communities characterised by different horizons of experience and perception and a specific self-image of the individual participants.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = Gesellschaft OR lemma = Gemeinschaft",
+        "eng": "Matches entries with the lemma \"Gesellschaft\" or \"Gemeinschaft\"",
+        "deu": "Treffer mit dem Lemma \"Gesellschaft\" oder \"Gemeinschaft\""
+      },
+      {
+        "query": "citation = Sozialismus",
+        "eng": "Matches entries in which the token \"Sozialismus\" occurs in an example",
+        "deu": "Treffer, bei denen der Token \"Sozialismus\" in einem Beleg vorkommt"
+      }
+    ]
   },
   "disk45": {
     "pid": "https://doi.org/10.14618/wb-disk45",
@@ -177,7 +249,19 @@
         "Description": "The dictionary summarises the lexical-semantic results of the study on the discourse on guilt in the early post-war period in the form of word articles. These word articles describe those words according to lexicographical principles that represent the lexical framework of the discourse on guilt. This vocabulary area manifests the documentation of the violence with which victims bear witness, the strategies of defense against guilt and justification used by the perpetrators to exonerate themselves, and the construction and dismantling of identity, with which the non-perpetrators analyse the phenomenon of National Socialism and attempt to rehabilitate the Germans.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = Antifaschist OR lemma = Wiedergutmachung OR lemma = Frieden",
+        "eng": "Matches entries with the lemma \"Antifaschist\", \"Wiedergutmachung\" or \"Frieden\"",
+        "deu": "Treffer mit dem Lemma \"Antifaschist\", \"Wiedergutmachung\" oder \"Frieden\""
+      },
+      {
+        "query": "citation = Kollektivschuld",
+        "eng": "Matches entries in which the token \"Kollektivschuld\" occurs in an example",
+        "deu": "Treffer, bei denen der Token \"Kollektivschuld\" in einem Beleg vorkommt"
+      }
+    ]
   },
   "disk68": {
     "pid": "https://doi.org/10.14618/wb-disk68",
@@ -198,7 +282,19 @@
         "Description": "This dictionary summarises the lexical-semantic results of the study \"Aspekte des Demokratiediskurses der späten 1960er Jahre. Constellations - Contexts - Concepts\" in the format of a discourse dictionary. The word articles describe those words according to lexicographical principles that represent the lexical framework of the discourse on democracy.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = Revolution OR lemma = Bewegung",
+        "eng": "Matches entries with the lemma \"Revolution\" or \"Bewegung\"",
+        "deu": "Treffer mit dem Lemma \"Revolution\" oder \"Bewegung\""
+      },
+      {
+        "query": "lemma = Opposition AND (citation = Studentenopposition OR citation = studentische Opposition)",
+        "eng": "Matches entries with the lemma \"Opposition\" in which the tokens \"Studentenopposition\" or \"studentische Opposition\" occur in an example",
+        "deu": "Treffer mit dem Lemma \"Opposition\", bei denen die Tokens \"Studentenopposition\" oder \"studentische Opposition\" in einem Beleg vorkommen"
+      }
+    ]
   },
   "swwz": {
     "pid": "https://doi.org/10.14618/wb-swwz",
@@ -219,7 +315,19 @@
         "Description": "The book \"Schlüsselwörter der Wendezeit\" was compiled at the Leibniz Institute for the German Language between 1993 and 1996 with the aim of presenting the public use of language during the period of reunification in the GDR and the Federal Republic of Germany in a consistently corpus-based and text-documentative manner. It is a text-orientated book, i.e. compiled on the basis of a defined text corpus of the \"Wendekorpus\", which presents, explains and documents the public use of selected lexemes in a specific period of the era or reunification. It is not a dictionary in the conventional sense, but rather a \"book about words\". The key words are presented in the dictionary in connection with linguistically and/or thematically link word material.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = Mauer",
+        "eng": "Matches entries with the lemma \"Mauer\"",
+        "deu": "Treffer mit dem Lemma \"Mauer\""
+      },
+      {
+        "query": "lemma = Westler OR lemma = Wessi",
+        "eng": "Matches entries with the lemma \"Westler\" or \"Wessi\"",
+        "deu": "Treffer mit dem Lemma \"Westler\" oder \"Wessi\""
+      }
+    ]
   },
   "progdb": {
     "pid": "https://doi.org/10.14618/wb-progdb",
@@ -240,6 +348,18 @@
         "Description": "The \"Kleine Wörterbuch der Verlaufsformen im Deutschen\" presents German verbs in terms of their occurrence in three progressive forms, the am-progressive, the absentive and the beim-progressive form. The aim of the dictionary is to provide researchers, students and teachers with a comprehensive and easily searchable collection of evidence illustrating the use of these forms. The dictionary is based on research in the text corpora of the Leibniz-Institute for the German Language (German Reference Corpus) and contains over 5000 entries for over 900 verbs.",
         "Institution": "Leibniz Institute for the German Language"
       }
-    }
+    },
+    "examples": [
+      {
+        "query": "lemma = prüfen OR lemma = checken",
+        "eng": "Matches entries with the lemma \"prüfen\" or \"checken\"",
+        "deu": "Treffer mit dem Lemma \"prüfen\" oder \"checken\""
+      },
+      {
+        "query": "lemma = lernen AND citation = am Bibliothek",
+        "eng": "Matches entries with the lemma \"lernen\" in which the tokens \"am\" and \"Bibliothek\" occur in an example",
+        "deu": "Treffer mit dem Lemma \"lernen\", bei denen die Tokens \"am\" und \"Bibliothek\" in einem Beleg vorkommen"
+      }
+    ]
   }
 }

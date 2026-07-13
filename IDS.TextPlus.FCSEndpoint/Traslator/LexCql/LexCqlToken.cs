@@ -21,6 +21,9 @@ public enum LexCqlToken
   [Token(Category = "operator", Example = "!=")]
   NotEquals,
 
+  [Token(Category = "operator", Example = "IS")]
+  Is,
+
   [Token(Category = "keyword", Example = "AND")]
   And,
 

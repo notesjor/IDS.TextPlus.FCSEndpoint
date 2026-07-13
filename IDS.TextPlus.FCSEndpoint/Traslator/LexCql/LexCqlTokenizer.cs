@@ -45,6 +45,7 @@ public static class LexCqlTokenizer
     .Match(Character.EqualTo('/'), LexCqlToken.Slash)
     .Match(Span.EqualTo("!="), LexCqlToken.NotEquals)
     .Match(Span.EqualTo("=="), LexCqlToken.DoubleEquals)
+    .Match(Span.EqualTo("IS"), LexCqlToken.Is, true)
     .Match(Character.EqualTo('='), LexCqlToken.Equals)
     .Match(QuotedStringToken, LexCqlToken.QuotedString)
     .Match(IdentifierToken, LexCqlToken.Identifier, true)

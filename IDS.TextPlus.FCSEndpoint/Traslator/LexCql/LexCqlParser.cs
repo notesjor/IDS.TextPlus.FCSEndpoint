@@ -39,6 +39,7 @@ public static class LexCqlParser
   private static readonly TokenListParser<LexCqlToken, RelationOp> RelationOp =
     Token.EqualTo(LexCqlToken.NotEquals).Value(LexCql.RelationOp.NotEquals)
       .Or(Token.EqualTo(LexCqlToken.DoubleEquals).Value(LexCql.RelationOp.ExactEquals))
+      .Or(Token.EqualTo(LexCqlToken.Is).Value(LexCql.RelationOp.IsMapping))
       .Or(Token.EqualTo(LexCqlToken.Equals).Value(LexCql.RelationOp.Equals));
 
   /// <summary>

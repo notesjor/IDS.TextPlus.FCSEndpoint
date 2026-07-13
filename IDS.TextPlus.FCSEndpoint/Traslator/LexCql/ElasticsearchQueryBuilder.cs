@@ -1,3 +1,4 @@
+using IDS.TextPlus.FCSEndpoint.Traslator.IsValueMapper.Helper;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -35,6 +36,7 @@ public static class ElasticsearchQueryBuilder
     var field = cmp.Field;
     var value = cmp.Value;
     var isExact = cmp.Relation == RelationOp.ExactEquals;
+    var isMapping = cmp.Relation == RelationOp.IsMapping;
 
     var clause = cmp.Modifier switch
     {
@@ -43,7 +45,7 @@ public static class ElasticsearchQueryBuilder
       RelationModifier.IgnoreCase => BuildMatchClause(field, value),
       RelationModifier.RespectCase => BuildTermClause(field, value),
       _ when isExact => BuildTermClause(field, value),
-      RelationModifier.None => BuildDefaultClause(field, value),
+      _ when isMapping => BuildMappingClause(field, value),
       _ => BuildDefaultClause(field, value)
     };
 
@@ -68,6 +70,14 @@ public static class ElasticsearchQueryBuilder
   private static JsonObject BuildDefaultClause(string field, string value)
   {
     return BuildMatchClause(field, value);
+  }
+
+  /// <summary>
+  ///   Mapping clause: Use Mapping-Function to find related values.
+  /// </summary>
+  private static JsonObject BuildMappingClause(string field, string value)
+  {
+    return BuildMatchClause(field, IsValueMapperHelper.BestMapper.MapValue(field, value));
   }
 
   /// <summary>
@@ -129,9 +139,9 @@ public static class ElasticsearchQueryBuilder
   /// </summary>
   private static JsonObject BuildRegexpClause(string field, string value)
   {
-    if(value.StartsWith("^"))
+    if (value.StartsWith("^"))
       value = value[1..]; // Remove leading ^ to avoid ES regex engine issues
-    if(value.EndsWith("$"))
+    if (value.EndsWith("$"))
       value = value[..^1]; // Remove trailing $ to avoid ES regex engine issues
 
     return new JsonObject
