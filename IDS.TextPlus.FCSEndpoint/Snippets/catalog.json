@@ -122,7 +122,7 @@
       {
         "query": "lemma = ernstlich OR lemma = ernsthaft",
         "eng": "Matches entries with the lemma \"ernstlich\" or \"ernsthaft\"",
-        "deu": "Treffer mit dem Lemma \"ernstlich\" oder \"ernsthaft\"<br>"
+        "deu": "Treffer mit dem Lemma \"ernstlich\" oder \"ernsthaft\""
       },
       {
         "query": "lemma = gewohnt AND synonym = gängig",
