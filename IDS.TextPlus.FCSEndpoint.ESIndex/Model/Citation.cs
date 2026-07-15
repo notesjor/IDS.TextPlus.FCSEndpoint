@@ -16,4 +16,10 @@ public class Citation
   /// </summary>
   [JsonPropertyName("source")]
   public string Source { get; set; }
+
+  /// <summary>
+  /// Examples: 1, 2, 3, ...
+  /// </summary>
+  [JsonPropertyName("defId")]
+  public int DefId { get; set; }
 }

@@ -106,7 +106,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             { "synonym", GenerateSnippet(doc.Link?.Where(x => x.Type == "synonym")) },
             { "citation", GenerateSnippet(doc.Citation) },
             { "segmentation", doc.Segmentation == null ? "" : $"<lex:Field type=\"segmentation\"><lex:Value>{doc.Segmentation}</lex:Value></lex:Field>" },
-            { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\"><lex:Value>{doc.Def}</lex:Value></lex:Field>"}
+            { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\">{string.Join("", doc.Def.Select(x=> $"<lex:Value xml:id=\"{x.Id}\">{x.Text}</lex:Value>"))}</lex:Field>"}
           };
 
           tmp.Add(new SearchResult
@@ -115,7 +115,8 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             OId = doc.Id,
             SId = doc.SId,
             Segmentation = doc.Segmentation,
-            Definition = doc.Def,
+            Definition = string.Join(" - ", doc.Def.Select(x => x.Text)),
+            DefinitionStruct = doc.Def,
             Url = doc.Url,
             Source = doc.Source,
             Text = HtmlEncoder.Default.Encode(stb.ToString()),
