@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
-using IDS.TextPlus.FCSEndpoint.Indexer.Model;
+﻿using System.Text.Json.Serialization;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
@@ -31,7 +29,7 @@ public class SearchResult
 
   [JsonPropertyName("definition")] public string Definition { get; set; }
 
-  [JsonPropertyName("definitionStruct")] public IList<Definition> DefinitionStruct { get; set; }
+  // [JsonPropertyName("definitionStruct")] public IList<Definition> DefinitionStruct { get; set; } -- wird nicht benötigt
 
   [JsonPropertyName("text")] public string Text { get; set; }
 
