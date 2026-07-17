@@ -30,10 +30,6 @@ public class SearchResult
   [JsonPropertyName("entryId")]
   public string OId { get; set; }
 
-  [JsonProperty("senseRef")]
-  [JsonPropertyName("senseRef")]
-  public string SId { get; set; }
-
   [JsonProperty("source")]
   [JsonPropertyName("source")]
   public string Source { get; set; }

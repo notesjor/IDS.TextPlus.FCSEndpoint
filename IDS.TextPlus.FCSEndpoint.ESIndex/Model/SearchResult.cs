@@ -19,8 +19,6 @@ public class SearchResult
 
   [JsonPropertyName("entryId")] public string OId { get; set; }
 
-  [JsonPropertyName("senseRef")] public string SId { get; set; }
-
   [JsonPropertyName("source")] public string Source { get; set; }
 
   [JsonPropertyName("url")] public string Url { get; set; }
@@ -28,8 +26,6 @@ public class SearchResult
   [JsonPropertyName("segmentation")] public string Segmentation { get; set; }
 
   [JsonPropertyName("definition")] public string Definition { get; set; }
-
-  // [JsonPropertyName("definitionStruct")] public IList<Definition> DefinitionStruct { get; set; } -- wird nicht benötigt
 
   [JsonPropertyName("text")] public string Text { get; set; }
 

@@ -20,6 +20,6 @@ public class Citation
   /// <summary>
   /// Examples: 1, 2, 3, ...
   /// </summary>
-  [JsonPropertyName("defId")]
-  public int DefId { get; set; }
+  [JsonPropertyName("sid")]
+  public string SId { get; set; } = "-";
 }
