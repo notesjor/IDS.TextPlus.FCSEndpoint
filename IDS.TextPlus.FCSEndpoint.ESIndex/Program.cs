@@ -142,6 +142,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         if (tmp.Count >= max)
         {
           client.IndexMany(tmp, _indexName);
+          tmp.Clear();
           Console.WriteLine($"QUEUE: {docs.Count}");
         }
       }
