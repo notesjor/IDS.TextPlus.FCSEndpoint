@@ -41,57 +41,10 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
           }
         }
 
-        docs = BuildSenseStructure(docs);
-
         Console.WriteLine($"Read {docs.Count} documents.");
 
         PushDocs(client, new Queue<Document>(docs), file);
       }
-    }
-
-    private static List<Document> BuildSenseStructure(List<Document> docs)
-    {
-      var res = new Dictionary<string, Document>();
-
-      foreach (var doc in docs)
-      {
-        if (!res.ContainsKey(doc.Id))
-        {
-          doc.DefComplex =
-          [
-            new TemporaryDefinitionComplex
-            {
-              Text = doc.Def,
-              SId = doc.SId
-            }
-          ];
-          if (doc?.Citation == null)
-            doc.Citation = new List<Citation>();
-          else
-            foreach (var x in doc.Citation)
-              x.SId = doc.SId;
-
-          res.Add(doc.Id, doc);
-          continue;
-        }
-
-        res[doc.Id].DefComplex.Add(
-          new TemporaryDefinitionComplex
-          {
-            Text = doc.Def,
-            SId = doc.SId
-          });
-        if (doc?.Citation == null)
-          continue;
-
-        foreach (var x in doc.Citation)
-        {
-          x.SId = doc.SId;
-          res[doc.Id].Citation.Add(x);
-        }
-      }
-
-      return res.Values.ToList();
     }
 
     private static ElasticsearchClient GetClient(out string dir)
@@ -120,7 +73,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
           Id = _id++,
           OId = doc.Id,
           Segmentation = doc.Segmentation,
-          Definition = string.Join(" — ", doc.DefComplex.Select(x => x.Text)),
+          Definition = doc.Def is { Count: > 0 } ? "" : string.Join(" — ", doc.Def.Select(x => x.Text)),
           Url = doc.Url,
           Source = doc.Source,
           Text = GenerateSnippetSimpleText(doc),
@@ -167,7 +120,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         { "synonym", GenerateSnippetFcsXml(doc.Link?.Where(x => x.Type == "synonym")) },
         { "citation", GenerateSnippetFcsXml(doc.Citation) },
         { "segmentation", doc.Segmentation == null ? "" : $"<lex:Field type=\"segmentation\"><lex:Value>{doc.Segmentation}</lex:Value></lex:Field>" },
-        { "definition", doc.Def == null ? "" : $"<lex:Field type=\"definition\">{string.Join("", doc.DefComplex.Select(x=> $"<lex:Value xml:id=\"{x.SId}\">{x.Text}</lex:Value>"))}</lex:Field>"}
+        { "definition", doc.Def is { Count: > 0 } ? "" : $"<lex:Field type=\"definition\">{string.Join("", doc.Def.Select(x=> $"<lex:Value xml:id=\"{x.SId}\">{x.Text}</lex:Value>"))}</lex:Field>"}
       };
       return snippetes;
     }
@@ -189,7 +142,8 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         stb.Append("; ").Append(string.Join(" / ", doc.Pos.Select(x => x.Value)));
       if (doc.Gender?.Count > 0)
         stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
-      stb.Append($" - {doc.Def}");
+      if(doc.Def is { Count: > 0 })
+        stb.Append($" - {string.Join(" / ", doc.Def.Select(x=>x.Text))}");
       return HtmlEncoder.Default.Encode(stb.ToString());
     }
 
