@@ -35,13 +35,13 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             foreach (var document in documentArray)
               docs.AddRange(document);
           }
-          catch
+          catch (Exception ex)
           {
-            // ignore
+            Console.WriteLine($"Error \"{ex.Message}\": {ex.StackTrace}");
           }
         }
 
-        Console.WriteLine($"Read {docs.Count} documents.");
+        Console.WriteLine($"Read \"{Path.GetFileName(file)}\": {docs.Count} documents.");
 
         PushDocs(client, new Queue<Document>(docs), file);
       }
@@ -73,7 +73,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
           Id = _id++,
           OId = doc.Id,
           Segmentation = doc.Segmentation,
-          Definition = doc.Def is { Count: > 0 } ? "" : string.Join(" — ", doc.Def.Select(x => x.Text)),
+          Definition = doc.Def == null || doc.Def.Count == 0 ? "" : string.Join(" — ", doc.Def.Select(x => x.Text)),
           Url = doc.Url,
           Source = doc.Source,
           Text = GenerateSnippetSimpleText(doc),
@@ -120,7 +120,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         { "synonym", GenerateSnippetFcsXml(doc.Link?.Where(x => x.Type == "synonym")) },
         { "citation", GenerateSnippetFcsXml(doc.Citation) },
         { "segmentation", doc.Segmentation == null ? "" : $"<lex:Field type=\"segmentation\"><lex:Value>{doc.Segmentation}</lex:Value></lex:Field>" },
-        { "definition", doc.Def is { Count: > 0 } ? "" : $"<lex:Field type=\"definition\">{string.Join("", doc.Def.Select(x=> $"<lex:Value xml:id=\"{x.SId}\">{x.Text}</lex:Value>"))}</lex:Field>"}
+        { "definition", doc.Def == null || doc.Def.Count == 0 ? "" : $"<lex:Field type=\"definition\">{string.Join("", doc.Def.Select(x=> $"<lex:Value xml:id=\"{x.SId}\">{x.Text}</lex:Value>"))}</lex:Field>"}
       };
       return snippetes;
     }
@@ -142,7 +142,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         stb.Append("; ").Append(string.Join(" / ", doc.Pos.Select(x => x.Value)));
       if (doc.Gender?.Count > 0)
         stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
-      if(doc.Def is { Count: > 0 })
+      if(doc.Def != null && doc.Def.Count > 0)
         stb.Append($" - {string.Join(" / ", doc.Def.Select(x=>x.Text))}");
       return HtmlEncoder.Default.Encode(stb.ToString());
     }
