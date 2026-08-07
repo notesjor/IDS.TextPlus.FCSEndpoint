@@ -142,8 +142,8 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
         stb.Append("; ").Append(string.Join(" / ", doc.Pos.Select(x => x.Value)));
       if (doc.Gender?.Count > 0)
         stb.Append(" (").Append(string.Join(" / ", doc.Gender.Select(x => x.Value))).Append(")");
-      if(doc.Def != null && doc.Def.Count > 0)
-        stb.Append($" - {string.Join(" / ", doc.Def.Select(x=>x.Text))}");
+      if (doc.Def != null && doc.Def.Count > 0)
+        stb.Append($" - {string.Join(" / ", doc.Def.Select(x => x.Text))}");
       return HtmlEncoder.Default.Encode(stb.ToString());
     }
 
@@ -159,7 +159,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
 
       var stb = new StringBuilder("<lex:Field type=\"citation\">");
       foreach (var x in values)
-        stb.Append($"<lex:Value idRefs=\"{x.SId}\" type=\"example\" source=\"{(string.IsNullOrEmpty(x.Source) ? "" : HtmlEncoder.Default.Encode(x.Source))}\">{(string.IsNullOrEmpty(x.Example) ? "" : HtmlEncoder.Default.Encode(x.Example))}</lex:Value>");
+        stb.Append($"<lex:Value {(string.IsNullOrWhiteSpace(x.SId) || x.SId == "-" ? "" : $"idRefs=\"{x.SId}\" ")}type=\"example\" source=\"{(string.IsNullOrEmpty(x.Source) ? "" : HtmlEncoder.Default.Encode(x.Source))}\">{(string.IsNullOrEmpty(x.Example) ? "" : HtmlEncoder.Default.Encode(x.Example))}</lex:Value>");
       stb.Append("</lex:Field>");
 
       return stb.ToString();

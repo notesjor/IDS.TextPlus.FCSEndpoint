@@ -81,6 +81,8 @@ public class Version20 : AbstractVersion
       context = data["x-fcs-context"];
     var provideDataView = (data.ContainsKey("querytype") && data["querytype"].ToLower() == "lex")
                           || (data.ContainsKey("x-fcs-dataviews") && data["x-fcs-dataviews"].ToLower() == "lex");
+    if (data.ContainsKey("x-fcs-context"))
+      provideDataView = true;
     HashSet<string> dataViewFilter = null;
     if (data.ContainsKey("x-fcs-lex-fields"))
       dataViewFilter = new HashSet<string>(data["x-fcs-lex-fields"].Split(',').Select(x => x.ToLower().Trim()));
