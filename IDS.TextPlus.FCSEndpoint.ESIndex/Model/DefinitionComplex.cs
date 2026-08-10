@@ -13,6 +13,6 @@ public class DefinitionComplex
   /// <summary>
   /// Examples: 1, 2, 3, ...
   /// </summary>
-  [JsonPropertyName("sid")]
+  [JsonPropertyName("s_id")]
   public string SId { get; set; }
 }
