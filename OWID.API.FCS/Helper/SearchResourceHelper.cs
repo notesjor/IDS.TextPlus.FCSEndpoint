@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using IDS.TextPlus.FCSEndpoint.Model;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace IDS.TextPlus.FCSEndpoint.Helper;
 
@@ -21,7 +21,7 @@ public static class SearchResourceHelper
 
   private static Dictionary<string, SearchResouce> Load(string path)
   {
-    return JsonConvert.DeserializeObject<Dictionary<string, SearchResouce>>(File.ReadAllText(path, Encoding.UTF8)) ??
+    return JsonSerializer.Deserialize<Dictionary<string, SearchResouce>>(File.ReadAllText(path, Encoding.UTF8)) ??
            new Dictionary<string, SearchResouce>();
   }
 }

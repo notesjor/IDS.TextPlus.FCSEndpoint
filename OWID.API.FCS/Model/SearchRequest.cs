@@ -1,6 +1,6 @@
-﻿using IDS.TextPlus.FCSEndpoint.Traslator;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using IDS.TextPlus.FCSEndpoint.Traslator;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
@@ -9,7 +9,7 @@ namespace IDS.TextPlus.FCSEndpoint.Model;
 /// </summary>
 public class SearchRequest
 {
-  private JToken? _query;
+  private JsonNode? _query;
 
   public int From { get; set; }
   public int Size { get; set; } = 10;
@@ -20,7 +20,8 @@ public class SearchRequest
   public void SetQuery(string query)
   {
     var translator = TranslatorFcs2Elasticsearch.Parse(query);
-    _query = JToken.Parse(translator.ElasticsearchQuery.ToJsonString());
+    var json = translator.ElasticsearchQuery.ToJsonString();
+    _query = string.IsNullOrWhiteSpace(json) ? null : JsonNode.Parse(json);
   }
 
   /// <summary>
@@ -28,18 +29,31 @@ public class SearchRequest
   /// </summary>
   public void AddSourceFilter(string source)
   {
-    _query = new JObject
+    // Build equivalent of: { "bool": { "must": [ _query ], "filter": [ { "term": { "source": { "value": source } } } ] } }
+    var mustArray = new JsonArray();
+    if (_query != null)
+      mustArray.Add(_query.DeepClone());
+
+    var filterArray = new JsonArray
     {
-      ["bool"] = new JObject
+      new JsonObject
       {
-        ["must"] = new JArray { _query },
-        ["filter"] = new JArray
+        ["term"] = new JsonObject
         {
-          new JObject
+          ["source"] = new JsonObject
           {
-            ["term"] = new JObject { ["source"] = new JObject { ["value"] = source } }
+            ["value"] = source
           }
         }
+      }
+    };
+
+    _query = new JsonObject
+    {
+      ["bool"] = new JsonObject
+      {
+        ["must"] = mustArray,
+        ["filter"] = filterArray
       }
     };
   }
@@ -49,25 +63,26 @@ public class SearchRequest
   /// </summary>
   public string ToRequestJson()
   {
-    var body = new JObject
+    var body = new JsonObject
     {
-      ["query"] = _query?.DeepClone(),
+      ["query"] = _query?.DeepClone() ?? new JsonObject(),
       ["from"] = From,
       ["size"] = Size,
-      ["highlight"] = new JObject
+      ["highlight"] = new JsonObject
       {
-        ["pre_tags"] = new JArray { "<hits:Hit>" },
-        ["post_tags"] = new JArray { "</hits:Hit>" },
+        ["pre_tags"] = new JsonArray { "<hits:Hit>" },
+        ["post_tags"] = new JsonArray { "</hits:Hit>" },
         ["require_field_match"] = false,
         ["fragment_size"] = 1000,
-        ["fields"] = new JObject
-        {          
-          ["text"] = new JObject(),
-          ["lemma"] = new JObject(),
+        ["fields"] = new JsonObject
+        {
+          ["text"] = new JsonObject(),
+          ["lemma"] = new JsonObject()
         }
       }
     };
 
-    return body.ToString(Formatting.None);
+    // Serialize preserving the explicit property names
+    return body.ToJsonString(new JsonSerializerOptions { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull });
   }
 }

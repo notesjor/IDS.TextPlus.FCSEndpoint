@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 using IDS.TextPlus.FCSEndpoint.Helper;
 using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;

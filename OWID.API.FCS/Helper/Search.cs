@@ -1,18 +1,19 @@
-﻿using IDS.TextPlus.FCSEndpoint.Model;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RestSharp;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using IDS.TextPlus.FCSEndpoint.Model;
 
 namespace IDS.TextPlus.FCSEndpoint.Helper;
 
 public static class Search
 {
-  private static readonly RestClient _client = new(new RestClientOptions { Timeout = new TimeSpan(0, 0, 10) });
+  private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
 
-  private static readonly JsonSerializer _serializer = JsonSerializer.Create(new JsonSerializerSettings
+  private static readonly JsonSerializerOptions _serializerOptions = new()
   {
-    NullValueHandling = NullValueHandling.Ignore
-  });
+    PropertyNameCaseInsensitive = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+  };
 
   /// <summary>
   ///   Sends a LexCQL query to Elasticsearch and returns the result.
@@ -36,17 +37,19 @@ public static class Search
         obj.AddSourceFilter(source);
     }
 
-    var request = new RestRequest("http://localhost:9200/fcs/_search", Method.Post);
-    request.AddHeader("Content-Type", "application/json");
-    request.AddStringBody(obj.ToRequestJson(), ContentType.Json);
 #if DEBUG
     Console.WriteLine(obj.ToRequestJson());
 #endif
 
-    var response = _client.ExecuteAsync(request);
-    response.Wait();
+    using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "http://localhost:9200/fcs/_search")
+    {
+      Content = new StringContent(obj.ToRequestJson(), Encoding.UTF8, "application/json")
+    };
 
-    return MapElasticsearchResponse(response?.Result?.Content, start - 1);
+    var response = _httpClient.SendAsync(httpRequest).GetAwaiter().GetResult();
+    var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+    return MapElasticsearchResponse(content, start - 1);
   }
 
   /// <summary>
@@ -57,47 +60,62 @@ public static class Search
     if (string.IsNullOrWhiteSpace(json))
       return null;
 
-    var esResponse = JObject.Parse(json);
-    var hits = esResponse["hits"];
-    if (hits == null)
+    using var doc = JsonDocument.Parse(json);
+    var root = doc.RootElement;
+    if (!root.TryGetProperty("hits", out var hitsElement))
       return null;
 
-    var totalValue = hits["total"]?["value"]?.Value<int>() ?? 0;
-    var hitArray = hits["hits"] as JArray;
+    int totalValue = 0;
+    if (hitsElement.TryGetProperty("total", out var totalEl) && totalEl.ValueKind == JsonValueKind.Object)
+    {
+      if (totalEl.TryGetProperty("value", out var valueEl) && valueEl.ValueKind == JsonValueKind.Number && valueEl.TryGetInt32(out var v))
+        totalValue = v;
+    }
 
     var containers = new List<SearchResponseContainer>();
-    if (hitArray != null)
-      foreach (var hit in hitArray)
+    if (hitsElement.TryGetProperty("hits", out var hitArray) && hitArray.ValueKind == JsonValueKind.Array)
+    {
+      foreach (var hit in hitArray.EnumerateArray())
       {
-        var sourceToken = hit["_source"];
-        if (sourceToken == null)
+        if (!hit.TryGetProperty("_source", out var sourceToken))
           continue;
 
-        var container = sourceToken.ToObject<SearchResponseContainer>(_serializer);
+        var container = JsonSerializer.Deserialize<SearchResponseContainer>(sourceToken, _serializerOptions);
         if (container == null)
           continue;
 
-        // Build formatted version with ES highlighting
-        var formatted = sourceToken.ToObject<SearchResult>(_serializer) ?? new SearchResult();
-        var highlight = hit["highlight"] as JObject;
-        if (highlight != null)
+        var formatted = JsonSerializer.Deserialize<SearchResult>(sourceToken, _serializerOptions) ?? new SearchResult();
+
+        if (hit.TryGetProperty("highlight", out var highlight) && highlight.ValueKind == JsonValueKind.Object)
         {
-          if (highlight["text"] is JArray textHl && textHl.Count > 0)
-            formatted.Text = string.Join(" ", textHl.Select(t => t.ToString()));
-          if (highlight["lemma"] is JArray lemmaHl && lemmaHl.Count > 0)
-            formatted.Lemma = string.Join(" ", lemmaHl.Select(t => t.ToString()));
+          if (highlight.TryGetProperty("text", out var textHl) && textHl.ValueKind == JsonValueKind.Array)
+          {
+            var parts = textHl.EnumerateArray().Select(e => e.GetString() ?? string.Empty);
+            var joined = string.Join(" ", parts.Where(s => !string.IsNullOrEmpty(s)));
+            if (!string.IsNullOrEmpty(joined))
+              formatted.Text = joined;
+          }
+
+          if (highlight.TryGetProperty("lemma", out var lemmaHl) && lemmaHl.ValueKind == JsonValueKind.Array)
+          {
+            var parts = lemmaHl.EnumerateArray().Select(e => e.GetString() ?? string.Empty);
+            var joined = string.Join(" ", parts.Where(s => !string.IsNullOrEmpty(s)));
+            if (!string.IsNullOrEmpty(joined))
+              formatted.Lemma = joined;
+          }
         }
 
         container.Formatted = formatted;
         containers.Add(container);
       }
+    }
 
     return new SearchResponse
     {
       Hits = containers.ToArray(),
       EstimatedTotalHits = totalValue,
       Offset = offset,
-      ProcessingTimeMs = esResponse["took"]?.ToString()
+      ProcessingTimeMs = root.TryGetProperty("took", out var tookEl) ? tookEl.ToString() : null
     };
   }
 }

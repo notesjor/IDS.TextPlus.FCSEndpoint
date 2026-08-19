@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace IDS.TextPlus.FCSEndpoint.Model;
 
 public class SearchResponseContainer : SearchResult
 {
-  [JsonProperty("_formatted")] public SearchResult Formatted { get; set; }
+  [JsonPropertyName("_formatted")] public SearchResult Formatted { get; set; }
 }

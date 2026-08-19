@@ -1,6 +1,6 @@
 ﻿using IDS.TextPlus.FCSEndpoint.Traslator.IsValueMapper.Abstract;
-using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace IDS.TextPlus.FCSEndpoint.Traslator.IsValueMapper
 {
@@ -12,7 +12,7 @@ namespace IDS.TextPlus.FCSEndpoint.Traslator.IsValueMapper
     {
       try
       {
-        _mapping = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(File.ReadAllText("Snippets/mapping.json", Encoding.UTF8));
+        _mapping = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(File.ReadAllText("Snippets/mapping.json", Encoding.UTF8));
         IsActive = _mapping is { Count: > 0 };
       }
       catch
