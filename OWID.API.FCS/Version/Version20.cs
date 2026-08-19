@@ -4,7 +4,6 @@ using IDS.TextPlus.FCSEndpoint.Helper;
 using IDS.TextPlus.FCSEndpoint.Model;
 using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
-using Tfres;
 
 namespace IDS.TextPlus.FCSEndpoint.Version;
 
@@ -58,13 +57,13 @@ public class Version20 : AbstractVersion
 
     if (data.ContainsKey("x-fcs-endpoint-description"))
     {
-      ctx.Response.Send(EndpointDescriptionResponse, _mime);
+      ctx.Response.WriteAsync(EndpointDescriptionResponse).Wait();
       return;
     }
 
     if (data.ContainsKey("recordxmlescaping") && data["recordxmlescaping"].ToLower() != "xml")
     {
-      ctx.Response.Send(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordxmlescaping"]));
+      ctx.Response.WriteAsync(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordxmlescaping"])).Wait();
       return;
     }
 
@@ -91,7 +90,7 @@ public class Version20 : AbstractVersion
     if (data.ContainsKey("query"))
       ExecuteQuery(ctx, data["query"], start, maximum, context, provideDataView, dataViewFilter);
     else
-      ctx.Response.Send(DefaultRouteResponse, _mime);
+      ctx.Response.WriteAsync(DefaultRouteResponse).Wait();
   }
 
   private void PrintDebug(Dictionary<string, string> data)
@@ -107,12 +106,12 @@ public class Version20 : AbstractVersion
       // FCS specs require an error message if the query is empty - but the regular CQL parser does not throw an exception in this case.
       if (query.EndsWith("="))
       {
-        ctx.Response.Send(Error_QuerySyntax, _mime);
+        ctx.Response.WriteAsync(Error_QuerySyntax).Wait();
         return;
       }
-      if(query == "öäüÖÄÜß€")
+      if (query == "öäüÖÄÜß€")
       {
-        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+        ctx.Response.WriteAsync(EmptyResult.Replace("{{query}}", query)).Wait();
         return;
       }
 
@@ -122,20 +121,23 @@ public class Version20 : AbstractVersion
       {
         if (start > 10000000 | (start > 1 && start > result?.EstimatedTotalHits))
         {
-          ctx.Response.Send(Error_OutOfRange, _mime);
+          ctx.Response.WriteAsync(Error_OutOfRange).Wait();
           return;
         }
 
-        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+        ctx.Response.WriteAsync(EmptyResult.Replace("{{query}}", query)).Wait();
         return;
       }
 
       var totalResults = result.EstimatedTotalHits;
       var nextPage = start + maximum <= totalResults ? start + maximum : totalResults;
 
-      ctx.Response.SendChunk(Template_Response_01, Encoding.UTF8, _mime);
-      ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
-      ctx.Response.SendChunk(Template_Response_02);
+      ctx.Response.WriteAsync(Template_Response_01).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
+      ctx.Response.WriteAsync(result.EstimatedTotalHits.ToString()).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
+      ctx.Response.WriteAsync(Template_Response_02).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
 
       var dict = SearchResourceHelper.KeyToPid;
 
@@ -147,21 +149,23 @@ public class Version20 : AbstractVersion
         stb.Replace("{{hit}}", provideDataView ? LexDataViewHit(result.Hits[i]) : result.Hits[i].Formatted.Text);
         stb.Replace("{{p}}", (result.Offset + i + 1).ToString());
         stb.Replace("{{lex_dataview}}", provideDataView ? LexDataView(result.Hits[i], dataViewFilter) : "");
-        ctx.Response.SendChunk(stb.ToString());
+        ctx.Response.WriteAsync(stb.ToString()).Wait();
+        ctx.Response.Body.FlushAsync().Wait();
       }
 
-      ctx.Response.SendChunk(Template_Response_04);
+      ctx.Response.WriteAsync(Template_Response_04).Wait();
       var stbF = new StringBuilder(Template_Response_05);
       stbF.Replace("{{query}}", query);
       stbF.Replace("{{start}}", (result.Offset + 1).ToString());
       stbF.Replace("{{offset}}", start.ToString());
       stbF.Replace("{{max}}", result.EstimatedTotalHits.ToString());
       stbF.Replace("{{next}}", nextPage.ToString());
-      ctx.Response.SendFinalChunk(stbF.ToString());
+      ctx.Response.WriteAsync(stbF.ToString()).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
     }
     catch (LexCqlParseException)
     {
-      ctx.Response.Send(Error_QueryParser, _mime);
+      ctx.Response.WriteAsync(Error_QueryParser).Wait();
     }
     catch (Exception ex)
     {
@@ -169,7 +173,6 @@ public class Version20 : AbstractVersion
       Console.WriteLine(ex.Message);
       Console.WriteLine(ex.StackTrace);
 #endif
-      ctx.Response.Send(HttpStatusCode.InternalServerError);
     }
   }
 

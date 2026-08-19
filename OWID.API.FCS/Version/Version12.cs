@@ -1,8 +1,8 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using IDS.TextPlus.FCSEndpoint.Helper;
 using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
-using Tfres;
 
 namespace IDS.TextPlus.FCSEndpoint.Version;
 
@@ -47,17 +47,17 @@ public class Version12 : AbstractVersion
   {
     if (data.ContainsKey("x-fcs-endpoint-description"))
     {
-      ctx.Response.Send(EndpointDescriptionResponse, _mime);
+      ctx.Response.WriteAsync(EndpointDescriptionResponse).Wait();
       return;
     }
 
     if (data.ContainsKey("recordpacking") && data["recordpacking"].ToLower() != "xml")
     {
-      ctx.Response.Send(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordpacking"]));
+      ctx.Response.WriteAsync(Template_Error_RecordXmlEscaping.Replace("{{format}}", data["recordpacking"])).Wait();
       return;
     }
 
-    if(GetUrlParameterNumber(ctx, ref data, "startrecord", "startRecord", 1, 1, out var start, Template_Error_Number))
+    if (GetUrlParameterNumber(ctx, ref data, "startrecord", "startRecord", 1, 1, out var start, Template_Error_Number))
       return;
     if (GetUrlParameterNumber(ctx, ref data, "responseposition", "responsePosition", start, 1, out start, Template_Error_ScanNumber))
       return;
@@ -78,7 +78,7 @@ public class Version12 : AbstractVersion
       return;
     }
 
-    ctx.Response.Send(DefaultRouteResponse, _mime);
+    ctx.Response.WriteAsync(DefaultRouteResponse).Wait();
   }
 
   private void ExecuteQuery(HttpContext ctx, string query, int start, int maximum)
@@ -88,12 +88,12 @@ public class Version12 : AbstractVersion
       // FCS specs require an error message if the query is empty - but the regular CQL parser does not throw an exception in this case.
       if (query.EndsWith("="))
       {
-        ctx.Response.Send(Error_QuerySyntax, _mime);
+        ctx.Response.WriteAsync(Error_QuerySyntax).Wait();
         return;
       }
       if (query == "öäüÖÄÜß€")
       {
-        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+        ctx.Response.WriteAsync(EmptyResult.Replace("{{query}}", query)).Wait();
         return;
       }
 
@@ -103,33 +103,40 @@ public class Version12 : AbstractVersion
       {
         if (start > 10000000 | (start > 1 && start > result?.EstimatedTotalHits))
         {
-          ctx.Response.Send(Error_OutOfRange, _mime);
+          ctx.Response.WriteAsync(Error_OutOfRange).Wait();
           return;
         }
 
-        ctx.Response.Send(EmptyResult.Replace("{{query}}", query), _mime);
+        ctx.Response.WriteAsync(EmptyResult.Replace("{{query}}", query)).Wait();
         return;
       }
 
-      ctx.Response.SendChunk(Template_Response_01, mimeType: _mime);
-      ctx.Response.SendChunk(result.EstimatedTotalHits.ToString());
-      ctx.Response.SendChunk(Template_Response_02);
+      ctx.Response.WriteAsync(Template_Response_01).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
+      ctx.Response.WriteAsync(result.EstimatedTotalHits.ToString()).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
+      ctx.Response.WriteAsync(Template_Response_02).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
 
       var dict = SearchResourceHelper.KeyToPid;
 
       for (var i = 0; i < result.Hits.Length; i++)
-        ctx.Response.SendChunk(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Formatted.Source])
+      {
+        ctx.Response.WriteAsync(Template_Response_03.Replace("{{res_pid}}", dict[result.Hits[i].Formatted.Source])
           .Replace("{{url}}", result.Hits[i].Formatted.Url).Replace("{{hit}}", result.Hits[i].Formatted.Text)
-          .Replace("{{p}}", (result.Offset + i + 1).ToString()));
+          .Replace("{{p}}", (result.Offset + i + 1).ToString())).Wait();
+        ctx.Response.Body.FlushAsync().Wait();
+      }
 
-      ctx.Response.SendChunk(Template_Response_04);
-      ctx.Response.SendFinalChunk(Template_Response_05.Replace("{{query}}", query)
+      ctx.Response.WriteAsync(Template_Response_04).Wait();
+      ctx.Response.WriteAsync(Template_Response_05.Replace("{{query}}", query)
         .Replace("{{start}}", (result.Offset + 1).ToString()).Replace("{{offset}}", start.ToString())
-        .Replace("{{max}}", result.EstimatedTotalHits.ToString()));
+        .Replace("{{max}}", result.EstimatedTotalHits.ToString())).Wait();
+      ctx.Response.Body.FlushAsync().Wait();
     }
     catch (LexCqlParseException)
     {
-      ctx.Response.Send(Error_QueryParser, _mime);
+      ctx.Response.WriteAsync(Error_QueryParser).Wait();
     }
   }
 }

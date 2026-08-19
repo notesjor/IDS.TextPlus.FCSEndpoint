@@ -1,11 +1,6 @@
-@OWID.API.FCS_HostAddress = http://localhost:5109
+@OWID.API.FCS_HostAddress = http://localhost:5101
 
-GET {{OWID.API.FCS_HostAddress}}/todos/
-Accept: application/json
-
-###
-
-GET {{OWID.API.FCS_HostAddress}}/todos/1
+GET {{OWID.API.FCS_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace OWID.API.FCS
 {
@@ -7,67 +5,25 @@ namespace OWID.API.FCS
   {
     public static void Main(string[] args)
     {
-      var builder = WebApplication.CreateSlimBuilder(args);
+      var builder = WebApplication.CreateBuilder(args);
 
-      builder.Services.ConfigureHttpJsonOptions(options =>
-      {
-        options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
-      });
+      // Add services to the container.
 
-      builder.Services.Configure<RouteOptions>(options =>
-          options.SetParameterPolicy<RegexInlineRouteConstraint>("regex"));
-
-      // OpenAPI/Swagger-Dokumentation aktivieren
-      builder.Services.AddEndpointsApiExplorer();
-      builder.Services.AddSwaggerGen();
+      builder.Services.AddControllers();
+      // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+      builder.Services.AddOpenApi();
 
       var app = builder.Build();
 
-      // Swagger-Middleware aktivieren
-      app.UseSwagger();
-      app.UseSwaggerUI();
-
-      var sampleTodos = new Todo[] {
-              new(1, "Walk the dog"),
-              new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
-              new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
-              new(4, "Clean the bathroom"),
-              new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
-          };
-
-      var todosApi = app.MapGroup("/todos");
-      todosApi.MapGet("/", () => sampleTodos);
-      todosApi.MapGet("/{id}", (int id) =>
-          sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
-              ? Results.Ok(todo)
-              : Results.NotFound());
-      todosApi.MapPost("/", (Todo todo) =>
+      // Configure the HTTP request pipeline.
+      if (app.Environment.IsDevelopment())
       {
-        if (todo.Id == 0)
-        {
-          todo = new Todo(sampleTodos.Length + 1, todo.Title, todo.DueBy, todo.IsComplete);
-          return Results.Created($"/todos/{todo.Id}", todo);
-        }
-        else
-        {
-          var index = Array.FindIndex(sampleTodos, a => a.Id == todo.Id);
-          if (index > -1)
-          {
-            sampleTodos[index] = todo;
-          }
-          return Results.Accepted($"/todos/{todo.Id}", todo);
-        }
-      });
+        app.MapOpenApi();
+      }
+
+      app.MapControllers();
 
       app.Run();
     }
-  }
-
-  public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
-
-  [JsonSerializable(typeof(Todo[]))]
-  internal partial class AppJsonSerializerContext : JsonSerializerContext
-  {
-
   }
 }
