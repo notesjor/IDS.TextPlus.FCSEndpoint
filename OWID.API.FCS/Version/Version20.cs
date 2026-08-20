@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Xml.Serialization;
 using IDS.TextPlus.FCSEndpoint.Helper;
 using IDS.TextPlus.FCSEndpoint.Model;
 using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
@@ -12,6 +14,7 @@ public class Version20 : AbstractVersion
   private readonly string DefaultRouteResponse;
   private readonly string EmptyResult;
   private readonly string EndpointDescriptionResponse;
+  private readonly string EndpointDescriptionResponseJson;
   private readonly string Error_OutOfRange;
   private readonly string Error_QueryParser;
   private readonly string Error_QuerySyntax;
@@ -29,8 +32,14 @@ public class Version20 : AbstractVersion
   {
     DefaultRouteResponse = File.ReadAllText("Snippets/20/20DefaultRoute.xml", Encoding.UTF8)
       .Replace("{{max}}", _maxRecords.ToString());
+
     EmptyResult = File.ReadAllText("Snippets/20/20EmptyResult.xml", Encoding.UTF8);
     EndpointDescriptionResponse = BuildEndpointDescription("20");
+
+    var serializer = new XmlSerializer(typeof(explainResponse));
+    using var ms = new MemoryStream(Encoding.UTF8.GetBytes(EndpointDescriptionResponse));
+    var explainResponse = serializer.Deserialize(ms);
+    EndpointDescriptionResponseJson = JsonSerializer.Serialize(explainResponse);
 
     Error_OutOfRange = File.ReadAllText("Snippets/20/20Error_OutOfRange.xml", Encoding.UTF8);
     Error_QueryParser = File.ReadAllText("Snippets/20/20Error_QueryParser.xml", Encoding.UTF8);
@@ -46,8 +55,11 @@ public class Version20 : AbstractVersion
     Template_Response_03 = File.ReadAllText("Snippets/20/20Template_Response_03.xml", Encoding.UTF8);
     Template_Response_03_ext = File.ReadAllText("Snippets/20/20Template_Response_03_ext.xml", Encoding.UTF8);
     Template_Response_04 = File.ReadAllText("Snippets/20/20Template_Response_04.xml", Encoding.UTF8);
-    Template_Response_05 = File.ReadAllText("Snippets/20/20Template_Response_05.xml", Encoding.UTF8);
+    Template_Response_05 = File.ReadAllText("Snippets/20/20Template_Response_05.xml", Encoding.UTF8);  
   }
+
+  public void SendExplainBypass(HttpContext ctx, ref Dictionary<string, string> data)
+    => ctx.Response.WriteAsync(EndpointDescriptionResponseJson).Wait();
 
   public override void ProcessRequest(HttpContext ctx, ref Dictionary<string, string> data)
   {

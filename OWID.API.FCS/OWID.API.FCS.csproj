@@ -18,7 +18,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Superpower" Version="3.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IDS.TextPlus.FCSEndpoint.Model\IDS.TextPlus.FCSEndpoint.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>

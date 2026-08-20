@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFRES.DotNet6", "..\..\..\.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OWID.API.FCS", "..\OWID.API.FCS\OWID.API.FCS.csproj", "{422EB8A8-4EB7-4B5C-AB0A-549DF881C16D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDS.TextPlus.FCSEndpoint.Model", "..\IDS.TextPlus.FCSEndpoint.Model\IDS.TextPlus.FCSEndpoint.Model.csproj", "{2AC59308-7F17-49A8-9F2B-3A62E9B8511A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{422EB8A8-4EB7-4B5C-AB0A-549DF881C16D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{422EB8A8-4EB7-4B5C-AB0A-549DF881C16D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{422EB8A8-4EB7-4B5C-AB0A-549DF881C16D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AC59308-7F17-49A8-9F2B-3A62E9B8511A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AC59308-7F17-49A8-9F2B-3A62E9B8511A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AC59308-7F17-49A8-9F2B-3A62E9B8511A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AC59308-7F17-49A8-9F2B-3A62E9B8511A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
