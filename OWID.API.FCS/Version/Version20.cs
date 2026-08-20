@@ -14,7 +14,7 @@ public class Version20 : AbstractVersion
   private readonly string DefaultRouteResponse;
   private readonly string EmptyResult;
   private readonly string EndpointDescriptionResponse;
-  private readonly string EndpointDescriptionResponseJson;
+  private readonly explainResponse EndpointDescriptionResponseObject;
   private readonly string Error_OutOfRange;
   private readonly string Error_QueryParser;
   private readonly string Error_QuerySyntax;
@@ -38,8 +38,7 @@ public class Version20 : AbstractVersion
 
     var serializer = new XmlSerializer(typeof(explainResponse));
     using var ms = new MemoryStream(Encoding.UTF8.GetBytes(EndpointDescriptionResponse));
-    var explainResponse = serializer.Deserialize(ms);
-    EndpointDescriptionResponseJson = JsonSerializer.Serialize(explainResponse);
+    EndpointDescriptionResponseObject = serializer.Deserialize(ms) as explainResponse;
 
     Error_OutOfRange = File.ReadAllText("Snippets/20/20Error_OutOfRange.xml", Encoding.UTF8);
     Error_QueryParser = File.ReadAllText("Snippets/20/20Error_QueryParser.xml", Encoding.UTF8);
@@ -58,8 +57,8 @@ public class Version20 : AbstractVersion
     Template_Response_05 = File.ReadAllText("Snippets/20/20Template_Response_05.xml", Encoding.UTF8);  
   }
 
-  public void SendExplainBypass(HttpContext ctx, ref Dictionary<string, string> data)
-    => ctx.Response.WriteAsync(EndpointDescriptionResponseJson).Wait();
+  public explainResponse SendExplainBypass()
+    => EndpointDescriptionResponseObject;
 
   public override void ProcessRequest(HttpContext ctx, ref Dictionary<string, string> data)
   {

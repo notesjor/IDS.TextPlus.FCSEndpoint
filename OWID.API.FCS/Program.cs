@@ -27,6 +27,8 @@ namespace OWID.API.FCS
         app.MapOpenApi();
       }
 
+      app.MapMcp("/mcp");
+
       app.MapControllers();
 
       app.Run();
