@@ -26,7 +26,7 @@
         "deu": "Treffer mit dem Lemma \"See\" (Maskulinum, \"der See\")"
       },
       {
-        "query": "lemma = *in AND pos = NOUN AND (definition = Person OR definiiton = Mensch OR definition = Frau",
+        "query": "lemma = *in AND pos = NOUN AND (definition = Person OR definiton = Mensch OR definition = Frau)",
         "eng": "Matches entries in which the lemma is a noun ending with \"-in\" and the tokens \"Person\", \"Mensch\" or \"Frau\" occur in the definition",
         "deu": "Treffer, bei denen das Lemma ein Nomen ist, das mit \"-in\" endet und bei denen die Tokens \"Person\", \"Mensch\" oder \"Frau\" in der Definition vorkommen"
       }
@@ -90,6 +90,11 @@
         "query": "lemma = \"Wege Rom\"",
         "eng": "Matches entries in which the tokens \"Wege\" and \"Rom\" occur in the lemma field",
         "deu": "Treffer, bei denen die Tokens \"Wege\" und \"Rom\" im Lemma-Feld vorkommen"
+      },
+	  {
+        "query": "lemma == \"Wege führen\"",
+        "eng": "Matches entries in which the token-sequency \"Wege führen\" occur in the lemma field",
+        "deu": "Treffer, bei denen die feste Token-Abfolge \"Wege führen\" im Lemma-Feld vorkommen"
       },
       {
         "query": "definition = Gerüchte",
@@ -290,7 +295,7 @@
         "deu": "Treffer mit dem Lemma \"Revolution\" oder \"Bewegung\""
       },
       {
-        "query": "lemma = Opposition AND (citation = Studentenopposition OR citation = studentische Opposition)",
+        "query": "lemma = Opposition AND (citation = Studentenopposition OR citation = \"studentische Opposition\")",
         "eng": "Matches entries with the lemma \"Opposition\" in which the tokens \"Studentenopposition\" or \"studentische Opposition\" occur in an example",
         "deu": "Treffer mit dem Lemma \"Opposition\", bei denen die Tokens \"Studentenopposition\" oder \"studentische Opposition\" in einem Beleg vorkommen"
       }
@@ -356,7 +361,7 @@
         "deu": "Treffer mit dem Lemma \"prüfen\" oder \"checken\""
       },
       {
-        "query": "lemma = lernen AND citation = am Bibliothek",
+        "query": "lemma = lernen AND citation = \"am Bibliothek\"",
         "eng": "Matches entries with the lemma \"lernen\" in which the tokens \"am\" and \"Bibliothek\" occur in an example",
         "deu": "Treffer mit dem Lemma \"lernen\", bei denen die Tokens \"am\" und \"Bibliothek\" in einem Beleg vorkommen"
       }
