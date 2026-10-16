@@ -22,4 +22,10 @@ public class Link
   /// </summary>
   [JsonPropertyName("value")]
   public string Value { get; set; }
+
+  /// <summary>
+  /// Examples: 1, 2, 3, ...
+  /// </summary>
+  [JsonPropertyName("s_id")]
+  public string SId { get; set; } = "-";
 }

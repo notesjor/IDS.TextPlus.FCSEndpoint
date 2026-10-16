@@ -177,7 +177,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
       {
         stb.Append($"<lex:Field type=\"{type}\">");
         foreach (var x in values)
-          stb.Append($"<lex:Value ref=\"{x.Target}\">{x.Value}</lex:Value>");
+          stb.Append($"<lex:Value ref=\"{x.Target}\"{ (string.IsNullOrWhiteSpace(x.SId) || x.SId == "-" ? "" : $" idRefs=\"{x.SId}\"") }>{x.Value}</lex:Value>");
         stb.Append("</lex:Field>");
       }
 
