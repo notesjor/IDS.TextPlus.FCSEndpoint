@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace IDS.TextPlus.FCSEndpoint.Indexer.Model;
 
@@ -8,12 +8,12 @@ public class SimpleValue
   /// <summary>
   /// Examples: "https://universaldependencies.org/u/feat/Number.html"
   /// </summary>
-  [JsonProperty("schema")]
+  [JsonPropertyName("schema")]
   public string Schema { get; set; }
 
   /// <summary>
   /// Examples: "Sing", "Coll", "Ptan"
   /// </summary>
-  [JsonProperty("value")]
+  [JsonPropertyName("value")]
   public string Value { get; set; }
 }
