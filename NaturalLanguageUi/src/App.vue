@@ -1,16 +1,17 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { translate } from './needle.js'
+import { translate, DEFAULT_URL, MODEL } from './ollama.js'
 
 const input = ref('')
+const ollamaUrl = ref(localStorage.getItem('ollamaUrl') || DEFAULT_URL)
 const query = ref('')
-const needleOutput = ref('')
-const needleArgs = ref(null)
+const modelOutput = ref('')
+const modelArgs = ref(null)
 const warnings = ref([])
 const loading = ref(false)
 const copied = ref(false)
 const copiedDebug = ref('')
-const formattedNeedleOutput = computed(() => needleOutput.value
+const formattedModelOutput = computed(() => modelOutput.value
   .replace(/<think>/g, '<think>\n')
   .replace(/<\/think>/g, '\n</think>')
   .replace(/<tool_call>/g, '\n<tool_call>\n')
@@ -27,13 +28,14 @@ async function run() {
   loading.value = true
   warnings.value = []
   query.value = ''
-  needleOutput.value = ''
-  needleArgs.value = null
+  modelOutput.value = ''
+  modelArgs.value = null
   try {
-    const r = await translate(input.value)
+    localStorage.setItem('ollamaUrl', ollamaUrl.value)
+    const r = await translate(input.value, ollamaUrl.value)
     query.value = r.query
-    needleOutput.value = r.output
-    needleArgs.value = r.args
+    modelOutput.value = r.output
+    modelArgs.value = r.args
     warnings.value = r.warnings ?? []
   } catch (e) {
     warnings.value = [e.message]
@@ -62,10 +64,11 @@ async function copyDebug(value, kind) {
         <div class="text-center mb-8">
           <v-icon icon="mdi-text-search-variant" size="56" color="primary" />
           <h1 class="text-h4 font-weight-bold mt-2">Abfrage in natürlicher Sprache</h1>
-          <p class="text-medium-emphasis">Wird lokal im Browser mit Needle 3 (WASM) in LexCQL übersetzt.</p>
+          <p class="text-medium-emphasis">Wird mit Ollama ({{ MODEL }}) in LexCQL übersetzt.</p>
         </div>
 
         <v-card rounded="xl" elevation="8" class="pa-6">
+          <v-text-field v-model="ollamaUrl" label="Ollama-URL" density="compact" variant="outlined" prepend-inner-icon="mdi-server" class="mb-4" hide-details />
           <v-textarea
             v-model="input"
             label="Deine Abfrage"
@@ -80,7 +83,7 @@ async function copyDebug(value, kind) {
             <v-chip v-for="e in examples" :key="e" size="small" @click="input = e">{{ e }}</v-chip>
           </div>
           <v-btn block size="large" color="primary" :loading="loading" :disabled="!input.trim()" @click="run">
-            <v-icon start icon="mdi-auto-fix" /> {{ loading ? 'Needle 3 arbeitet …' : 'In LexCQL übersetzen' }}
+            <v-icon start icon="mdi-auto-fix" /> {{ loading ? 'Ollama arbeitet …' : 'In LexCQL übersetzen' }}
           </v-btn>
 
           <v-alert v-if="warnings.length" type="warning" variant="tonal" class="mt-4">
@@ -99,8 +102,8 @@ async function copyDebug(value, kind) {
               {{ query }}
             </v-sheet>
           </div>
-          <v-expansion-panels v-if="needleOutput || needleArgs" variant="accordion" class="mt-3">
-            <v-expansion-panel title="Needle 3 Debug-Ausgabe">
+          <v-expansion-panels v-if="modelOutput || modelArgs" variant="accordion" class="mt-3">
+            <v-expansion-panel title="Debug-Ausgabe">
               <v-expansion-panel-text>
                 <div class="d-flex align-center justify-space-between mb-2">
                   <span class="text-subtitle-2">Originalausgabe</span>
@@ -108,26 +111,26 @@ async function copyDebug(value, kind) {
                     size="small"
                     variant="text"
                     :prepend-icon="copiedDebug === 'output' ? 'mdi-check' : 'mdi-content-copy'"
-                    :disabled="!needleOutput"
-                    @click="copyDebug(needleOutput, 'output')"
+                    :disabled="!modelOutput"
+                    @click="copyDebug(modelOutput, 'output')"
                   >
                     {{ copiedDebug === 'output' ? 'Kopiert' : 'Ausgabe kopieren' }}
                   </v-btn>
                 </div>
-                <pre class="debug-output">{{ formattedNeedleOutput || 'Keine Modellausgabe vorhanden.' }}</pre>
-                <template v-if="needleArgs">
+                <pre class="debug-output">{{ formattedModelOutput || 'Keine Modellausgabe vorhanden.' }}</pre>
+                <template v-if="modelArgs">
                   <div class="d-flex align-center justify-space-between mt-4 mb-2">
                     <span class="text-subtitle-2">Extrahierte Tool-Argumente</span>
                     <v-btn
                       size="small"
                       variant="text"
                       :prepend-icon="copiedDebug === 'args' ? 'mdi-check' : 'mdi-content-copy'"
-                      @click="copyDebug(JSON.stringify(needleArgs, null, 2), 'args')"
+                      @click="copyDebug(JSON.stringify(modelArgs, null, 2), 'args')"
                     >
                       {{ copiedDebug === 'args' ? 'Kopiert' : 'JSON kopieren' }}
                     </v-btn>
                   </div>
-                  <pre class="debug-output">{{ JSON.stringify(needleArgs, null, 2) }}</pre>
+                  <pre class="debug-output">{{ JSON.stringify(modelArgs, null, 2) }}</pre>
                 </template>
               </v-expansion-panel-text>
             </v-expansion-panel>

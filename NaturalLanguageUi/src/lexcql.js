@@ -1,4 +1,4 @@
-// Renders structured conditions (Needle tool call) into a LexCQL string
+// Renders structured conditions (model JSON output) into a LexCQL string
 // that is accepted by LexCqlTokenizer / LexCqlParser.
 
 export const FIELDS = ['lemma', 'pos', 'definition', 'gender']
@@ -6,71 +6,37 @@ export const OPERATORS = ['=', '==', '!=', 'IS']
 export const MODIFIERS = ['ignoreCase', 'respectCase', 'regexp']
 export const CONNECTORS = ['AND', 'OR']
 
-/** Tool definition handed to Needle. */
-export const LEXCQL_TOOL = {
-  name: 'lexcql_query',
-  description:
-    'Build a lexical query from one or more conditions. Each condition has a field, operator, and value. ' +
-    'Return conditions as an array of objects using the exact keys field, op, modifier, value, connector, negate, open_paren, close_paren. ' +
-    'Use lemma for lexical headwords (wildcard * only at the beginning or end, e.g. *in or Berg*), ' +
-    'pos for Universal Dependencies UPOS tags (e.g. NOUN, VERB, ADJ), definition for meaning or gloss text, ' +
-    'and gender for grammatical gender (Masc, Fem, Neut). Use == by default; != means not equal. ' +
-    'Modifiers control case sensitivity or interpret the value as a regular expression. ' +
-    'Use AND/OR in connector to join positive conditions; set negate true for a negative condition, without adding AND before NOT. ' +
-    'Example: verbs beginning with "ver" but not ending with "en" become ' +
-    '{"conditions":[{"field":"lemma","op":"==","value":"ver*"},{"field":"pos","op":"==","value":"VERB"},{"field":"lemma","op":"==","value":"*en","negate":true}]}. ' +
-    'Use open_paren and close_paren to group conditions.',
-  parameters: {
-    type: 'object',
-    properties: {
-      conditions: {
-        type: 'array',
-        items: {
-          type: 'object',
-          required: ['field', 'value'],
-          properties: {
-            field: {
-              type: 'string',
-              enum: FIELDS,
-              description:
-                'lemma: lexical headword; * wildcard is allowed only at the start or end. ' +
-                'pos: Universal Dependencies UPOS tag, e.g. NOUN, VERB, ADJ. ' +
-                'definition: meaning or gloss text. gender: grammatical gender, use Masc, Fem, or Neut.',
-            },
-            op: {
-              type: 'string',
-              enum: OPERATORS,
-              description:
-                'Comparison operator: = and == request a match, != requests a non-match, and IS is suitable for categorical values ' +
-                'such as pos or gender (e.g. pos IS NOUN). Use == by default and choose only a listed operator.',
-            },
-            modifier: {
-              type: 'string',
-              enum: MODIFIERS,
-              description:
-                'Optional value modifier: ignoreCase for case-insensitive matching, respectCase for case-sensitive matching, ' +
-                'regexp to interpret the value as a regular expression. Omit when no special matching is requested.',
-            },
-            value: {
-              type: 'string',
-              description: 'The requested field value. For lemma, use * only as a leading and/or trailing wildcard unless using regexp.',
-            },
-            connector: {
-              type: 'string',
-              enum: CONNECTORS,
-              description: 'How this condition connects to the previous one. AND requires both; OR accepts either. The first condition has no previous condition.',
-            },
-            negate: { type: 'boolean', description: 'Set true to negate this condition with NOT.' },
-            open_paren: { type: 'integer', description: 'Number of opening parentheses before this condition, for grouping.' },
-            close_paren: { type: 'integer', description: 'Number of closing parentheses after this condition, for grouping.' },
-          },
-          required: ['field', 'value'],
+/** JSON schema for Ollama structured output (`format`). */
+export const LEXCQL_SCHEMA = {
+  type: 'object',
+  properties: {
+    conditions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          field: { type: 'string', enum: FIELDS },
+          op: { type: 'string', enum: OPERATORS },
+          modifier: { type: 'string', enum: MODIFIERS },
+          value: { type: 'string' },
+          connector: { type: 'string', enum: CONNECTORS },
+          negate: { type: 'boolean' },
+          open_paren: { type: 'integer' },
+          close_paren: { type: 'integer' },
         },
+        required: ['field', 'value'],
       },
     },
-    required: ['conditions'],
   },
+  required: ['conditions'],
 }
+
+export const SYSTEM_PROMPT = `You translate a natural-language request about dictionary entries into JSON conditions. Answer with JSON only.
+Fields: lemma (word form; "*" wildcard only at the start and/or end, e.g. "*in", "Berg*"), pos (UPOS tag: NOUN, VERB, ADJ, ADV, ...), definition (meaning, e.g. Person), gender (Masc, Fem, Neut).
+op: "==" (default), "=", "!=" not equal, "IS" (categorical values, e.g. pos IS NOUN). modifier "regexp" means value is a regular expression.
+connector ("AND" default, or "OR") joins a condition with the previous one. negate=true adds NOT (do not also add AND before it). open_paren/close_paren (integers) group conditions.
+Example: "female nouns ending in -in that refer to a person" ->
+{"conditions":[{"field":"lemma","value":"*in"},{"field":"pos","value":"NOUN"},{"field":"definition","value":"Person"},{"field":"gender","value":"Fem"}]}`
 
 const SIMPLE = /^(?:[\p{L}\p{N}_*?']|\\.)+$/u
 

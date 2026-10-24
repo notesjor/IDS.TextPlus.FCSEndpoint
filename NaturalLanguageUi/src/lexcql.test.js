@@ -1,9 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { LEXCQL_TOOL, render } from './lexcql.js'
+import { LEXCQL_SCHEMA, render } from './lexcql.js'
 
 test('tool schema requires each condition to have a field and value', () => {
-  assert.deepEqual(LEXCQL_TOOL.parameters.properties.conditions.items.required, ['field', 'value'])
+  assert.deepEqual(LEXCQL_SCHEMA.properties.conditions.items.required, ['field', 'value'])
 })
 
 test('wildcard + AND', () => {
