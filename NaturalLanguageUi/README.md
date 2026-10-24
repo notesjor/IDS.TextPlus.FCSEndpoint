@@ -9,9 +9,9 @@ bun run test  # Tests für den LexCQL-Renderer
 ```
 
 ## Needle 3 einbinden
-Lege Runtime und Modell nach `public/needle/` (nicht eingecheckt):
-`needle.js` (exportiert `loadEngine`, `NeedleAgent`), `needle.wasm`, `needle3.cact`.
-Weicht die API deiner Runtime ab, passe nur `src/needle.js` an.
+Die WASM-Runtime wird über `needle-rs` eingebunden. Beim ersten Übersetzen lädt der Browser das Needle-3-Modell (35,3 MB) von Hugging Face; dafür ist eine Internetverbindung nötig. Danach bleibt das Modell bis zum Neuladen der Seite im Speicher.
+
+Das Modell steht unter Apache-2.0. Das Runtime-Paket ist MIT-lizenziert.
 
 ## Unterstützte Syntax (`src/lexcql.js`)
 - Felder: `lemma`, `pos`, `definition`, `gender`

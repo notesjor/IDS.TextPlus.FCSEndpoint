@@ -10,12 +10,16 @@ export const CONNECTORS = ['AND', 'OR']
 export const LEXCQL_TOOL = {
   name: 'lexcql_query',
   description:
-    'Build a lexical query. Each condition compares a field with a value. ' +
-    'Fields: lemma (word form; * wildcard only at start and/or end, e.g. *in, Berg*), pos (UPOS: NOUN, VERB, ADJ, ...), ' +
-    'definition, gender (Masc, Fem, Neut). Operators: =, ==, !=, IS. ' +
-    'Modifier "regexp" treats value as regular expression. ' +
-    'connector (AND/OR) joins a condition with the previous one, negate adds NOT, ' +
-    'open_paren/close_paren group conditions.',
+    'Build a lexical query from one or more conditions. Each condition has a field, operator, and value. ' +
+    'Return conditions as an array of objects using the exact keys field, op, modifier, value, connector, negate, open_paren, close_paren. ' +
+    'Use lemma for lexical headwords (wildcard * only at the beginning or end, e.g. *in or Berg*), ' +
+    'pos for Universal Dependencies UPOS tags (e.g. NOUN, VERB, ADJ), definition for meaning or gloss text, ' +
+    'and gender for grammatical gender (Masc, Fem, Neut). Use == by default; != means not equal. ' +
+    'Modifiers control case sensitivity or interpret the value as a regular expression. ' +
+    'Use AND/OR in connector to join positive conditions; set negate true for a negative condition, without adding AND before NOT. ' +
+    'Example: verbs beginning with "ver" but not ending with "en" become ' +
+    '{"conditions":[{"field":"lemma","op":"==","value":"ver*"},{"field":"pos","op":"==","value":"VERB"},{"field":"lemma","op":"==","value":"*en","negate":true}]}. ' +
+    'Use open_paren and close_paren to group conditions.',
   parameters: {
     type: 'object',
     properties: {
@@ -23,15 +27,42 @@ export const LEXCQL_TOOL = {
         type: 'array',
         items: {
           type: 'object',
+          required: ['field', 'value'],
           properties: {
-            field: { type: 'string', enum: FIELDS },
-            op: { type: 'string', enum: OPERATORS },
-            modifier: { type: 'string', enum: MODIFIERS },
-            value: { type: 'string' },
-            connector: { type: 'string', enum: CONNECTORS },
-            negate: { type: 'boolean' },
-            open_paren: { type: 'integer' },
-            close_paren: { type: 'integer' },
+            field: {
+              type: 'string',
+              enum: FIELDS,
+              description:
+                'lemma: lexical headword; * wildcard is allowed only at the start or end. ' +
+                'pos: Universal Dependencies UPOS tag, e.g. NOUN, VERB, ADJ. ' +
+                'definition: meaning or gloss text. gender: grammatical gender, use Masc, Fem, or Neut.',
+            },
+            op: {
+              type: 'string',
+              enum: OPERATORS,
+              description:
+                'Comparison operator: = and == request a match, != requests a non-match, and IS is suitable for categorical values ' +
+                'such as pos or gender (e.g. pos IS NOUN). Use == by default and choose only a listed operator.',
+            },
+            modifier: {
+              type: 'string',
+              enum: MODIFIERS,
+              description:
+                'Optional value modifier: ignoreCase for case-insensitive matching, respectCase for case-sensitive matching, ' +
+                'regexp to interpret the value as a regular expression. Omit when no special matching is requested.',
+            },
+            value: {
+              type: 'string',
+              description: 'The requested field value. For lemma, use * only as a leading and/or trailing wildcard unless using regexp.',
+            },
+            connector: {
+              type: 'string',
+              enum: CONNECTORS,
+              description: 'How this condition connects to the previous one. AND requires both; OR accepts either. The first condition has no previous condition.',
+            },
+            negate: { type: 'boolean', description: 'Set true to negate this condition with NOT.' },
+            open_paren: { type: 'integer', description: 'Number of opening parentheses before this condition, for grouping.' },
+            close_paren: { type: 'integer', description: 'Number of closing parentheses after this condition, for grouping.' },
           },
           required: ['field', 'value'],
         },
@@ -63,36 +94,68 @@ function renderValue(value, modifier) {
   return SIMPLE.test(v) && !['AND', 'OR', 'NOT', 'IS'].includes(v.toUpperCase()) ? v : quote(v, false)
 }
 
-export function render(call) {
-  const conditions = call?.conditions
-  if (!Array.isArray(conditions) || conditions.length === 0) throw new Error('Keine Bedingungen erkannt.')
+export function render(call, warnings = []) {
+  const conditions = Array.isArray(call?.conditions) ? call.conditions : []
+  if (conditions.length === 0) warnings.push('Keine Bedingungen erkannt.')
   let depth = 0
   const out = []
-  conditions.forEach((c, i) => {
-    const field = String(c.field ?? '').toLowerCase()
-    const op = c.op ?? '='
-    const value = String(c.value ?? '').trim()
-    const modifier = c.modifier || ''
-    if (!FIELDS.includes(field)) throw new Error(`Unbekanntes Feld: ${c.field}`)
-    if (!OPERATORS.includes(op)) throw new Error(`Unbekannter Operator: ${op}`)
-    if (modifier && !MODIFIERS.includes(modifier)) throw new Error(`Unbekannter Modifier: ${modifier}`)
-    if (!value) throw new Error('Leerer Wert.')
-    if (modifier === 'regexp') {
-      try { new RegExp(value) } catch { throw new Error(`Ungültiger regulärer Ausdruck: ${value}`) }
+  conditions.forEach((condition) => {
+    const c = condition && typeof condition === 'object' ? condition : {}
+    let field = String(c.field ?? '').toLowerCase()
+    if (!FIELDS.includes(field)) {
+      warnings.push(`Unbekanntes oder fehlendes Feld "${c.field}"; verwende lemma.`)
+      field = 'lemma'
     }
-    const open = Math.max(0, c.open_paren | 0)
-    const close = Math.max(0, c.close_paren | 0)
-    const connector = String(c.connector ?? 'AND').toUpperCase()
-    if (!CONNECTORS.includes(connector)) throw new Error(`Unbekannter Verknüpfer: ${c.connector}`)
+    let op = c.op ?? '=='
+    if (!OPERATORS.includes(op)) {
+      warnings.push(`Unbekannter Operator "${op}"; verwende =.`)
+      op = '=='
+    }
+    let modifier = c.modifier || ''
+    if (modifier && !MODIFIERS.includes(modifier)) {
+      warnings.push(`Unbekannter Modifier "${modifier}"; lasse ihn weg.`)
+      modifier = ''
+    }
+    const value = String(c.value ?? '').trim()
+    if (!value) {
+      warnings.push(`Bedingung für ${field} ohne Wert übersprungen.`)
+      return
+    }
+    if (modifier === 'regexp') {
+      try {
+        new RegExp(value)
+      } catch {
+        warnings.push(`Ungültiger regulärer Ausdruck "${value}"; behandle den Wert als Text.`)
+        modifier = ''
+      }
+    }
+    const requestedOpen = Math.max(0, Math.trunc(Number(c.open_paren) || 0))
+    const requestedClose = Math.max(0, Math.trunc(Number(c.close_paren) || 0))
+    const open = Math.min(requestedOpen, conditions.length)
+    if (open !== requestedOpen) warnings.push('Zu viele öffnende Klammern; Anzahl wurde begrenzt.')
+    let connector = String(c.connector ?? 'AND').toUpperCase()
+    if (!CONNECTORS.includes(connector)) {
+      warnings.push(`Unbekannter Verknüpfer "${c.connector}"; verwende AND.`)
+      connector = 'AND'
+    }
 
     const parts = []
-    if (i > 0) parts.push(connector)
-    if (c.negate) parts.push('NOT')
+    if (out.length > 0) parts.push(c.negate === true ? 'NOT' : connector)
+    else if (c.negate === true) parts.push('NOT')
+    depth += open
+    const close = Math.min(requestedClose, depth)
+    if (close !== requestedClose) warnings.push('Zu viele schließende Klammern; Anzahl wurde angepasst.')
     parts.push('('.repeat(open) + `${field} ${op}${modifier ? ' /' + modifier : ''} ${renderValue(value, modifier)}` + ')'.repeat(close))
-    depth += open - close
-    if (depth < 0) throw new Error('Unausgeglichene Klammern.')
+    depth -= close
     out.push(parts.join(' '))
   })
-  if (depth !== 0) throw new Error('Unausgeglichene Klammern.')
+  if (depth > 0) {
+    out[out.length - 1] += ')'.repeat(depth)
+    warnings.push('Fehlende schließende Klammern wurden ergänzt.')
+  }
+  if (out.length === 0) {
+    warnings.push('Keine verwendbare Bedingung; es wird kein Query ausgegeben.')
+    return ''
+  }
   return out.join(' ')
 }
