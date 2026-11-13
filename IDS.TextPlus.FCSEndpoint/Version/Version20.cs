@@ -206,8 +206,8 @@ public class Version20 : AbstractVersion
     ////
 
     var fields = dataViewFilter == null
-      ? snippets.Values
-      : snippets.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
+      ? snippets?.Values
+      : snippets?.Where(x => dataViewFilter.Contains(x.Key)).Select(x => x.Value);
 
     stb.Replace("{{extra_fields}}", string.Join("", fields));
 

@@ -22,12 +22,14 @@ public static class LexCqlTokenizer
     select Unit.Value;
 
   /// <summary>
-  ///   Recognizer for an unquoted identifier (letters, digits, underscores).
+  ///   Recognizer for an unquoted identifier (letters, digits, underscores, dots, dollar signs).
   ///   Includes wildcard characters * and ? so bare terms like "Berg*" are captured as a single token.
   /// </summary>
   private static readonly TextParser<Unit> IdentifierToken =
     Character.LetterOrDigit
       .Or(Character.EqualTo('_'))
+      .Or(Character.EqualTo('.'))
+      .Or(Character.EqualTo('$'))
       .Or(Character.EqualTo('*'))
       .Or(Character.EqualTo('?'))
       .Or(Character.EqualTo('\\').IgnoreThen(Character.AnyChar)) // escaped chars in bare words

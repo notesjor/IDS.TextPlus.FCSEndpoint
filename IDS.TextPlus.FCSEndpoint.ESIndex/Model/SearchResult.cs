@@ -54,4 +54,5 @@ public class SearchResult
 
   [JsonPropertyName("lemma_token")] public string[] LemmaTokens { get; set; }
   [JsonPropertyName("citation")] public string Citation { get; set; }
+  [JsonPropertyName("citation$source")] public string CitationSource { get; set; }
 }

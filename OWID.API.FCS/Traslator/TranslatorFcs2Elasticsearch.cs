@@ -49,7 +49,8 @@ public class TranslatorFcs2Elasticsearch
 
     try
     {
-      var tokens = LexCqlTokenizer.Instance.Tokenize(query.Trim());
+      var normalizedQuery = NormalizeKnownFieldAliases(query.Trim());
+      var tokens = LexCqlTokenizer.Instance.Tokenize(normalizedQuery);
       var ast = LexCqlParser.Query.Parse(tokens);
 
       return new TranslatorFcs2Elasticsearch { Expression = ast };
@@ -62,6 +63,11 @@ public class TranslatorFcs2Elasticsearch
     {
       throw new LexCqlParseException($"Failed to parse LexCQL query: {ex.Message}", ex);
     }
+  }
+
+  private static string NormalizeKnownFieldAliases(string query)
+  {
+    return query.Replace("citation.source", "citation$source", StringComparison.OrdinalIgnoreCase);
   }
 
   /// <summary>

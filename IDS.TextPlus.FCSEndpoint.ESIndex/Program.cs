@@ -65,13 +65,18 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
     {
       var tmp = new List<SearchResult>();
       var max = 10000;
+      var blocked = 0;
 
       while (docs.Count > 0)
       {
         var doc = docs.Dequeue();
 
-        if (!_filter.Add(doc.Url))
+        var fkey = $"{doc.Lemma}+{doc.Url}";
+        if (!_filter.Add(fkey))
+        {
+          blocked++;
           continue;
+        }
 
         tmp.Add(new SearchResult
         {
@@ -80,7 +85,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
           Segmentation = doc.Segmentation,
           Definition = doc.Def == null || doc.Def.Count == 0 ? "" : string.Join(" — ", doc.Def.Select(x => x.Text)),
           Url = doc.Url,
-          Source = doc.Source,
+          Source = doc.Source,          
           Text = GenerateSnippetSimpleText(doc),
           Lemma = doc.Lemma,
           LemmaTokens = Tokenize(doc.Lemma),
@@ -94,7 +99,8 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
           Antonym = doc.Link?.Where(x => x.Type == "antonym")?.Select(x => x.Value)?.ToArray(),
           Synonym = doc.Link?.Where(x => x.Type == "synonym")?.Select(x => x.Value)?.ToArray(),
           FcsSnippets = GenerateSnippetFcs(doc),
-          Citation = doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x => x.Example)) // doc.Citation == null ? null : doc.Citation.First().Example //doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x=>x.Example))
+          Citation = doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x => x.Example)),
+          CitationSource = doc.Citation == null ? null : string.Join(" ", doc.Citation.Select(x => x.Source)),
         });
 
         if (tmp.Count >= max)
@@ -109,6 +115,8 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
       {
         client.IndexMany(tmp, _indexName);
       }
+
+      Console.WriteLine($"BLOCKED: {blocked}");
     }
 
     private static Dictionary<string, string> GenerateSnippetFcs(Document doc)
@@ -245,6 +253,7 @@ namespace IDS.TextPlus.FCSEndpoint.ESIndex
             // Suchbare Felder (Text / Full-Text)            
             .Text("definition")
             .Text("citation")
+            .Text("citation$source")
             .Text("text", k =>
               k.Index(false)
               .Store()

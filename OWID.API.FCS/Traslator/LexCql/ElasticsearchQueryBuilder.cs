@@ -33,7 +33,7 @@ public static class ElasticsearchQueryBuilder
 
   private static JsonObject BuildComparison(ComparisonExpression cmp)
   {
-    var field = cmp.Field;
+    var field = NormalizeField(cmp.Field);
     var value = cmp.Value;
     var isExact = cmp.Relation == RelationOp.ExactEquals;
     var isMapping = cmp.Relation == RelationOp.IsMapping;
@@ -60,6 +60,13 @@ public static class ElasticsearchQueryBuilder
       if (value[i] is '*' or '?')
         return true;
     return false;
+  }
+
+  private static string NormalizeField(string field)
+  {
+    return field.Equals("citation.source", StringComparison.OrdinalIgnoreCase)
+      ? "citation$source"
+      : field;
   }
 
   // ── Elasticsearch clause builders ──────────────────────────────────
