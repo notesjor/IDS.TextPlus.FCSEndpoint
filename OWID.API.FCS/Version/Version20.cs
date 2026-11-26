@@ -6,6 +6,7 @@ using IDS.TextPlus.FCSEndpoint.Helper;
 using IDS.TextPlus.FCSEndpoint.Model;
 using IDS.TextPlus.FCSEndpoint.Traslator.LexCql;
 using IDS.TextPlus.FCSEndpoint.Version.Abstract;
+using OWID.API.FCS.Logfile;
 
 namespace IDS.TextPlus.FCSEndpoint.Version;
 
@@ -114,14 +115,18 @@ public class Version20 : AbstractVersion
   {
     try
     {
+      var session = Logger.Create(query, start, maximum, provideDataView);
+
       // FCS specs require an error message if the query is empty - but the regular CQL parser does not throw an exception in this case.
       if (query.EndsWith("="))
       {
+        Logger.Error(session, 1);
         ctx.Response.WriteAsync(Error_QuerySyntax).Wait();
         return;
       }
       if (query == "öäüÖÄÜß€")
       {
+        Logger.Error(session, 2);
         ctx.Response.WriteAsync(EmptyResult.Replace("{{query}}", query)).Wait();
         return;
       }
@@ -132,10 +137,12 @@ public class Version20 : AbstractVersion
       {
         if (start > 10000000 | (start > 1 && start > result?.EstimatedTotalHits))
         {
+          Logger.Error(session, 3);
           ctx.Response.WriteAsync(Error_OutOfRange).Wait();
           return;
         }
-
+        
+        Logger.Error(session, 4);
         ctx.Response.WriteAsync(EmptyResult.Replace("{{query}}", query)).Wait();
         return;
       }
@@ -173,6 +180,8 @@ public class Version20 : AbstractVersion
       stbF.Replace("{{next}}", nextPage.ToString());
       ctx.Response.WriteAsync(stbF.ToString()).Wait();
       ctx.Response.Body.FlushAsync().Wait();
+
+      Logger.Success(session, result.EstimatedTotalHits);
     }
     catch (LexCqlParseException)
     {
