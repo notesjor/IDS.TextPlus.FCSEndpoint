@@ -25,15 +25,22 @@ namespace OWID.API.FCS
 
       var app = builder.Build();
 
-      // Configure the HTTP request pipeline.
-      if (app.Environment.IsDevelopment())
-      {
-        app.MapOpenApi();
-      }
+      app.UsePathBase("/api/fcs");
 
-      app.MapMcp("/mcp");
+      app.UseCors(policy =>
+      {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+      });
+
+      app.MapOpenApi();
+
+      app.MapMcp("/api/fcs/mcp");
 
       app.MapControllers();
+
+      app.MapFallbackToController("Get", "Fcs");
 
       app.Run();
     }
